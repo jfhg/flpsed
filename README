@@ -11,9 +11,9 @@ It is useful for filling in forms etc.
 Usage:
 - open an existing PostScript document.
 - click anywhere on the document and type a text line.
-- adjust the size of your text line
 - the frame around the text shows, which text line has the focus.
 - remove text, by hitting BackSpace.
+- click on the lower left corner of a text line, to focus it.
 - navigate within the document with the Page->next or Page->first menu buttons.
 - save your document and preview it with ghostview or something
   similar.
