@@ -60,4 +60,4 @@ flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
 
 Johannes Hofmann
 (Johannes.Hofmann@gmx.de)
-November 10, 2004
+November 14, 2004

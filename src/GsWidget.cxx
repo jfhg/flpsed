@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.12 2004/11/10 18:49:08 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.13 2004/11/14 20:04:09 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -118,7 +118,7 @@ GsWidget::~GsWidget() {
 int GsWidget::load(char *f) {
   int fd = open(f, O_RDONLY); 
   if (fd == -1) {
-    fprintf(stderr, "Could not open file %s (errno %d).\n", f, errno);
+    perror("open");
     return 1;
   }
   return load(fd);
@@ -161,7 +161,7 @@ int GsWidget::load(int fd) {
     argv[5] = "-";
     argv[6] = NULL;
     execvp(argv[0], argv);
-    fprintf(stderr, "Could not exec gs (errno %d)\n", errno);
+    perror("exec");
     fprintf(stderr, "Please install ghostscript and make sure 'gs' "
 	    "is in the PATH.\n");
     exit(1);
@@ -179,7 +179,7 @@ int GsWidget::reload() {
   if (in_fd >= 0) {
     ret = lseek(in_fd, 0L, SEEK_SET);
     if (ret == -1) {
-      fprintf(stderr, "lseek failed (errno %d)\n", errno);
+      perror("lseek");
       return 1;
     }
     load(in_fd);

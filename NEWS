@@ -4,7 +4,7 @@ flpsed ChangeLog
 flpsed-0.3.1
  - Fix redraw problem after scrolling.
  - Allow moving of text with arrow keys for better text positioning.
- - Tab key now cycles through text fields.
+ - Tab key now cycles through text fields on current page.
  - Various bug fixes.
 
 flpsed-0.3.0
