@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.30 2005/02/03 18:10:17 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.31 2005/02/28 17:56:51 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -30,6 +30,7 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <signal.h>
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
@@ -41,6 +42,7 @@
 #include <FL/Fl_Menu_Item.H>
 
 #include "PSEditor.H"
+#include "util.h"
 
 PSEditor *psed_p   = NULL;
 Fl_Scroll *scroll = NULL;
@@ -82,52 +84,72 @@ void open_cb() {
 }
 
 void import_pdf_cb() {
+  char *file;
+  FILE *p;
+  int status;
+  char *args[32];
+  pid_t pid;
+  
   if (!check_save()) return;
-  char *file = fl_file_chooser("Open File?", "*.pdf", filename);
+  file = fl_file_chooser("Open File?", "*.pdf", filename);
   if(file != NULL) {
-    FILE *p;
-    int ret;
-    char cmd[1000];
+    args[0] = "pdftops";
+    args[1] = file;
+    args[2] = "-";
+    args[3] = NULL;
+    
+    p = pexecvp("pdftops", args, &pid, "r");
 
-    snprintf(cmd, sizeof(cmd), "pdftops \"%s\" -", file);
-    p = popen(cmd, "r");
     if (p) {
       psed_p->load(p);
-      ret = pclose(p);
-      if (WEXITSTATUS(ret) == 127 || WEXITSTATUS(ret) == 126) {
+      fclose(p);
+      waitpid(pid, &status, 0); 
+      if (WEXITSTATUS(status) == 127 || WEXITSTATUS(status) == 126) {
        fl_message("PDF import depends on pdftops from xpdf.\n"
 		  "Make sure pdftops is available on your system.\n");
-      } else if (WEXITSTATUS(ret) != 0) {
+      } else if (WEXITSTATUS(status) != 0) {
        fl_message("PDF import failed\n");
       }
     } else {
-      perror("popen");
+      perror("pexecvp");
     }
   }
 }
 
 void export_pdf_cb() {
-  if (!check_save()) return;
-  char *file = fl_file_chooser("Open File?", "*.pdf", filename);
-  if(file != NULL) {
-    FILE *p;
-    int ret;
-    char cmd[1000];
+  char *file;
+  FILE *p;
+  int status;
+  char *args[32];
+  pid_t pid;
 
-    snprintf(cmd, sizeof(cmd), "ps2pdf - \"%s\"", file);
-    p = popen(cmd, "w");
+  file = fl_file_chooser("Open File?", "*.pdf", filename);
+  if(file != NULL) {
+    args[0] = "ps2pdf";
+    args[1] = "-";
+    args[2] = file;
+    args[3] = NULL;
+    
+    signal(SIGPIPE, SIG_IGN);
+
+    p = pexecvp("ps2pdf", args, &pid, "w");
+   
     if (p) {
       psed_p->save(p);
-      ret = pclose(p); 
-      if (WEXITSTATUS(ret) == 127 || WEXITSTATUS(ret) == 126) {
+
+      fclose(p);
+      waitpid(pid, &status, 0); 
+      if (WEXITSTATUS(status) == 127 || WEXITSTATUS(status) == 126) {
        fl_message("PDF export depends on ps2pdf from ghostscript.\n"
 		  "Make sure ps2pdf is available on your system.\n");
-      } else if (WEXITSTATUS(ret) != 0) {
+      } else if (WEXITSTATUS(status) != 0) {
 	fl_message("PDF export failed\n");
       }
     } else {
-      perror("pclose");
+      perror("pexecvp");
     }
+
+    signal(SIGPIPE, SIG_DFL);
   }
 }
 
@@ -297,7 +319,6 @@ int main(int argc, char** argv) {
   int err, bflag = 0, dflag = 0;
   Fl_Window *win;
   Fl_Menu_Bar *m;
-  Fl_Int_Input *x_in, *y_in;
   struct {char *tag; char *value;} tv[TV_LEN];
   int tv_idx = 0, my_argc;
   FILE *in_fp = NULL, *out_fp = NULL;

@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.12 2004/11/10 18:32:59 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.13 2005/02/28 17:56:51 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -108,8 +108,6 @@ int PSEditModel::set_cur_text(int x1, int y1, int p) {
 }
 
 int PSEditModel::next_text(int p) {
-  PSEditText *t;
-
   if (p < 0 || p >= max_pages) {
     return 1;
   }
@@ -239,12 +237,12 @@ PSEditText *PSEditModel::get_text(int p) {
 int PSEditModel::load(FILE *fp) {
   char tmpname[256];
   char linebuf[1024];
-  int ret;
+  ssize_t ret;
   PSParser *p1 = new PSParser_1(this);
   PSParser *p2 = new PSParser_2(this);
   int tmp_fd;
 
-  strncpy(tmpname, "/tmp/PSEditorXXXXXX", 256);
+  strncpy(tmpname, "/tmp/PSEditorXXXXXX", sizeof(tmpname));
   tmp_fd = mkstemp(tmpname);
   if (tmp_fd < 0) {
     fprintf(stderr, "Could not create temporary file (errno %d).\n", errno);
@@ -254,7 +252,7 @@ int PSEditModel::load(FILE *fp) {
 
   clear();
 
-  while (fgets(linebuf, 1024, fp) != NULL) {
+  while (fgets(linebuf, sizeof(linebuf), fp) != NULL) {
     if (!p2->parse(linebuf) && !p1->parse(linebuf)) {
       ret = write(tmp_fd, linebuf, strlen(linebuf));
       if (ret != strlen(linebuf)) {
