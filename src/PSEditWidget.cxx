@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.32 2005/01/27 21:07:09 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.33 2005/01/28 15:08:28 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -70,7 +70,7 @@ void PSEditWidget::draw() {
     if (t->get_tag() && show_tags) {
       int text_height = fl_height() - fl_descent();
       fl_color(FL_BLUE);
-      fl_font(FLPSED_TAG_FONT, FLPSED_TAG_FONT_SIZE);
+      fl_font(FLPSED_TAG_FONT, FLPSED_TAG_FONT_SIZE * zoom_percent / 100);
       fl_draw(t->get_tag(), t_x + x(), 
 	      t_y + y() - text_height - 1);
     }

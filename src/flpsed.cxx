@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.25 2005/01/27 21:07:09 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.26 2005/01/28 15:08:29 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -42,7 +42,8 @@
 
 #include "PSEditor.H"
 
-PSEditor *gsw_p;
+PSEditor *gsw_p   = NULL;
+Fl_Scroll *scroll = NULL;
 
 int xev_handler(int ev) {
   if (gsw_p) {
@@ -151,7 +152,12 @@ void zoom_cb(Fl_Widget *w, void *) {
   Fl_Menu_* mw = (Fl_Menu_*)w;
   const Fl_Menu_Item* m = mw->mvalue();
   if (m) {
-    gsw_p->zoom(atoi(m->label()));
+    if (scroll) {
+      scroll->position(0,0);
+    }
+    if (gsw_p) {
+      gsw_p->zoom(atoi(m->label()));
+    }
   }
 }
 
@@ -191,7 +197,8 @@ Fl_Menu_Item menuitems[] = {
     { "75",  0, (Fl_Callback *)zoom_cb },
     { "100",  0, (Fl_Callback *)zoom_cb },
     { "150",  0, (Fl_Callback *)zoom_cb },
-    { "200",  0, (Fl_Callback *)zoom_cb },    
+    { "200",  0, (Fl_Callback *)zoom_cb },
+    { "250",  0, (Fl_Callback *)zoom_cb },
     { 0 },
 
   { "&Size", 0, 0, 0, FL_SUBMENU },
@@ -239,7 +246,6 @@ int main(int argc, char** argv) {
   Fl_Window *win;
   Fl_Menu_Bar *m;
   Fl_Int_Input *x_in, *y_in;
-  Fl_Scroll *scroll;
   struct {char *tag; char *value;} tv[TV_LEN];
   int tv_idx = 0, my_argc;
   FILE *in_fp = NULL, *out_fp = NULL;
