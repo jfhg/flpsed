@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.4 2004/07/09 22:51:39 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.5 2004/07/18 20:49:43 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -29,6 +29,7 @@
 PSEditor::PSEditor(int X,int Y,int W, int H) : PSEditWidget(X, Y, W, H) {
   loaded = 0;
   mod = 0;
+  ps_level = 1;
 }
 
 int PSEditor::handle(int event) {
@@ -137,7 +138,13 @@ int PSEditor::save(const char* savefile) {
   FILE *fp = fdopen(tmp_fd, "r");
   rewind(fp);
   FILE *sfp = fopen(savefile, "w");
-  PSWriter *pw = new PSLevel2Writer(this);
+  PSWriter *pw;
+  
+  if (ps_level == 2) {
+    pw = new PSLevel2Writer(this);
+  } else {
+    pw = new PSLevel1Writer(this);
+  }
 
   pw->write(fp, sfp);
 
@@ -146,4 +153,16 @@ int PSEditor::save(const char* savefile) {
   fclose(sfp);
   mod = 0;
   return 0;
+}
+
+int PSEditor::get_ps_level() {
+  return ps_level;
+}
+
+void PSEditor::set_ps_level(int l) {
+  if (l == 2) {
+    ps_level = 2;
+  } else {
+    ps_level = 1;
+  }
 }

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.5 2004/07/09 22:51:39 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.6 2004/07/18 20:49:43 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -23,41 +23,47 @@
 
 #include "Postscript.H"
 
-#define PS_POS_FORMAT       "newpath %d %d moveto %% PSEditWidget\n"
-#define PS_TEXT_FORMAT      "(%s) show %% PSEditWidget\n"
-#define PS_SIZE_FORMAT "/HelveticaNeue-Roman findfont %d scalefont setfont %% PSEditWidget\n"
-#define PS_GLYPH_FORMAT     "/%s glyphshow %% PSEditWidget\n"
+#define PS_POS_FORMAT   "newpath %d %d moveto %% PSEditWidget\n"
+#define PS_TEXT_FORMAT  "(%s) show %% PSEditWidget\n"
+#define PS_SIZE_FORMAT  "/HelveticaNeue-Roman findfont %d scalefont setfont"\
+                        " %% PSEditWidget\n"
+#define PS_GLYPH_FORMAT "/%s glyphshow %% PSEditWidget\n"
 
 //
 // PSEditWidget internal format as PostScript comments
 //
 
-#define PSEDIT_BEGIN "%% PSEditWidget Begin\n"
-#define PSEDIT_END   "%% PSEditWidget End\n"
+#define PSEDIT_BEGIN              "% PSEditWidget Begin\n"
+#define PSEDIT_END                "% PSEditWidget End\n"
 
-#define PSEDIT_PAGE_FORMAT  "%% PSEditWidget: PAGE %d\n"
-#define PSEDIT_POS_FORMAT   "%% PSEditWidget: POS %d %d\n"
+#define PSEDIT_PAGE_FORMAT        "%% PSEditWidget: PAGE %d\n"
+#define PSEDIT_POS_FORMAT         "%% PSEditWidget: POS %d %d\n"
 #define PSEDIT_TEXT_FORMAT_PRINT  "%% PSEditWidget: TEXT (%s)\n"
 #define PSEDIT_TEXT_FORMAT_SCAN   "%% PSEditWidget: TEXT (%[^)])\n"
-#define PSEDIT_SIZE_FORMAT  "%% PSEditWidget: SIZE %d\n"
-#define PSEDIT_GLYPH_FORMAT "%% PSEditWidget: GLYPH %s\n"
+#define PSEDIT_SIZE_FORMAT        "%% PSEditWidget: SIZE %d\n"
+#define PSEDIT_GLYPH_FORMAT       "%% PSEditWidget: GLYPH %s\n"
 
-#define PSEDIT_PAGE_MARKER  "/PSEditWidgetPageCount %d def %% PSEditWidget\n"
+//
+// Marker to set page number. This is necessary for viewers like ghostview
+// to display single pages properly.
+// 
+#define PSEDIT_PAGE_MARKER "/PSEditWidgetPageCount %d def %% PSEditWidget\n"
 
 static struct {
   const char *glyph;
   const char *c;
 } glyph_char[] = {
-  {"adieresis", "ä"}, 
-  {"Adieresis", "Ä"}, 
-  {"odieresis", "ö"}, 
-  {"Odieresis", "Ö"}, 
-  {"udieresis", "ü"}, 
-  {"Udieresis", "Ü"}, 
+  {"adieresis",  "ä"}, 
+  {"Adieresis",  "Ä"}, 
+  {"odieresis",  "ö"}, 
+  {"Odieresis",  "Ö"}, 
+  {"udieresis",  "ü"}, 
+  {"Udieresis",  "Ü"}, 
   {"germandbls", "ß"}, 
-  {"parenleft", "("}, 
+  {"parenleft",  "("}, 
   {"parenright", ")"}, 
-  {"backslash", "\\"}, 
+  {"percent",    "%"}, 
+  {"backslash",  "\\"}, 
   {NULL, NULL}};
 
 static const char * glyph_to_char(char *glyph) {
@@ -184,7 +190,9 @@ int PSWriter::write(FILE *in, FILE *out) {
   int done=0, page = 1;
   
   while (fgets(linebuf, 1024, in) != NULL) {
-    if (!done && strncmp(linebuf, "%%EndSetup", 10) == 0) {
+    if (!done && 
+	(strncmp(linebuf, "%%EndSetup", 10) == 0 ||
+	 strncmp(linebuf, "%%EndProlog", 10) == 0)) {
       done++;
 
       fprintf(out, "\n");
@@ -296,10 +304,10 @@ char * PSWriter::ps_trailer() {
 PSLevel1Writer::PSLevel1Writer(PSEditWidget *p) : PSWriter(p) {};
 
 char * PSLevel1Writer::ps_header() {
-  return		  \
-    "/PSEditWidgetPageCount 0 def\n"		\
-    "/PSEditWidgetPC 0 def\n"			\
-    "/PSEditWidgetshowpage /showpage load def\n"	\
+  return		                                                \
+    "/PSEditWidgetPageCount 0 def\n"		                        \
+    "/PSEditWidgetPC 0 def\n"			                        \
+    "/PSEditWidgetshowpage /showpage load def\n"	                \
     "/showpage {\n"							\
     "gsave initgraphics\n"                                              \
     "PSEditWidgetPageCount 0 eq { \n"					\
@@ -317,12 +325,12 @@ char * PSLevel1Writer::ps_trailer() {
 PSLevel2Writer::PSLevel2Writer(PSEditWidget *p) : PSWriter(p) {};
 
 char * PSLevel2Writer::ps_header() {
-  return		  \
-    "/PSEditWidgetPageCount 0 def\n"		\
-    "<< /EndPage {\n"				\
+  return		                                                \
+    "/PSEditWidgetPageCount 0 def\n"	                         	\
+    "<< /EndPage {\n"				                        \
     "gsave initgraphics\n"                                              \
     "pop\n"								\
-    "PSEditWidgetPageCount 0 eq { \n" \
+    "PSEditWidgetPageCount 0 eq { \n"                                   \
     "1 add                        %% use showpage counter instead.\n"	\
     "} {\n"								\
     "PSEditWidgetPageCount\n"						\
