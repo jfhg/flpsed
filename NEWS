@@ -1,0 +1,14 @@
+flpsed ChangeLog
+=================
+
+flpsed-0.2
+ - Change internal format to allow for more compatible PostScript code.
+ - Improve PostScript output.
+ - Make flpsed work with various page sizes.
+ - Major code restructuring.
+ - Allow pasting of text.
+ - Fix segmentation fault when saving large documents.
+ - Add support for '\' character.
+
+flpsed-0.1
+ - initial version
