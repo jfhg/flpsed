@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.26 2005/01/28 15:08:29 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.27 2005/01/28 15:37:40 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -192,13 +192,13 @@ Fl_Menu_Item menuitems[] = {
     { "&Next",       FL_CTRL + 'n', (Fl_Callback *)next_cb },
     { 0 },
 
-  { "&Zoom (%)", 0, 0, 0, FL_SUBMENU },
-    { "50",  0, (Fl_Callback *)zoom_cb },
-    { "75",  0, (Fl_Callback *)zoom_cb },
-    { "100",  0, (Fl_Callback *)zoom_cb },
-    { "150",  0, (Fl_Callback *)zoom_cb },
-    { "200",  0, (Fl_Callback *)zoom_cb },
-    { "250",  0, (Fl_Callback *)zoom_cb },
+  { "&Zoom", 0, 0, 0, FL_SUBMENU },
+    { "50 %",  0, (Fl_Callback *)zoom_cb },
+    { "75 %",  0, (Fl_Callback *)zoom_cb },
+    { "100 %",  0, (Fl_Callback *)zoom_cb },
+    { "150 %",  0, (Fl_Callback *)zoom_cb },
+    { "200 %",  0, (Fl_Callback *)zoom_cb },
+    { "250 %",  0, (Fl_Callback *)zoom_cb },
     { 0 },
 
   { "&Size", 0, 0, 0, FL_SUBMENU },

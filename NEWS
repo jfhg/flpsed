@@ -1,6 +1,9 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.3.2
+ - Implement zooming (thanks to Jochen Eisinger for the suggestion).
+
 flpsed-0.3.1
  - Fix redraw problem after scrolling.
  - Allow moving of text with arrow keys for better text positioning.

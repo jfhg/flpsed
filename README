@@ -31,6 +31,9 @@ Features:
 Restrictions:
 - flpsed probably does not work on all existing PostScript documents.
   You simply have to test it for your documents.
+- Zooming depends on the availability of scalable fonts on your X11 system.
+  Font sizes might be wrong with zoom values other than 100% if these are 
+  missing.
 - flpsed is alpha software, so please backup your files, before trying to 
   modify them.
 
@@ -60,4 +63,4 @@ flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
 
 Johannes Hofmann
 (Johannes.Hofmann@gmx.de)
-November 14, 2004
+January 28, 2005
