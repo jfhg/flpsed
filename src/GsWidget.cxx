@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.9 2004/10/24 18:28:37 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.10 2004/10/26 17:22:45 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -157,7 +157,6 @@ int GsWidget::load(int fd) {
     argv[1] = "-dSAFER";
     argv[2] = "-dQUIET";
     argv[3] = "-sDEVICE=x11alpha";
-    //    argv[4] = "-sPAPERSIZE=a4";
     argv[4] = "-dNOPLATFONTS";
     argv[5] = "-";
     argv[6] = NULL;
@@ -219,8 +218,7 @@ int GsWidget::handleX11(int ev) {
       damage(FL_DAMAGE_ALL);
       fl_cursor(FL_CURSOR_DEFAULT);
     } else if(fl_xevent->xclient.message_type == atoms[4] ) {
-      kill_gs();                         
-      fl_cursor(FL_CURSOR_DEFAULT);   // DONE received
+      reload();                            // go back to page 1 
     }
     return 1;
   }

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.22 2004/10/23 20:00:51 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.23 2004/10/26 17:22:45 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -154,7 +154,7 @@ void PSEditWidget::move(int x1, int y1, int last_x, int last_y) {
 
 void PSEditWidget::rm_char() {
   PSEditText *t;
-  int width;
+  double width;
 
   t = model->get_cur_text();
   if (t) {
