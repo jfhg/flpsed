@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.6 2004/07/20 18:53:29 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.7 2004/07/20 20:02:07 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -149,6 +149,8 @@ int PSEditor::load(char *f) {
 }
 
 int PSEditor::save(const char* savefile) {
+  off_t pos = lseek(tmp_fd, 0, SEEK_CUR); // save current position
+
   if (!file_loaded()) {
     return 1;
   }
@@ -168,6 +170,7 @@ int PSEditor::save(const char* savefile) {
   delete(pw);
    
   fclose(sfp);
+  lseek(tmp_fd, pos, SEEK_SET);           // restore current position
   mod = 0;
   return 0;
 }
