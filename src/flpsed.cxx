@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.29 2005/02/02 19:24:37 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.30 2005/02/03 18:10:17 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -89,7 +89,7 @@ void import_pdf_cb() {
     int ret;
     char cmd[1000];
 
-    snprintf(cmd, sizeof(cmd), "pdftops %s -", file);
+    snprintf(cmd, sizeof(cmd), "pdftops \"%s\" -", file);
     p = popen(cmd, "r");
     if (p) {
       psed_p->load(p);
@@ -114,7 +114,7 @@ void export_pdf_cb() {
     int ret;
     char cmd[1000];
 
-    snprintf(cmd, sizeof(cmd), "ps2pdf - %s", file);
+    snprintf(cmd, sizeof(cmd), "ps2pdf - \"%s\"", file);
     p = popen(cmd, "w");
     if (p) {
       psed_p->save(p);

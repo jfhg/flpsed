@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.34 2005/02/02 16:49:12 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.35 2005/02/03 18:10:17 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -328,11 +328,24 @@ int PSEditWidget::bb_w(PSEditText *t) {
 
   tag = t->get_tag();
   if (tag) {
-     fl_font(FLPSED_TAG_FONT, FLPSED_TAG_FONT_SIZE);
+     fl_font(FLPSED_TAG_FONT, FLPSED_TAG_FONT_SIZE * zoom_percent / 100);
      wt = (int) fl_width(tag) + 20;
   }
   
   return w>=wt?w:wt;
+}
+
+int PSEditWidget::bb_h(PSEditText *t) {
+  int ret;
+  fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
+  ret = fl_height() + 30;
+
+  if (t->get_tag()) {
+     fl_font(FLPSED_TAG_FONT, FLPSED_TAG_FONT_SIZE * zoom_percent / 100);
+     ret = ret + fl_height();
+  }
+
+  return ret;
 }
 
 static int round_div(int a, int b) {
@@ -344,11 +357,6 @@ static int round_div(int a, int b) {
   }
 
   return r;
-}
-
-int PSEditWidget::bb_h(PSEditText *t) {
-  fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
-  return fl_height() + 30;
 }
 
 int PSEditWidget::ps_to_display_x(int x1) {
