@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.11 2004/06/29 17:26:20 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.12 2004/07/09 17:22:55 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -40,66 +40,7 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Item.H>
 
-#include "PSEditWidget.H"
-
-class PSEditor : public PSEditWidget {
-  int mark_x, mark_y;
-
-  int handle(int event) {
-    switch(event) {
-    case FL_PUSH:
-      if (!file_loaded()) {
-	fl_beep();
-	return 0;
-      }
-      
-      mark_x = Fl::event_x()-x();
-      mark_y = Fl::event_y()-y();
-
-      if (!set_cur_text(mark_x, mark_y) == 0) {
-	new_text(mark_x, mark_y, "");
-      }
-
-      Fl::focus(this);
-      return 1;
-    case FL_DRAG:
-      move(Fl::event_x()-x(), Fl::event_y()-y());
-      return 1;
-    case FL_KEYBOARD:
-      {
-	int del;
-	int key = Fl::event_key();
-        if (key == FL_BackSpace) {
-          rm_char();  
-        } else if (Fl::compose(del)) {
-	  if (del > 0) {
-	    for (int i=0; i<del; i++) rm_char();
-	  }
-	  if (Fl::event_length()) {
-	    append_text(Fl::event_text());
-	  }
-	} else {
-	  return 0;
-	}
-
-	return 1;
-      }
-    case FL_FOCUS:
-      return 1;
-    case FL_UNFOCUS:
-      return 0;
-    }
-    return 0;
-  }
-
-public: 
-  PSEditor(int X,int Y,int W, int H) : PSEditWidget(X, Y, W, H) {}
-};
-
-
-//
-//  Main Program
-// 
+#include "PSEditor.H"
 
 PSEditor *gsw_p;
 

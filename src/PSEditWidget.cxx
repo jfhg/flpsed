@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.13 2004/07/07 17:17:54 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.14 2004/07/09 17:22:55 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -37,53 +37,6 @@
 
 #include "PSEditWidget.H"
 
-#define PS_POS_FORMAT       "newpath %d %d moveto %% PSEditWidget\n"
-#define PS_TEXT_FORMAT      "(%s) show %% PSEditWidget\n"
-#define PS_FONT_SIZE_FORMAT "/HelveticaNeue-Roman findfont %d scalefont setfont %% PSEditWidget\n"
-#define PS_GLYPH_FORMAT     "/%s glyphshow %% PSEditWidget\n"
-
-static struct {
-  const char *glyph;
-  const char *c;
-} glyph_char[] = {
-  {"adieresis", "ä"}, 
-  {"Adieresis", "Ä"}, 
-  {"odieresis", "ö"}, 
-  {"Odieresis", "Ö"}, 
-  {"udieresis", "ü"}, 
-  {"Udieresis", "Ü"}, 
-  {"germandbls", "ß"}, 
-  {"parenleft", "("}, 
-  {"parenright", ")"}, 
-  {"backslash", "\\"}, 
-  {NULL, NULL}};
-
-static const char * glyph_to_char(char *glyph) {
-  int i=0;
-
-  while(glyph_char[i].glyph != NULL) {
-    if (strcmp(glyph_char[i].glyph, glyph) == 0) {
-      return glyph_char[i].c;
-      }
-    i++;
-  }
-  
-  return NULL;
-}
-
-static const char * char_to_glyph(char *c) {
-  int i=0;
-  
-  while(glyph_char[i].glyph != NULL) {
-    if (strncmp(glyph_char[i].c, c, 1) == 0) {
-      return glyph_char[i].glyph;
-    }
-    i++;
-  }
-  
-  return NULL;
-}
-
 void PSEditWidget::clear_text() {
   cur_text = NULL;
   for (int i = 0; i < max_pages; i++) {
@@ -109,8 +62,6 @@ PSEditWidget::PSEditWidget(int X,int Y,int W, int H) : GsWidget(X, Y, W, H) {
   }
   cur_text = NULL;
   cur_size = 12;
-  mod = 0;
-  loaded = 0;
 }
   
 int PSEditWidget::next() {
@@ -133,7 +84,6 @@ void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
     text[p] = cur_text;
   }
   redraw();
-  mod = 1;
 }
 
 void PSEditWidget::new_text(int x1, int y1, const char *s) {
@@ -154,7 +104,6 @@ int PSEditWidget::set_cur_text(int x1, int y1) {
 void PSEditWidget::append_text(const char *s) {
   if (cur_text && s) {
     cur_text->append_text(s);
-    mod = 1;
     redraw();
   }
 }
@@ -162,7 +111,6 @@ void PSEditWidget::append_text(const char *s) {
 void PSEditWidget::move(int x1, int y1) {
   if (cur_text) {
     cur_text->move(x1, y1);
-    mod = 1;
     redraw();
   }
 }
@@ -170,7 +118,6 @@ void PSEditWidget::move(int x1, int y1) {
 void PSEditWidget::rm_char() {
   if (cur_text) {
     cur_text->rm_char();
-    mod = 1;
     redraw();
   }
 }
@@ -196,141 +143,6 @@ int PSEditWidget::reload() {
   return GsWidget::reload();
 }
 
-int PSEditWidget::load(char *f) {
-  FILE *fp = fopen(f, "r");
-  char tmpname[256];
-  char linebuf[1024];
-  int p = 1;
-  int x1, y1;
-  char *s, *e, glyph[1024];
-  int size, ret;
-  
-  strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", 256);
-  tmp_fd = mkstemp(tmpname);
-  if (tmp_fd < 0) {
-    fprintf(stderr, "Could not create temporary file (errno %d).\n", errno);
-    return 1;
-  }
-  unlink(tmpname);
-
-  clear_text();
-
-  while (fgets(linebuf, 1024, fp) != NULL) {
-    
-    if (strcmp(linebuf, "showpage\n") == 0) {
-      p++;
-    }
-    
-    if (strstr(linebuf, "% PSEditWidget")) {
-      if (sscanf(linebuf, PS_FONT_SIZE_FORMAT, &size) == 1) {
-	set_cur_size(size);
-      } else if (sscanf(linebuf, PS_POS_FORMAT, &x1, &y1) == 2) {
-	new_text(ps_to_display_x(x1), ps_to_display_y(y1), "", p);
-      } else if (sscanf(linebuf, PS_GLYPH_FORMAT, glyph) == 1) {
-	fprintf(stderr, "GLYPH %s\n", glyph);
-	append_text(glyph_to_char(glyph));
-      } else if ((s = strchr(linebuf, '(')) &&
-		 (e = strrchr(linebuf, ')'))) {
-	*e = '\0';
-	s++;
-	append_text(s);
-      }
-    } else {
-      ret = write(tmp_fd, linebuf, strlen(linebuf));
-      if (ret != strlen(linebuf)) {
-	fprintf(stderr, "Error while writing to temporary file\n");
-      }
-    }
-  }
-  fclose(fp);
-  lseek(tmp_fd, 0L, SEEK_SET);
-
-  mod = 0;
-  loaded = 1;
-  return GsWidget::load(tmp_fd);
-}
-
-void PSEditWidget::to_ps(FILE *f, int p) {
-  if (!text[p]) {
-    return;
-  }
-  fprintf(f, "dup %d eq {\n", p);
-  text[p]->to_ps(f);
-  fprintf(f, "} if\n");
-}
-
-#define PS_HEADER_L2 "%% Begin PSEditWidget\n" \
-"/PSEditWidgetPageCount 0 def\n" \
-"<< /EndPage {\n" \
-"pop\n" \
-"PSEditWidgetPageCount 0 eq { %% if PSEditWidgetPageCount is undefined,\n" \
-"1 add                        %% use showpage counter instead.\n" \
-"} {\n" \
-"PSEditWidgetPageCount\n" \
-"} ifelse\n"
-
-
-#define PS_TRAILER_L2 "true } >> setpagedevice\n" \
-"%% End PSEditWidget\n"
-
-#define PS_HEADER_L1 "%% Begin PSEditWidget\n" \
-"/PSEditWidgetPageCount 0 def\n" \
-"/PSEditWidgetPC 0 def\n" \
-"/PSEditWidgetshowpage /showpage load def\n" \
-"/showpage {\n" \
-"PSEditWidgetPageCount 0 eq { %% if PSEditWidgetPageCount is undefined,\n" \
-"/PSEditWidgetPC PSEditWidgetPC 1 add def PSEditWidgetPC\n" \      
-"} {\n" \
-"PSEditWidgetPageCount\n" \
-"} ifelse\n"
-
-#define PS_TRAILER_L1 "PSEditWidgetshowpage} def\n" \
-"%% End PSEditWidget\n"
-
-int PSEditWidget::save(const char* savefile) {
-  if (!file_loaded()) {
-    return 1;
-  }
-  FILE *fp = fdopen(tmp_fd, "r");
-  rewind(fp);
-  FILE *sfp = fopen(savefile, "w");
-  char linebuf[1024];
-  int done=0, page = 1;
-  
-  while (fgets(linebuf, 1024, fp) != NULL) {
-    if (!done && strncmp(linebuf, "%%EndSetup", 10) == 0) {
-      done++;
-
-      fprintf(sfp, PS_HEADER_L1);
-
-      for (int i=1;i<max_pages;i++) {
-	to_ps(sfp, i);
-      }
-
-      fprintf(sfp, PS_TRAILER_L1);
-  
-    }
-
-    fprintf(sfp, "%s", linebuf);
-
-    if (strncmp(linebuf, "%%Page:", 7) == 0) {
-      fprintf(sfp, "/PSEditWidgetPageCount %d def %% PSEditWidget\n", page++);
-    }
-  }
-  
-  fclose(sfp);
-  mod = 0;
-  return 0;
-}
-
-int PSEditWidget::modified() {
-  return mod;
-}
-
-int PSEditWidget::file_loaded() {
-  return loaded;
-}
-
 void PSEditWidget::set_cur_size(int s) {
   cur_size = s;
 }
@@ -351,6 +163,18 @@ int PSEditWidget::get_size() {
   }
 }
 
+
+int PSEditWidget::get_max_pages() {
+  return max_pages;
+}
+
+PSText *PSEditWidget::get_text(int p) {
+  if (p >= max_pages) {
+    return 0;
+  } else {
+    return text[p];
+  }
+}
 
 
 
@@ -429,42 +253,26 @@ void PSText::draw(int off_x,int off_y) {
   }
 }
 
-void PSText::string_to_ps(FILE *f, char *s) {
-  const char *glyph;
-  
-  if (strlen(s) == 0) {
-    return;
-  } else if ((glyph = char_to_glyph(s)) != NULL) {
-    fprintf(f, PS_GLYPH_FORMAT, glyph);
-    string_to_ps(f, &(s[1]));
-    return;
-  } else {
-    for(int i=0; i<strlen(s); i++) {
-      if ((glyph = char_to_glyph(&(s[i]))) != NULL) {
-	char *s1 = strdup(s);
-	s1[i] = '\0';
-	fprintf(f, PS_TEXT_FORMAT, s1);
-	free(s1);
-	string_to_ps(f, &(s[i]));
-	return;
-	}
-    }
-    fprintf(f, PS_TEXT_FORMAT, s);
-  }
-  return;
-}
-  
-void PSText::to_ps(FILE *f) {
-  if (strcmp(s, "") != 0) {
-    fprintf(f, PS_FONT_SIZE_FORMAT, size);
-    fprintf(f, PS_POS_FORMAT, gsew->ps_x(x), gsew->ps_y(y));
-    string_to_ps(f, s);
-  }
-  
-  if (next) {
-    next->to_ps(f);
-  }
+char *PSText::get_text() {
+  return s;
 }
 
+int PSText::get_size() {
+  return size;
+}
 
+Fl_Color PSText::get_color() {
+  return c;
+}
 
+PSText* PSText::get_next() {
+  return next;
+}
+
+int PSText::get_x() {
+  return x;
+}
+
+int PSText::get_y() {
+  return y;
+}

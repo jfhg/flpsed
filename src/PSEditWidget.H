@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.H,v 1.5 2004/06/25 17:25:17 hofmann Exp $"
+// "$Id: PSEditWidget.H,v 1.6 2004/07/09 17:22:55 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -30,12 +30,9 @@ class PSText;
 
 class PSEditWidget : public GsWidget {
 private:
-  int mark_x, mark_y;
   PSText **text;
   int max_pages;
-  int tmp_fd;    
   int cur_size;
-  int mod, loaded;
 
 protected:
   void clear_text();
@@ -56,15 +53,12 @@ public:
   int ps_to_display_y(int y1);
   int ps_x(int x1);
   int ps_y(int y1);
-  int load(char *f);
   int reload();
-  void to_ps(FILE *f, int p);
-  int save(const char* savefile);
   void set_cur_size(int s);
   void set_size(int s);
   int get_size();
-  int modified();
-  int file_loaded();
+  int get_max_pages();
+  PSText * get_text(int p);
 };
 
 
@@ -85,9 +79,13 @@ public:
   void move(int x1, int y1);
   void append(PSText *g);
   PSText *get_match(int x1, int y1);
+  char *get_text();
+  int get_size();
+  PSText *get_next();
+  Fl_Color get_color();
+  int get_x();
+  int get_y();
   void draw(int off_x,int off_y);
-  void string_to_ps(FILE *f, char *s); 
-  void to_ps(FILE *f);
 };
 
 #endif

@@ -1,7 +1,7 @@
 // 
-// "$Id: Postscript.cxx,v 1.1 2004/07/09 16:13:35 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.2 2004/07/09 17:22:55 hofmann Exp $"
 //
-// PSEditWidget routines.
+// Postscript handling routines.
 //
 // Copyright 2004 by Johannes Hofmann
 //
@@ -22,6 +22,7 @@
 //
 
 #include "Postscript.H"
+
 #define PS_POS_FORMAT       "newpath %d %d moveto %% PSEditWidget\n"
 #define PS_TEXT_FORMAT      "(%s) show %% PSEditWidget\n"
 #define PS_FONT_SIZE_FORMAT "/HelveticaNeue-Roman findfont %d scalefont setfont %% PSEditWidget\n"
@@ -77,6 +78,10 @@ static const char * char_to_glyph(char *c) {
 
 PSParser::PSParser(PSEditWidget *p) {
   pse = p;
+}
+
+int PSParser::parse(char *line) {
+  return 0;
 }
 
 PSParser_1::PSParser_1(PSEditWidget *p) : PSParser(p) {
@@ -209,4 +214,55 @@ int PSWriter::write_text(FILE *out, PSText *t) {
   }
   
   return 0;
+}
+
+char * PSWriter::ps_header() {
+  return "";
+}
+
+char * PSWriter::ps_trailer() {
+  return "";
+}
+
+PSLevel1Writer::PSLevel1Writer(PSEditWidget *p) : PSWriter(p) {};
+
+char * PSLevel1Writer::ps_header() {
+  return		  \
+    "%% Begin PSEditWidget\n"	 \
+    "/PSEditWidgetPageCount 0 def\n"		\
+    "/PSEditWidgetPC 0 def\n"			\
+    "/PSEditWidgetshowpage /showpage load def\n"	\
+    "/showpage {\n"							\
+    "PSEditWidgetPageCount 0 eq { \n"					\
+    "/PSEditWidgetPC PSEditWidgetPC 1 add def PSEditWidgetPC\n"		\
+    "} {\n"								\
+    "PSEditWidgetPageCount\n"						\
+    "} ifelse\n";
+}
+
+char * PSLevel1Writer::ps_trailer() {
+  return  "PSEditWidgetshowpage} def\n" \
+    "%% End PSEditWidget\n";
+}
+
+
+PSLevel2Writer::PSLevel2Writer(PSEditWidget *p) : PSWriter(p) {};
+
+char * PSLevel2Writer::ps_header() {
+  return		  \
+    "%% Begin PSEditWidget\n"	 \
+    "/PSEditWidgetPageCount 0 def\n"		\
+    "<< /EndPage {\n"				\
+    "pop\n"								\
+    "PSEditWidgetPageCount 0 eq { \n" \
+    "1 add                        %% use showpage counter instead.\n"	\
+    "} {\n"								\
+    "PSEditWidgetPageCount\n"						\
+    "} ifelse\n";
+
+}
+
+char * PSLevel2Writer::ps_trailer() {
+  return  "true } >> setpagedevice\n" \
+    "%% End PSEditWidget\n";
 }
