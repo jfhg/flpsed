@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.21 2004/10/23 19:57:14 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.22 2004/10/23 20:00:51 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -180,9 +180,24 @@ void PSEditWidget::set_cur_size(int s) {
 }
 
 void PSEditWidget::set_size(int s) {
+  PSEditText *t;
+  int old_size;
+
+  t = model->get_cur_text();
+  if (t) {
+    old_size = t->get_size();
+  }
+
   set_cur_size(s);
   model->set_size(s);
-  redraw();
+
+  if (t) {
+    fl_font(FL_HELVETICA, t->get_size());
+    damage(4, t->get_x() - 10, t->get_y() - fl_height() - 20, fl_width(t->get_text()) + 20, fl_height() + 30);
+    fl_font(FL_HELVETICA, old_size);
+    damage(4, t->get_x() - 10, t->get_y() - fl_height() - 20, fl_width(t->get_text()) + 20, fl_height() + 30);
+  }
+
 }
 
 int PSEditWidget::get_size() {
