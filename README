@@ -8,7 +8,7 @@ edit existing PostScript documents, but you can add arbitrary text lines to
 existing documents.
 It is useful for filling in forms etc. 
 
-Usage:
+Quick Start:
 - open an existing PostScript document.
 - click anywhere on the document and type a text line.
 - the frame around the text shows, which text line has the focus.
@@ -23,7 +23,9 @@ Features:
 - reedit text, that has been added with flpsed.
 - the overall structure of the PostScript document is not
   modified. flpsed only adds the additional text.
-
+- lines can be given names ("tags"). The text of these lines can
+  be replaced in batch mode (no X11 required).
+ 
 Restrictions:
 - flpsed probably does not work on all existing PostScript documents.
   You simply have to test it for your documents.
@@ -35,3 +37,21 @@ Building:
 - you need to have ghostscript installed.
 - you need to have fltk-1.1.x from www.fltk.org installed.
 - unpack the tarball and type "make".
+
+
+
+Tags and Batch Mode:
+
+to use batch mode, add text lines to your PostScript document as usual. 
+Give all or some of the lines tag names (Tags->Edit Tag). 
+Save the document. Now you can replace the text of the tagged line in batch
+mode using the -t flag (see usage).
+Example:
+Lets assume you have added text lines with tags "name", and "street"
+to your document letter.ps with flpsed in interactive mode and saved the
+result in letter-templ.ps.
+You can now call flpsed in batch mode to set the actual values:
+
+flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
+
+

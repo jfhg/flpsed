@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.20 2004/10/26 16:12:19 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.21 2004/10/26 16:41:40 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -201,11 +201,25 @@ Fl_Menu_Item menuitems[] = {
   { 0 }
 };
   
+
+void usage() {
+  fprintf(stderr,
+	  "usage: flpsed [-d] [-b] [-t <tag>=<value>] [<infile>] [<outfile>]\n"
+	  "   -b                 batch mode (no gui)\n"
+	  "   -d                 dump tags and values from a document\n"
+	  "                      to stdout (this implies -b)\n"
+	  "   -t <tag>=<value>   set text to <value> where tag is <tag>\n"
+	  "   <infile>           optional input file; in batch mode if no\n"
+	  "                      input file is given, input is read from stdin\n"
+	  "   <outfile>          optional output file for batch mode; if no\n"
+	  "                      output file is given, output is written to stdout\n");
+}
+
 #define TV_LEN 256
 
 int main(int argc, char** argv) {
   char c, *sep, *tmp, **my_argv;
-  int err, batch = 0;
+  int err, bflag = 0, dflag = 0;
   Fl_Window *win;
   Fl_Menu_Bar* m;
   Fl_Scroll *scroll;
@@ -214,10 +228,13 @@ int main(int argc, char** argv) {
   FILE *in_fp = NULL, *out_fp = NULL;
   
   err = 0;
-  while ((c = getopt(argc, argv, "bt:")) != EOF) {
+  while ((c = getopt(argc, argv, "dbt:")) != EOF) {
     switch (c) {  
     case 'b':
-      batch = 1;
+      bflag = 1;
+      break;
+    case 'd':
+      dflag = 1;
       break;
     case 't':
       tmp = strdup(optarg);
@@ -249,6 +266,7 @@ int main(int argc, char** argv) {
   }
   
   if (err) {
+    usage();
     exit(1);
   }
 
@@ -263,7 +281,7 @@ int main(int argc, char** argv) {
     }
   }
   
-  if (batch) {
+  if (bflag || dflag) {
     //
     // Batch Mode 
     //
@@ -275,15 +293,6 @@ int main(int argc, char** argv) {
       in_fp = stdin;
     }
  
-    if (my_argc >= 2) {
-      out_fp = fopen(my_argv[1], "w");
-      if (!in_fp) {
-	perror("fopen");
-	exit(1);
-      }
-    } else {
-      out_fp = stdout;
-    }
 
     tmp_fd= m->load(in_fp);
 
@@ -301,11 +310,26 @@ int main(int argc, char** argv) {
       free(tv[i].tag);
       free(tv[i].value);
     }
-	
-    m->save(out_fp, tmp_fd);
 
-    if (out_fp != stdout) {
-      fclose(out_fp);
+
+    if (bflag) {
+      if (my_argc >= 2) {
+	out_fp = fopen(my_argv[1], "w");
+	if (!in_fp) {
+	  perror("fopen");
+	  exit(1);
+	}
+      } else {
+	out_fp = stdout;
+      }
+      
+      m->save(out_fp, tmp_fd);
+      
+      if (out_fp != stdout) {
+	fclose(out_fp);
+      }
+    } else { // dump tags
+      m->dump_tags();
     }
 
   } else {
