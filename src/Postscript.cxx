@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.6 2004/07/18 20:49:43 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.7 2004/07/28 20:15:48 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -143,7 +143,7 @@ PSParser_2::PSParser_2(PSEditWidget *p) : PSParser(p) {
 }
 
 int PSParser_2::parse(char *line) {
-  int x1, y1, size, page, dummy;
+  int x1, y1, size, dummy;
   char buf[2028];
   
   if (!inside && strcmp(line, PSEDIT_BEGIN) == 0) {

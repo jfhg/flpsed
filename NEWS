@@ -1,6 +1,9 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.2.1
+ - fix segfault when reloading documents
+
 flpsed-0.2
  - Change internal format to allow for more compatible PostScript code.
  - Improve PostScript output.
