@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.15 2004/10/12 20:52:23 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.16 2004/10/13 18:03:08 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -139,7 +139,6 @@ void about_cb() {
 	     "PostScript is a registered trademark of Adobe Systems");
 }
 
-
 void size_cb(Fl_Widget *w, void *) {
   Fl_Menu_* mw = (Fl_Menu_*)w;
   const Fl_Menu_Item* m = mw->mvalue();
@@ -157,10 +156,12 @@ void edit_tag_cb() {
   char *tag = gsw_p->get_tag();
   const char *new_tag;
   new_tag = fl_input("Tag Name", tag?tag:"");
-  if (strcmp(new_tag, "") != 0) {
-    gsw_p->set_tag(new_tag);
-  } else {
-    gsw_p->set_tag(NULL);
+  if (new_tag) {
+    if (strcmp(new_tag, "") != 0) {
+      gsw_p->set_tag(new_tag);
+    } else {
+      gsw_p->set_tag(NULL);
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.16 2004/10/12 20:52:23 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.17 2004/10/13 18:03:08 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -311,7 +311,11 @@ int PSText::set_tag(const char *t) {
   if (tag) {
     free(tag);
   }
-  tag = strdup(t);
+  if (t) {
+    tag = strdup(t);
+  } else {
+    tag = NULL;
+  }
   gsew->redraw();
   return 0;
 }

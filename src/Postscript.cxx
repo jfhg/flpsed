@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.8 2004/10/12 17:14:16 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.9 2004/10/13 18:03:08 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -28,6 +28,7 @@
 #define PS_SIZE_FORMAT  "/HelveticaNeue-Roman findfont %d scalefont setfont"\
                         " %% PSEditWidget\n"
 #define PS_GLYPH_FORMAT "/%s glyphshow %% PSEditWidget\n"
+#define PS_TAG_FORMAT   ""
 
 //
 // PSEditWidget internal format as PostScript comments
@@ -42,6 +43,7 @@
 #define PSEDIT_TEXT_FORMAT_SCAN   "%% PSEditWidget: TEXT (%[^)])\n"
 #define PSEDIT_SIZE_FORMAT        "%% PSEditWidget: SIZE %d\n"
 #define PSEDIT_GLYPH_FORMAT       "%% PSEditWidget: GLYPH %s\n"
+#define PSEDIT_TAG_FORMAT       "%% PSEditWidget: TAG %s\n"
 
 //
 // Marker to set page number. This is necessary for viewers like ghostview
@@ -166,6 +168,9 @@ int PSParser_2::parse(char *line) {
   } else if (inside && sscanf(line, PSEDIT_TEXT_FORMAT_SCAN, buf) == 1) {
     pse->append_text(buf);
     return 1;
+  } else if (inside && sscanf(line, PSEDIT_TAG_FORMAT, buf) == 1) {
+    pse->set_tag(buf);
+    return 1;
   } else if (inside) {
     return 1;
   } else if (sscanf(line, PSEDIT_PAGE_MARKER, &dummy) == 1) {
@@ -204,6 +209,7 @@ int PSWriter::write(FILE *in, FILE *out) {
       size_format  = PS_SIZE_FORMAT;
       text_format  = PS_TEXT_FORMAT;
       glyph_format = PS_GLYPH_FORMAT;
+      tag_format   = PS_TAG_FORMAT;
 
       fprintf(out, "\n");
       fprintf(out, ps_header());
@@ -237,6 +243,7 @@ void PSWriter::write_internal_format(FILE *out) {
   size_format  = PSEDIT_SIZE_FORMAT;
   text_format  = PSEDIT_TEXT_FORMAT_PRINT;
   glyph_format = PSEDIT_GLYPH_FORMAT;
+  tag_format   = PSEDIT_TAG_FORMAT;
 
   for (int i=1;i<pse->get_max_pages();i++) {
     if (pse->get_text(i)) {
@@ -285,6 +292,10 @@ int PSWriter::write_text(FILE *out, PSText *t) {
     fprintf(out, pos_format, 
 	    pse->ps_x(t->get_x()), 
 	    pse->ps_y(t->get_y()));
+    if (t->get_tag()) {
+      fprintf(out, tag_format, t->get_tag());
+    }
+
     write_string(out, s);
   }
   
