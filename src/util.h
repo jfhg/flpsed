@@ -1,5 +1,5 @@
 /* 
- * "$Id: util.h,v 1.1 2005/02/28 17:56:51 hofmann Exp $"
+ * "$Id: util.h,v 1.2 2005/03/17 18:46:20 hofmann Exp $"
  *
  * flpsed program.
  *
@@ -20,8 +20,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  */
+#ifndef _UTIL_H_
+#define _UTIL_H_
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 FILE *
 pexecvp(const char *file, char *const argv[], pid_t *pid, char *type);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
