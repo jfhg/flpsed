@@ -9,21 +9,23 @@ existing documents.
 It is useful for filling in forms etc. 
 
 Quick Start:
-- open an existing PostScript document.
-- click anywhere on the document and type a text line.
-- the frame around the text shows, which text line has the focus.
-- remove text, by hitting BackSpace.
-- click on the lower left corner of a text line, to focus it.
-- navigate within the document with the Page->Next or Page->First menu buttons.
-- save your document and preview it with ghostview or something similar.
-- if you reopen the document with flpsed, you can edit the added text lines.
+- Open an existing PostScript document.
+- Click anywhere on the document and type a text line.
+- The frame around the text shows, which text line has the focus.
+- Click on the lower left corner of a text line to focus it or use the 
+  Tab-key to cycle through the text lines on the current page. 
+- Remove text, by hitting BackSpace.
+- Move text lines by dragging them with the mouse or using the arrow keys.
+- Navigate within the document with the Page->Next or Page->First menu buttons.
+- Save your document and preview it with ghostview or something similar.
+- If you reopen the document with flpsed, you can edit the added text lines.
 
 Features:
-- add arbitrary text to existing PostScript documents.
-- reedit text, that has been added with flpsed.
-- the overall structure of the PostScript document is not
+- Add arbitrary text to existing PostScript documents.
+- Reedit text, that has been added with flpsed.
+- The overall structure of the PostScript document is not
   modified. flpsed only adds the additional text.
-- lines can be given names ("tags"). The text of these lines can
+- Lines can be given names ("tags"). The text of these lines can
   be replaced in batch mode (no X11 required).
  
 Restrictions:
@@ -34,15 +36,15 @@ Restrictions:
 
 Building:
 - flpsed only works on X11-based systems.
-- you need to have ghostscript installed.
-- you need to have fltk-1.1.x from www.fltk.org installed.
-- unpack the tarball and type "make".
+- You need to have ghostscript installed.
+- You need to have fltk-1.1.x from www.fltk.org installed.
+- Unpack the tarball and type "make".
 
 
 
 Tags and Batch Mode:
 
-to use batch mode, add text lines to your PostScript document as usual. 
+To use batch mode, add text lines to your PostScript document as usual. 
 Give all or some of the lines tag names (Tags->Edit Tag). 
 Save the document. Now you can replace the text of the tagged line in batch
 mode using the -t flag (see usage).
@@ -58,4 +60,4 @@ flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
 
 Johannes Hofmann
 (Johannes.Hofmann@gmx.de)
-October 26, 2004
+November 10, 2004

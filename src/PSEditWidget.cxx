@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.30 2004/11/10 18:49:08 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.31 2004/11/10 19:21:06 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -332,24 +332,34 @@ int PSEditWidget::bb_w(PSEditText *t) {
   return w>=wt?w:wt;
 }
 
+static int round_div(int a, int b) {
+  int r;
+
+  r = a / b;
+  if (a % b > b / 2) {
+    r++;
+  }
+
+  return r;
+}
+
 int PSEditWidget::bb_h(PSEditText *t) {
   fl_font(FLPSED_FONT, t->get_size());
   return fl_height() + 30;
 }
 
-  
 int PSEditWidget::ps_to_display_x(int x1) {
-  return  (x1 * xdpi) / 72;
+  return  round_div(x1 * xdpi,  72);
 }
 
 int PSEditWidget::ps_to_display_y(int y1) {
-  return ((paper_y - y1) * xdpi) / 72;
+  return round_div((paper_y - y1) * xdpi, 72);
 }
 
 int PSEditWidget::ps_x(int x1) {
-  return (x1 * 72) / xdpi;
+  return round_div(x1 * 72, xdpi);
 }
 
 int PSEditWidget::ps_y(int y1) {
-  return paper_y - (y1 * 72) / ydpi;
+  return paper_y - round_div(y1 * 72, ydpi);
 }
