@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.11 2004/10/12 20:52:23 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.12 2004/10/21 19:55:36 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -110,8 +110,8 @@ int PSEditor::load(char *f) {
   char tmpname[256];
   char linebuf[1024];
   int ret;
-  PSParser *p1 = new PSParser_1(this);
-  PSParser *p2 = new PSParser_2(this);
+  PSParser *p1 = new PSParser_1(model);
+  PSParser *p2 = new PSParser_2(model);
   
   fp = fopen(f, "r");
   if (!fp) {
@@ -161,9 +161,9 @@ int PSEditor::save(const char* savefile) {
   PSWriter *pw;
   
   if (ps_level == 2) {
-    pw = new PSLevel2Writer(this);
+    pw = new PSLevel2Writer(model);
   } else {
-    pw = new PSLevel1Writer(this);
+    pw = new PSLevel1Writer(model);
   }
 
   pw->write(fp, sfp);
@@ -192,8 +192,8 @@ int PSEditor::import(char *f) {
     return 1;
   }
 
-  p1 = new PSParser_1(this);
-  p2 = new PSParser_2(this);
+  p1 = new PSParser_1(model);
+  p2 = new PSParser_2(model);
   while (fgets(linebuf, 1024, fp) != NULL) {
     if (!p2->parse(linebuf)) {
       p1->parse(linebuf);

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.9 2004/10/13 18:03:08 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.10 2004/10/21 19:55:36 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -21,6 +21,8 @@
 // USA.
 //
 
+#include <stdlib.h>
+#include <string.h>
 #include "Postscript.H"
 
 #define PS_POS_FORMAT   "newpath %d %d moveto %% PSEditWidget\n"
@@ -94,8 +96,9 @@ static const char * char_to_glyph(char *c) {
   return NULL;
 }
 
-PSParser::PSParser(PSEditWidget *p) {
+PSParser::PSParser(PSEditModel *p) {
   pse = p;
+  cur_size = 12;
 }
 
 int PSParser::parse(char *line) {
@@ -103,7 +106,7 @@ int PSParser::parse(char *line) {
 }
 
 
-PSParser_1::PSParser_1(PSEditWidget *p) : PSParser(p) {
+PSParser_1::PSParser_1(PSEditModel *p) : PSParser(p) {
   page = 1;
 }
 
@@ -117,11 +120,11 @@ int PSParser_1::parse(char *line) {
   
   if (strstr(line, "% PSEditWidget")) {
     if (sscanf(line, PS_SIZE_FORMAT, &size) == 1) {
-      pse->set_cur_size(size);
+      cur_size = size;
       return 1; // line was recognized 
     } else if (sscanf(line, PS_POS_FORMAT, &x1, &y1) == 2) {
       pse->new_text(pse->ps_to_display_x(x1), pse->ps_to_display_y(y1), 
-		    "", page);
+		    "", cur_size, page);
       return 1;
     } else if (sscanf(line, PS_GLYPH_FORMAT, glyph) == 1) {
       pse->append_text(glyph_to_char(glyph));
@@ -139,7 +142,7 @@ int PSParser_1::parse(char *line) {
   }
 }
 
-PSParser_2::PSParser_2(PSEditWidget *p) : PSParser(p) {
+PSParser_2::PSParser_2(PSEditModel *p) : PSParser(p) {
   page = 1;
   inside = 0;
 }
@@ -157,10 +160,11 @@ int PSParser_2::parse(char *line) {
   } else if (inside && sscanf(line, PSEDIT_PAGE_FORMAT, &page) == 1) {
     return 1; 
   } else if (inside && sscanf(line, PSEDIT_SIZE_FORMAT, &size) == 1) {
-    pse->set_cur_size(size);
+    cur_size = size;
     return 1; 
   } else if (inside && sscanf(line, PSEDIT_POS_FORMAT, &x1, &y1) == 2) {
-    pse->new_text(pse->ps_to_display_x(x1), pse->ps_to_display_y(y1),"",page);
+    pse->new_text(pse->ps_to_display_x(x1), pse->ps_to_display_y(y1),"",
+		  cur_size, page);
     return 1;
   } else if (inside && sscanf(line, PSEDIT_GLYPH_FORMAT, buf) == 1) {
     pse->append_text(glyph_to_char(buf));
@@ -186,7 +190,7 @@ int PSParser_2::parse(char *line) {
 //
 
 
-PSWriter::PSWriter(PSEditWidget *p) {
+PSWriter::PSWriter(PSEditModel *p) {
   pse = p;
 }
 
@@ -278,7 +282,7 @@ void PSWriter::write_string(FILE *out, char *s) {
   return;
 }
 
-int PSWriter::write_text(FILE *out, PSText *t) {
+int PSWriter::write_text(FILE *out, PSEditText *t) {
   char *s;
 
   if (!t) {
@@ -314,7 +318,7 @@ char * PSWriter::ps_trailer() {
   return "";
 }
 
-PSLevel1Writer::PSLevel1Writer(PSEditWidget *p) : PSWriter(p) {};
+PSLevel1Writer::PSLevel1Writer(PSEditModel *p) : PSWriter(p) {};
 
 char * PSLevel1Writer::ps_header() {
   return		                                                \
@@ -335,7 +339,7 @@ char * PSLevel1Writer::ps_trailer() {
 }
 
 
-PSLevel2Writer::PSLevel2Writer(PSEditWidget *p) : PSWriter(p) {};
+PSLevel2Writer::PSLevel2Writer(PSEditModel *p) : PSWriter(p) {};
 
 char * PSLevel2Writer::ps_header() {
   return		                                                \

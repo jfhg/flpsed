@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.16 2004/10/13 18:03:08 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.17 2004/10/21 19:55:36 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -202,27 +202,56 @@ Fl_Menu_Item menuitems[] = {
 };
   
 int main(int argc, char** argv) {
-  Fl_Window window(600,700);
-  Fl_Menu_Bar* m = new Fl_Menu_Bar(0, 0, 600, 30);
-  m->menu(menuitems);
+  char c, *sep, *tmp;
+  int err;
+  Fl_Window *win;
+  Fl_Menu_Bar* m;
+  Fl_Scroll *scroll;
 
-  Fl_Scroll scroll(0, 30, window.w(), window.h()-30);
+  win = new Fl_Window(600,700);
+  m = new Fl_Menu_Bar(0, 0, 600, 30);
+  m->menu(menuitems);
+  scroll = new Fl_Scroll(0, 30, win->w(), win->h()-30);
   gsw_p = new PSEditor(0, 0, 700, 900);
-  scroll.end();
+  scroll->end();
+
   fl_open_display();
   Fl::add_handler(xev_handler);
 
-  window.resizable(scroll);
+  win->resizable(scroll);
 
-  window.end();
-  window.callback((Fl_Callback *)quit_cb);
-  window.show(1, argv); 
+  win->end();
+  win->callback((Fl_Callback *)quit_cb);
+  win->show(1, argv); 
 
-
-
-  if (argc >= 2) {
-    gsw_p->load(argv[1]);
+  err = 0;
+  while ((c = getopt(argc, argv, "t:")) != EOF) {
+    switch (c) {
+    case 't':
+      tmp = strdup(optarg);
+      if (!tmp) {
+	perror("strdup");
+	exit(1);
+      }
+      sep = strchr(tmp, '=');
+      if (!sep) {
+	fprintf(stderr, "Cannot parse %s\n", optarg);
+	free(tmp);
+	continue;
+      }
+      *sep = '\0';
+      gsw_p->replace_tag(tmp, sep+1);
+      free(tmp);
+      break;
+    default:
+      err++;
+    }
   }
+
+  if (err) {
+    exit(1);
+  }
+  
 
   return Fl::run();
 }

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.H,v 1.3 2004/10/13 18:03:08 hofmann Exp $"
+// "$Id: Postscript.H,v 1.4 2004/10/21 19:55:36 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -24,22 +24,23 @@
 #ifndef POSTSCRIPT_H
 #define POSTSCRIPT_H
 
-#include "PSEditWidget.H"
-
+#include <stdio.h>
+#include "PSEditModel.H"
 
 class PSParser {
  protected:
-  PSEditWidget *pse;
+  PSEditModel *pse;
+  int cur_size;
   int page;
 
  public: 
-  PSParser(PSEditWidget *p);
+  PSParser(PSEditModel *p);
   virtual int parse(char *line);
 };
   
 class PSParser_1 : public PSParser {
  public:
-  PSParser_1(PSEditWidget *p);
+  PSParser_1(PSEditModel *p);
   int parse(char *line);
 };
 
@@ -48,13 +49,13 @@ class PSParser_2 : public PSParser {
   int inside;
 
  public:
-  PSParser_2(PSEditWidget *p);
+  PSParser_2(PSEditModel *p);
   int parse(char *line);
 };
 
 class PSWriter {
  protected:
-  PSEditWidget *pse;
+  PSEditModel *pse;
   char * pos_format;
   char * size_format;
   char * text_format;
@@ -62,12 +63,12 @@ class PSWriter {
   char * tag_format;
   void write_string(FILE *out, char *s);
   void write_internal_format(FILE *out);
-  int write_text(FILE *out, PSText *t);
+  int write_text(FILE *out, PSEditText *t);
   virtual char *ps_header();
   virtual char *ps_trailer();
 
  public: 
-  PSWriter(PSEditWidget *p);
+  PSWriter(PSEditModel *p);
   int write(FILE *in, FILE *out);
 };
 
@@ -76,7 +77,7 @@ class PSLevel1Writer : public PSWriter {
   char *ps_header();
   char *ps_trailer();
  public:
-  PSLevel1Writer(PSEditWidget *p);
+  PSLevel1Writer(PSEditModel *p);
 };
 
 class PSLevel2Writer : public PSWriter {
@@ -84,7 +85,7 @@ class PSLevel2Writer : public PSWriter {
   char *ps_header();
   char *ps_trailer();
  public:
-  PSLevel2Writer(PSEditWidget *p);
+  PSLevel2Writer(PSEditModel *p);
 };
 
 

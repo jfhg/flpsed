@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.H,v 1.8 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: PSEditModel.H,v 1.1 2004/10/21 19:55:36 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -21,48 +21,42 @@
 // USA.
 //
 
-#ifndef PSEditWidget_H
-#define PSEditWidget_H
+#ifndef PSEditModel_H
+#define PSEditModel_H
 
-#include "GsWidget.H"
-#include "PSEditModel.H"
+#include "PSEditText.H"
 
-class PSText;
+class PSEditModel {
+  PSEditText **text;
+  int max_pages;
+  int page;
+  PSEditText *cur_text;  
+  float xdpi, ydpi;
+  int paper_x, paper_y;
 
-class PSEditWidget : public GsWidget {
-private:
-  int cur_size;
-  int show_tags;
 
-protected:
-  PSEditModel *model;
-  int loaded;
-  int mod;
-  void clear_text();
-  void draw();
+public:
+  PSEditModel(int x1, int y1, float dx, float dy);
+  ~PSEditModel();
 
-public: 
-  PSEditWidget(int X,int Y,int W, int H);  
-  int next();
-  void new_text(int x1, int y1, const char *s, int p);
-  void new_text(int x1, int y1, const char *s);
-  int set_cur_text(int x1, int y1);
+  void clear();
+  void new_text(int x1, int y1, const char *s, int size, int p);
   void append_text(const char *s);
   void move(int x1, int y1);
   void rm_char();
-  int reload();
-  void set_cur_size(int s);
   void set_size(int s);
   int get_size();
-  int get_max_pages();
+  void set_page(int p);
+  int get_page();
   char *get_tag();
   int set_tag(const char *t);
-  int get_show_tags();
-  void set_show_tags(int s);
-  PSText * get_text(int p);
-  int modified();
-  int file_loaded();
-  int replace_tag(char* tag, char* text);
+  int get_max_pages();
+  int set_cur_text(int x1, int y1, int p);
+  PSEditText *get_text(int p);
+  int ps_to_display_x(int x1);
+  int ps_to_display_y(int y1);
+  int ps_x(int x1);
+  int ps_y(int y1);
 };
 
 #endif

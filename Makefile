@@ -1,7 +1,7 @@
 CFLAGS=-I/usr/X11R6/include -g -Wall
 CC=c++
 
-OBJECTS=GsWidget.o PSEditWidget.o PSEditor.o Postscript.o flpsed.o
+OBJECTS=GsWidget.o PSEditWidget.o PSEditor.o PSEditText.o PSEditModel.o Postscript.o flpsed.o
 
 %.o: %.cxx
 	$(CC) -c $(CFLAGS) $*.cxx

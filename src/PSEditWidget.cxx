@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.17 2004/10/13 18:03:08 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.18 2004/10/21 19:55:36 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -38,52 +38,27 @@
 #include "PSEditWidget.H"
 
 void PSEditWidget::clear_text() {
-  cur_text = NULL;
-  for (int i = 0; i < max_pages; i++) {
-    if (text[i]) {
-      delete(text[i]);
-      text[i] = NULL;
-    }
-  }
+  model->clear();
 }
 
 void PSEditWidget::draw() {
   GsWidget::draw();
-  if (text[page]) {
-    text[page]->draw(x() ,y());
-  }
+
 }
 
 PSEditWidget::PSEditWidget(int X,int Y,int W, int H) : GsWidget(X, Y, W, H) {
-  max_pages = 32;
-  text = (PSText**) malloc(sizeof(PSText*) * max_pages);
-  for (int i = 0; i < max_pages; i++) {
-    text[i] = NULL;
-  }
-  cur_text = NULL;
+  model = new PSEditModel(paper_x, paper_y, xdpi, ydpi);
   cur_size = 12;
   show_tags = 1;
 }
   
 int PSEditWidget::next() {
-  if (page >= max_pages) {
-    max_pages = max_pages * 2;
-    text = (PSText**) realloc(text, sizeof(PSText*) * max_pages);
-    for (int i = max_pages / 2; i < max_pages; i++) {
-      text[i] = NULL;
-    }
-  }
-  cur_text = NULL;
+  model->set_page(page);
   return GsWidget::next();
 }  
 
 void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
-  cur_text = new PSText(this, x1, y1, s, cur_size);
-  if (text[p]) {
-    text[p]->append(cur_text);
-  } else {
-    text[p] = cur_text;
-  }
+  model->new_text(x1, y1, s, cur_size, p);
   redraw();
 }
 
@@ -92,55 +67,31 @@ void PSEditWidget::new_text(int x1, int y1, const char *s) {
 }
 
 int PSEditWidget::set_cur_text(int x1, int y1) {
-  if (text[page]) {
-    cur_text = text[page]->get_match(x1, y1);
-    if (cur_text) {
-      redraw();
-      return 0;
-    }
+  if (model->set_cur_text(x1, y1, page) == 0) {
+    redraw();
+    return 0;
   }
   return 1;
 }
 
 void PSEditWidget::append_text(const char *s) {
-  if (cur_text && s) {
-    cur_text->append_text(s);
-    redraw();
-  }
+  model->append_text(s);
+  redraw();
 }
 
 void PSEditWidget::move(int x1, int y1) {
-  if (cur_text) {
-    cur_text->move(x1, y1);
-    redraw();
-  }
+  model->move(x1, y1);
+  redraw();
 }
 
 void PSEditWidget::rm_char() {
-  if (cur_text) {
-    cur_text->rm_char();
-    redraw();
-  }
+  model->rm_char();
+  redraw();
 }
 
-int PSEditWidget::ps_to_display_x(int x1) {
-  return (int) ((float) x1 * xdpi / 72.0);
-}
-
-int PSEditWidget::ps_to_display_y(int y1) {
-  return (int) ((float) (paper_y - y1) * xdpi / 72.0);
-}
-
-int PSEditWidget::ps_x(int x1) {
-  return (int) ((float) x1 * 72.0 / xdpi);
-}
-
-int PSEditWidget::ps_y(int y1) {
-  return paper_y - (int)((float) y1 * 72.0 / ydpi);
-}
 
 int PSEditWidget::reload() {
-  cur_text = NULL;
+  model->set_page(0);
   return GsWidget::reload();
 }
 
@@ -150,23 +101,23 @@ void PSEditWidget::set_cur_size(int s) {
 
 void PSEditWidget::set_size(int s) {
   set_cur_size(s);
-  if (cur_text) {
-    cur_text->size = s;
-    redraw();
-  }
+  model->set_size(s);
+  redraw();
 }
 
 int PSEditWidget::get_size() {
-  if (cur_text) {
-    return cur_text->size;
+  int s;
+
+  s = model->get_size();
+  if (s >= 0) {
+    return s;
   } else {
     return cur_size;
   }
 }
 
-
 int PSEditWidget::get_max_pages() {
-  return max_pages;
+  return model->get_max_pages();
 }
 
 int PSEditWidget::get_show_tags() {
@@ -178,29 +129,17 @@ void PSEditWidget::set_show_tags(int s) {
   redraw();
 }
 
-PSText *PSEditWidget::get_text(int p) {
-  if (p >= max_pages) {
-    return 0;
-  } else {
-    return text[p];
-  }
-}
-
 int PSEditWidget::set_tag(const char *t) {
-  if (cur_text) {
+  if (model->set_tag(t) == 0) {
     mod++;
-    return cur_text->set_tag(t);
+    return 0;
   } else {
     return 1;
   }
 }
 
 char *PSEditWidget::get_tag() {
-  if (cur_text) {
-    return cur_text->get_tag();
-  } else {
-    return NULL;
-  }
+  return model->get_tag();
 }
 
 int PSEditWidget::modified() {
@@ -211,131 +150,9 @@ int PSEditWidget::file_loaded() {
   return loaded;
 }
 
-PSText::PSText(PSEditWidget *g, int x1, int y1, const char *s1, int size1) {
-  x = x1;
-  y = y1;
-  s = strdup(s1);
-  tag = NULL;
-  c = FL_BLACK;
-  size = size1;
-  next = NULL;
-  gsew = g;
-}
+int PSEditWidget::replace_tag(char *tag, char *text) {
+  fprintf(stderr, "%s => %s\n", tag, text);
 
-PSText::~PSText() {
-  if (next) {
-    delete(next);
-  }
-  if (s) {
-    free(s);
-  }
-  if (tag) {
-    free(tag);
-  }
-}
-  
-void PSText::append_text(const char*s1) {
-  int len = (s?strlen(s):0) + strlen(s1) + 1;
-  char *tmp = (char*) malloc(len);
-  
-  strncpy(tmp, s?s:"", len);
-  strncat(tmp, s1, len - strlen(tmp));
-  
-  if (s) {
-    free(s);
-  }
-  
-  s = tmp;
-}
-
-void PSText::rm_char() {
-  if (s && strlen(s) > 0) {
-    s[strlen(s) - 1] = '\0';
-  }
-}
-
-void PSText::move(int x1, int y1) {
-  x = x1;
-  y = y1;
-}
-
-void PSText::append(PSText *g) {
-  PSText *p = this;
-  while (p->next) {
-    p = p->next;
-  }
-  p->next = g;
-}
-
-PSText *PSText::get_match(int x1, int y1) {
-  if (abs(x - x1) < 10 && abs(y - y1) < 10) {
-    return this;
-  } else if (next) {
-    return next->get_match(x1, y1);
-  } else {
-      return NULL;
-  }
-}
-
-void PSText::draw(int off_x,int off_y) {
-  PSText *p = this;
-  fl_color(c);
-  fl_font(FL_HELVETICA, size);
-  fl_draw(s, x + off_x, y + off_y);
-  if (gsew->cur_text == this) {
-    fl_draw_box(FL_BORDER_FRAME, x+off_x-1, y+off_y-fl_height()+fl_descent(),
-		(int) fl_width(s)+2, fl_height(), FL_BLACK);
-  }
-
-  if (tag && gsew->get_show_tags()) {
-    int text_height = fl_height() - fl_descent();
-    fl_color(FL_BLUE);
-    fl_font(FL_COURIER, 10);
-     fl_draw(tag, x + off_x, y + off_y - text_height - 1);
-  }
-  
-  if (p->next) {
-    p->next->draw(off_x, off_y);
-  }
-}
-
-char *PSText::get_text() {
-  return s;
-}
-
-char *PSText::get_tag() {
-  return tag;
-}
-
-int PSText::set_tag(const char *t) {
-  if (tag) {
-    free(tag);
-  }
-  if (t) {
-    tag = strdup(t);
-  } else {
-    tag = NULL;
-  }
-  gsew->redraw();
   return 0;
 }
 
-int PSText::get_size() {
-  return size;
-}
-
-Fl_Color PSText::get_color() {
-  return c;
-}
-
-PSText* PSText::get_next() {
-  return next;
-}
-
-int PSText::get_x() {
-  return x;
-}
-
-int PSText::get_y() {
-  return y;
-}
