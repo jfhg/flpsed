@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.12 2004/07/06 16:57:37 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.13 2004/07/07 17:17:54 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -258,7 +258,8 @@ void PSEditWidget::to_ps(FILE *f, int p) {
   text[p]->to_ps(f);
   fprintf(f, "} if\n");
 }
-#define PS_HEADER "%% Begin PSEditWidget\n" \
+
+#define PS_HEADER_L2 "%% Begin PSEditWidget\n" \
 "/PSEditWidgetPageCount 0 def\n" \
 "<< /EndPage {\n" \
 "pop\n" \
@@ -269,7 +270,21 @@ void PSEditWidget::to_ps(FILE *f, int p) {
 "} ifelse\n"
 
 
-#define PS_TRAILER "true } >> setpagedevice\n" \
+#define PS_TRAILER_L2 "true } >> setpagedevice\n" \
+"%% End PSEditWidget\n"
+
+#define PS_HEADER_L1 "%% Begin PSEditWidget\n" \
+"/PSEditWidgetPageCount 0 def\n" \
+"/PSEditWidgetPC 0 def\n" \
+"/PSEditWidgetshowpage /showpage load def\n" \
+"/showpage {\n" \
+"PSEditWidgetPageCount 0 eq { %% if PSEditWidgetPageCount is undefined,\n" \
+"/PSEditWidgetPC PSEditWidgetPC 1 add def PSEditWidgetPC\n" \      
+"} {\n" \
+"PSEditWidgetPageCount\n" \
+"} ifelse\n"
+
+#define PS_TRAILER_L1 "PSEditWidgetshowpage} def\n" \
 "%% End PSEditWidget\n"
 
 int PSEditWidget::save(const char* savefile) {
@@ -286,13 +301,13 @@ int PSEditWidget::save(const char* savefile) {
     if (!done && strncmp(linebuf, "%%EndSetup", 10) == 0) {
       done++;
 
-      fprintf(sfp, PS_HEADER);
+      fprintf(sfp, PS_HEADER_L1);
 
       for (int i=1;i<max_pages;i++) {
 	to_ps(sfp, i);
       }
 
-      fprintf(sfp, PS_TRAILER);
+      fprintf(sfp, PS_TRAILER_L1);
   
     }
 
