@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.11 2004/10/26 18:08:57 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.12 2004/11/10 18:49:08 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -66,7 +66,7 @@ void GsWidget::setProps() {
   atoms[3] = XInternAtom(fl_display,"PAGE" , false);
   atoms[4] = XInternAtom(fl_display,"DONE" , false);
    
-  snprintf(data, 512, "%lu %d %d %d %d %d %g %g",
+  snprintf(data, 512, "%lu %d %d %d %d %d %d.0 %d.0",
 	   0, 0, 0, 0, paper_x, paper_y, xdpi, ydpi);
 
   int xid = fl_xid(window());
@@ -100,8 +100,8 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
   offscreen = 0;
   gs_pid = 0;
   page = 0;
-  xdpi = 75.0;
-  ydpi = 75.0;
+  xdpi = 75;
+  ydpi = 75;
   paper_x = 594; // DIN A4
   paper_y = 841; //
   in_fd = -1;

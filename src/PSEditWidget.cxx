@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.29 2004/11/10 18:32:59 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.30 2004/11/10 18:49:08 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -339,17 +339,17 @@ int PSEditWidget::bb_h(PSEditText *t) {
 
   
 int PSEditWidget::ps_to_display_x(int x1) {
-  return (int) ((float) x1 * xdpi / 72.0);
+  return  (x1 * xdpi) / 72;
 }
 
 int PSEditWidget::ps_to_display_y(int y1) {
-  return (int) ((float) (paper_y - y1) * xdpi / 72.0);
+  return ((paper_y - y1) * xdpi) / 72;
 }
 
 int PSEditWidget::ps_x(int x1) {
-  return (int) ((float) x1 * 72.0 / xdpi);
+  return (x1 * 72) / xdpi;
 }
 
 int PSEditWidget::ps_y(int y1) {
-  return paper_y - (int)((float) y1 * 72.0 / ydpi);
+  return paper_y - (y1 * 72) / ydpi;
 }
