@@ -1,4 +1,4 @@
-CFLAGS=-I/usr/X11R6/include -g 
+CFLAGS=-I/usr/X11R6/include -g -Wall
 CC=c++
 
 OBJECTS=GsWidget.o PSEditWidget.o PSEditor.o PSEditText.o PSEditModel.o Postscript.o flpsed.o
