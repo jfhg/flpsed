@@ -55,3 +55,7 @@ You can now call flpsed in batch mode to set the actual values:
 flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
 
 
+
+Johannes Hofmann
+(Johannes.Hofmann@gmx.de)
+October 26, 2004
