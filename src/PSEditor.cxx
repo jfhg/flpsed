@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.3 2004/07/09 21:27:00 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.4 2004/07/09 22:51:39 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -137,7 +137,7 @@ int PSEditor::save(const char* savefile) {
   FILE *fp = fdopen(tmp_fd, "r");
   rewind(fp);
   FILE *sfp = fopen(savefile, "w");
-  PSWriter *pw = new PSLevel1Writer(this);
+  PSWriter *pw = new PSLevel2Writer(this);
 
   pw->write(fp, sfp);
 

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.4 2004/07/09 21:27:01 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.5 2004/07/09 22:51:39 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -301,6 +301,7 @@ char * PSLevel1Writer::ps_header() {
     "/PSEditWidgetPC 0 def\n"			\
     "/PSEditWidgetshowpage /showpage load def\n"	\
     "/showpage {\n"							\
+    "gsave initgraphics\n"                                              \
     "PSEditWidgetPageCount 0 eq { \n"					\
     "/PSEditWidgetPC PSEditWidgetPC 1 add def PSEditWidgetPC\n"		\
     "} {\n"								\
@@ -309,7 +310,7 @@ char * PSLevel1Writer::ps_header() {
 }
 
 char * PSLevel1Writer::ps_trailer() {
-  return  "PSEditWidgetshowpage} def\n";
+  return  "PSEditWidgetshowpage grestore} def\n";
 }
 
 
@@ -319,6 +320,7 @@ char * PSLevel2Writer::ps_header() {
   return		  \
     "/PSEditWidgetPageCount 0 def\n"		\
     "<< /EndPage {\n"				\
+    "gsave initgraphics\n"                                              \
     "pop\n"								\
     "PSEditWidgetPageCount 0 eq { \n" \
     "1 add                        %% use showpage counter instead.\n"	\
@@ -329,5 +331,5 @@ char * PSLevel2Writer::ps_header() {
 }
 
 char * PSLevel2Writer::ps_trailer() {
-  return  "true } >> setpagedevice\n";
+  return  "grestore true } >> setpagedevice\n";
 }
