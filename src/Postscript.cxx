@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.7 2004/07/28 20:15:48 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.8 2004/10/12 17:14:16 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -228,6 +228,8 @@ int PSWriter::write(FILE *in, FILE *out) {
       fprintf(out, PSEDIT_PAGE_MARKER, page++);
     }
   }
+
+  return 0;
 }
 
 void PSWriter::write_internal_format(FILE *out) {

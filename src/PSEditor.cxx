@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.9 2004/10/11 14:44:47 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.10 2004/10/12 17:14:16 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -115,7 +115,7 @@ int PSEditor::load(char *f) {
   FILE *fp;
   char tmpname[256];
   char linebuf[1024];
-  int size, ret, ret1, ret2;
+  int ret;
   PSParser *p1 = new PSParser_1(this);
   PSParser *p2 = new PSParser_2(this);
   
@@ -210,6 +210,7 @@ int PSEditor::import(char *f) {
   delete(p2);
 
   mod = 1;
+  return 0;
 }
 
 int PSEditor::get_ps_level() {

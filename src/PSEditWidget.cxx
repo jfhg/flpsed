@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.14 2004/07/09 17:22:55 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.15 2004/10/12 17:14:16 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -73,7 +73,7 @@ int PSEditWidget::next() {
     }
   }
   cur_text = NULL;
-  GsWidget::next();
+  return GsWidget::next();
 }  
 
 void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {

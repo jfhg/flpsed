@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.7 2004/10/12 16:41:43 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.8 2004/10/12 17:14:16 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -55,7 +55,6 @@ void GsWidget::draw() {
 
 void GsWidget::setProps() {
   char data[512];
-  int gs_win;
 
   if (!offscreen) {
     offscreen = fl_create_offscreen(w(), h());
@@ -68,8 +67,7 @@ void GsWidget::setProps() {
   atoms[4] = XInternAtom(fl_display,"DONE" , false);
    
   snprintf(data, 512, "%lu %d %d %d %d %d %g %g",
-	  0, 0, 0, 0, paper_x, paper_y,
-	  xdpi, ydpi,0,0,0,0 );
+	  0, 0, 0, 0, paper_x, paper_y, xdpi, ydpi);
 
   int xid = fl_xid(window());
 
@@ -171,7 +169,9 @@ int GsWidget::load(int fd) {
   } else {
     gs_pid = pid;
     page = 0;
-  } 
+  }
+  
+  return 0;
 }
 
 int GsWidget::reload() {
@@ -206,6 +206,8 @@ int GsWidget::next() {
     XSendEvent(fl_display, gs_win, false, 0, &e);
     XFlush(fl_display);
   }
+
+  return 0;
 }
 
 int GsWidget::handleX11(int ev) {
