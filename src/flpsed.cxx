@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.24 2004/11/10 18:32:59 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.25 2005/01/27 21:07:09 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -147,6 +147,14 @@ void size_cb(Fl_Widget *w, void *) {
   }
 }
 
+void zoom_cb(Fl_Widget *w, void *) {
+  Fl_Menu_* mw = (Fl_Menu_*)w;
+  const Fl_Menu_Item* m = mw->mvalue();
+  if (m) {
+    gsw_p->zoom(atoi(m->label()));
+  }
+}
+
 void show_tags_cb(Fl_Widget* w, void*d) {
   gsw_p->set_show_tags((int) d);
 }
@@ -176,6 +184,14 @@ Fl_Menu_Item menuitems[] = {
   { "&Page", 0, 0, 0, FL_SUBMENU },
     { "F&irst",        FL_CTRL + 'i', (Fl_Callback *)first_cb },
     { "&Next",       FL_CTRL + 'n', (Fl_Callback *)next_cb },
+    { 0 },
+
+  { "&Zoom (%)", 0, 0, 0, FL_SUBMENU },
+    { "50",  0, (Fl_Callback *)zoom_cb },
+    { "75",  0, (Fl_Callback *)zoom_cb },
+    { "100",  0, (Fl_Callback *)zoom_cb },
+    { "150",  0, (Fl_Callback *)zoom_cb },
+    { "200",  0, (Fl_Callback *)zoom_cb },    
     { 0 },
 
   { "&Size", 0, 0, 0, FL_SUBMENU },

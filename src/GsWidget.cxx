@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.13 2004/11/14 20:04:09 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.14 2005/01/27 21:07:09 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -100,10 +100,13 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
   offscreen = 0;
   gs_pid = 0;
   page = 0;
-  xdpi = 75;
-  ydpi = 75;
+  zoom_percent = 100;
+  xdpi = 75 * zoom_percent / 100;
+  ydpi = 75 * zoom_percent / 100;
   paper_x = 594; // DIN A4
   paper_y = 841; //
+  initial_width = W;
+  initial_height = H;
   in_fd = -1;
   reload_needed = 0;
 }
@@ -227,4 +230,31 @@ int GsWidget::handleX11(int ev) {
 
 int GsWidget::get_page() {
   return page;
+}
+
+int GsWidget::zoom(int p) {
+  zoom_percent = p;
+
+  kill_gs();
+
+  // Clear widget
+  fl_begin_offscreen(offscreen);
+  fl_color(FL_WHITE);
+  fl_rectf(0, 0, w(), h());
+  fl_end_offscreen();
+  redraw();
+
+  if (offscreen) {
+    fl_delete_offscreen(offscreen);
+    offscreen = NULL;
+  }
+
+  w(initial_width * zoom_percent / 100);
+  h(initial_height * zoom_percent / 100);
+
+  xdpi = 75 * zoom_percent / 100;
+  ydpi = 75 * zoom_percent / 100;
+  reload();
+
+  return 0;
 }

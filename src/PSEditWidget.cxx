@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.31 2004/11/10 19:21:06 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.32 2005/01/27 21:07:09 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -56,7 +56,7 @@ void PSEditWidget::draw() {
     t_y = ps_to_display_y(t->get_y());
 
     fl_color((Fl_Color) t->get_color());
-    fl_font(FLPSED_FONT, t->get_size());
+    fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
     fl_draw(t->get_text(), t_x + x(), t_y + y());
     if (model->is_cur_text(t)) {
       fl_draw_box(FL_BORDER_FRAME, 
@@ -74,7 +74,7 @@ void PSEditWidget::draw() {
       fl_draw(t->get_tag(), t_x + x(), 
 	      t_y + y() - text_height - 1);
     }
-  
+
     t = t->get_next();
   }
 }
@@ -84,6 +84,7 @@ PSEditWidget::PSEditWidget(int X,int Y,int W, int H): GsWidget(X, Y, W, H) {
   model = new PSEditModel();
   cur_size = 12;
   show_tags = 1;
+  zoom_percent = 100;
 }
   
 int PSEditWidget::next() {
@@ -214,7 +215,7 @@ void PSEditWidget::rm_char() {
 
   t = model->get_cur_text();
   if (t) {
-    fl_font(FLPSED_FONT, t->get_size());
+    fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
     width =  bb_w(t);
   }
 
@@ -308,19 +309,25 @@ int PSEditWidget::replace_tag(char *tag, char *text) {
     return model->replace_tag(tag, text);
 }
 
+int PSEditWidget::zoom(int p) {
+  zoom_percent = p;
+  return GsWidget::zoom(zoom_percent);
+}
+
+
 int PSEditWidget::bb_x(PSEditText *t) {
   return ps_to_display_x(t->get_x()) + x() - 10;
 }
 
 int PSEditWidget::bb_y(PSEditText *t) {
-  fl_font(FLPSED_FONT, t->get_size());
-  return ps_to_display_y(t->get_y()) - fl_height() + y() - 20;
+  fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
+  return ps_to_display_y(t->get_y()) - fl_height() + y() - 10;
 }
 
 int PSEditWidget::bb_w(PSEditText *t) {
   int w, wt = 0;
   char *tag;
-  fl_font(FLPSED_FONT, t->get_size());
+  fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
   w = (int) fl_width(t->get_text()) + 20;
 
   tag = t->get_tag();
@@ -344,7 +351,7 @@ static int round_div(int a, int b) {
 }
 
 int PSEditWidget::bb_h(PSEditText *t) {
-  fl_font(FLPSED_FONT, t->get_size());
+  fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
   return fl_height() + 30;
 }
 
