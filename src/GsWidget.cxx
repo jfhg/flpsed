@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.10 2004/10/26 17:22:45 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.11 2004/10/26 18:08:57 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -84,7 +84,7 @@ void GsWidget::setProps() {
 
 void GsWidget::kill_gs() {
   int status;
-  fprintf(stderr, "Killing...\n");
+
   if (gs_pid > 0) {
     kill(gs_pid, SIGTERM);
     waitpid(gs_pid, &status, 0);
