@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.11 2004/10/23 19:57:14 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.12 2004/10/26 18:32:07 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -335,7 +335,7 @@ char * PSLevel1Writer::ps_header() {
 }
 
 char * PSLevel1Writer::ps_trailer() {
-  return  "PSEditWidgetshowpage grestore} def\n";
+  return  "grestore PSEditWidgetshowpage} def\n";
 }
 
 
