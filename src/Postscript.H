@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.H,v 1.5 2004/10/26 16:58:49 hofmann Exp $"
+// "$Id: Postscript.H,v 1.6 2005/02/28 19:53:58 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -73,6 +73,8 @@ class PSWriter {
   char * tag_format;
 
   void write_string(FILE *out, char *s);
+
+  void write_main_block(FILE *out);
 
   void write_internal_format(FILE *out);
 

@@ -1,6 +1,13 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.3.3
+ - Implement PDF import/export based on pdftops and ps2pdf.
+ - Fix segfault when using arrow keys on empty document 
+  (reported by Arho Virkki).
+ - Remove beeping sound  (requested by Arho Virkki).
+ - Fix PostScript output for certain documents (reported by Petr Baum).
+
 flpsed-0.3.2
  - Implement zooming (thanks to Jochen Eisinger for the suggestion).
 

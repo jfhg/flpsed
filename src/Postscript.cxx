@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.13 2004/11/10 18:32:59 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.14 2005/02/28 19:53:58 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -45,7 +45,7 @@
 #define PSEDIT_TEXT_FORMAT_SCAN   "%% PSEditWidget: TEXT (%[^)])\n"
 #define PSEDIT_SIZE_FORMAT        "%% PSEditWidget: SIZE %d\n"
 #define PSEDIT_GLYPH_FORMAT       "%% PSEditWidget: GLYPH %s\n"
-#define PSEDIT_TAG_FORMAT       "%% PSEditWidget: TAG %s\n"
+#define PSEDIT_TAG_FORMAT         "%% PSEditWidget: TAG %s\n"
 
 //
 // Marker to set page number. This is necessary for viewers like ghostview
@@ -197,48 +197,60 @@ int PSWriter::write(FILE *in, FILE *out) {
   int done=0, page = 1;
   
   while (fgets(linebuf, 1024, in) != NULL) {
+    // Try to write main block before %%EndSetup or %%EndProlog
     if (!done && 
-	(strncmp(linebuf, "%%EndSetup", 10) == 0 ||
-	 strncmp(linebuf, "%%EndProlog", 10) == 0)) {
+	(strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0 ||
+	 strncmp(linebuf, "%%EndProlog", strlen("%%EndProlog")) == 0)) {
       done++;
-
-      fprintf(out, "\n");
-      fprintf(out, "%s", PSEDIT_BEGIN);
-      fprintf(out, "\n");
-
-      write_internal_format(out);
-      pos_format   = PS_POS_FORMAT;
-      size_format  = PS_SIZE_FORMAT;
-      text_format  = PS_TEXT_FORMAT;
-      glyph_format = PS_GLYPH_FORMAT;
-      tag_format   = PS_TAG_FORMAT;
-
-      fprintf(out, "\n");
-      fprintf(out, ps_header());
-
-      for (int i=1;i<pse->get_max_pages();i++) {
-	if (pse->get_text(i)) {
-	  fprintf(out, "dup %d eq { \n", i);
-	  write_text(out, pse->get_text(i));
-	  fprintf(out, "} if\n");
-	}
-      }
-      
-      fprintf(out, ps_trailer());
-      fprintf(out, "\n");
-      fprintf(out, "%s", PSEDIT_END);
-      fprintf(out, "\n");
+      write_main_block(out);
     }
 
     fprintf(out, "%s", linebuf);
 
-    if (strncmp(linebuf, "%%Page:", 7) == 0) {
+    // Try to write main block after %%BeginProlog
+    if (!done && 
+	(strncmp(linebuf, "%%BeginProlog", strlen("%%BeginProlog")) == 0)) {
+      done++;
+      write_main_block(out);
+    }
+
+    if (strncmp(linebuf, "%%Page:", strlen("%%Page:")) == 0) {
       fprintf(out, PSEDIT_PAGE_MARKER, page++);
     }
   }
 
   return 0;
 }
+
+void PSWriter::write_main_block(FILE *out) {
+  fprintf(out, "\n");
+  fprintf(out, "%s", PSEDIT_BEGIN);
+  fprintf(out, "\n");
+  
+  write_internal_format(out);
+  pos_format   = PS_POS_FORMAT;
+  size_format  = PS_SIZE_FORMAT;
+  text_format  = PS_TEXT_FORMAT;
+  glyph_format = PS_GLYPH_FORMAT;
+  tag_format   = PS_TAG_FORMAT;
+  
+  fprintf(out, "\n");
+  fprintf(out, ps_header());
+  
+  for (int i=1;i<pse->get_max_pages();i++) {
+    if (pse->get_text(i)) {
+      fprintf(out, "dup %d eq { \n", i);
+      write_text(out, pse->get_text(i));
+      fprintf(out, "} if\n");
+    }
+  }
+  
+  fprintf(out, ps_trailer());
+  fprintf(out, "\n");
+  fprintf(out, "%s", PSEDIT_END);
+  fprintf(out, "\n");
+}
+
 
 void PSWriter::write_internal_format(FILE *out) {
   pos_format   = PSEDIT_POS_FORMAT;
