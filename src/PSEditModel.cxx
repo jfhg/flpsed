@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.8 2004/10/26 16:41:40 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.9 2004/10/26 18:11:14 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -178,7 +178,7 @@ char *PSEditModel::get_tag() {
 int PSEditModel::replace_tag(char *tag, char *txt) {
   PSEditText *t;
   int p, ret = 0;
-  fprintf(stderr, "%s => %s\n", tag, txt);
+
   for (p = 0; p < max_pages; p++) {
     t = get_text(p);
     while (t) {
