@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.27 2005/01/28 15:37:40 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.28 2005/02/02 18:18:47 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -42,12 +42,12 @@
 
 #include "PSEditor.H"
 
-PSEditor *gsw_p   = NULL;
+PSEditor *psed_p   = NULL;
 Fl_Scroll *scroll = NULL;
 
 int xev_handler(int ev) {
-  if (gsw_p) {
-    return gsw_p->handleX11(ev);
+  if (psed_p) {
+    return psed_p->handleX11(ev);
   } else {
     return 0;
   }
@@ -56,7 +56,7 @@ int xev_handler(int ev) {
 void save_cb();
 
 int check_save(void) {
-  if (!gsw_p->modified()) return 1;
+  if (!psed_p->modified()) return 1;
 
   int r = fl_choice("The current file has not been saved.\n"
                     "Would you like to save it now?",
@@ -64,7 +64,7 @@ int check_save(void) {
 
   if (r == 1) {
     save_cb(); // Save the file...
-    return !gsw_p->modified();
+    return !psed_p->modified();
   }
 
   return (r == 2) ? 1 : 0;
@@ -77,35 +77,85 @@ void open_cb() {
   if (!check_save()) return;
   char *file = fl_file_chooser("Open File?", "*.ps", filename);
   if(file != NULL) {
-    gsw_p->load(file);
+    psed_p->load(file);
   }  
+}
+
+void import_pdf_cb() {
+  if (!check_save()) return;
+  char *file = fl_file_chooser("Open File?", "*.pdf", filename);
+  if(file != NULL) {
+    FILE *p;
+    int ret;
+    char cmd[1000];
+
+    snprintf(cmd, sizeof(cmd), "pdftops %s -", file);
+    p = popen(cmd, "r");
+    if (p) {
+      psed_p->load(p);
+      ret = pclose(p);
+      if (WEXITSTATUS(ret) == 127 || WEXITSTATUS(ret) == 126) {
+       fl_message("PDF import depends on pdftops from xpdf.\n"
+		  "Make sure pdftops is available on your system.\n");
+      } else if (WEXITSTATUS(ret) != 0) {
+       fl_message("PDF import failed\n");
+      }
+    } else {
+      perror("popen");
+    }
+  }
+}
+
+void export_pdf_cb() {
+  if (!check_save()) return;
+  char *file = fl_file_chooser("Open File?", "*.pdf", filename);
+  if(file != NULL) {
+    FILE *p;
+    int ret;
+    char cmd[1000];
+
+    snprintf(cmd, sizeof(cmd), "ps2pdf - %s", file);
+    p = popen(cmd, "w");
+    if (p) {
+      psed_p->save(p);
+      ret = pclose(p); 
+      if (WEXITSTATUS(ret) == 127 || WEXITSTATUS(ret) == 126) {
+       fl_message("PDF export depends on ps2pdf from ghostscript.\n"
+		  "Make sure ps2pdf is available on your system.\n");
+      } else if (WEXITSTATUS(ret) != 0) {
+	fl_message("PDF export failed\n");
+      }
+    } else {
+      perror("pclose");
+    }
+  }
 }
 
 void import_cb() {
   char *file = fl_file_chooser("Import Overlay from File?", "*.ps", filename);
   if(file != NULL) {
-    gsw_p->import(file);
+    psed_p->import(file);
   }  
 }
 
 void first_cb() {
-  gsw_p->reload();
+  psed_p->reload();
 }
 
 void next_cb() {
-  gsw_p->next();
+  psed_p->next();
 }
 
 void quit_cb() {
   if (!check_save()) return;
-  delete gsw_p;
+  delete psed_p;
   exit(0);
 }
 
 void save_cb() {
   char *file = fl_file_chooser("Open File?", "*.ps", filename);
   if (file != NULL) {
-    gsw_p->save(file);
+    psed_p->save(file);
   }
 }
 
@@ -124,7 +174,7 @@ void print_cb() {
 
   if (tmp_fd >= 0) {
     close(tmp_fd);
-    if (gsw_p->save(tmpname) != 0) {
+    if (psed_p->save(tmpname) != 0) {
       fprintf(stderr, "Failed to print file\n");
     } else {
       snprintf(buf, 256, "lpr %s", tmpname);
@@ -136,7 +186,7 @@ void print_cb() {
 
 void about_cb() {
   fl_message("flpsed -- a pseudo PostScript editor\n"
-	     "(c) Johannes Hofmann 2004\n\n"
+	     "(c) Johannes Hofmann 2004, 2005\n\n"
 	     "PostScript is a registered trademark of Adobe Systems");
 }
 
@@ -144,7 +194,7 @@ void size_cb(Fl_Widget *w, void *) {
   Fl_Menu_* mw = (Fl_Menu_*)w;
   const Fl_Menu_Item* m = mw->mvalue();
   if (m) {
-    gsw_p->set_size(atoi(m->label()));
+    psed_p->set_size(atoi(m->label()));
   }
 }
 
@@ -155,25 +205,25 @@ void zoom_cb(Fl_Widget *w, void *) {
     if (scroll) {
       scroll->position(0,0);
     }
-    if (gsw_p) {
-      gsw_p->zoom(atoi(m->label()));
+    if (psed_p) {
+      psed_p->zoom(atoi(m->label()));
     }
   }
 }
 
 void show_tags_cb(Fl_Widget* w, void*d) {
-  gsw_p->set_show_tags((int) d);
+  psed_p->set_show_tags((int) d);
 }
 
 void edit_tag_cb() {
-  char *tag = gsw_p->get_tag();
+  char *tag = psed_p->get_tag();
   const char *new_tag;
   new_tag = fl_input("Tag Name", tag?tag:"");
   if (new_tag) {
     if (strcmp(new_tag, "") != 0) {
-      gsw_p->set_tag(new_tag);
+      psed_p->set_tag(new_tag);
     } else {
-      gsw_p->set_tag(NULL);
+      psed_p->set_tag(NULL);
     }
   }
 }
@@ -182,6 +232,8 @@ Fl_Menu_Item menuitems[] = {
   { "&File",              0, 0, 0, FL_SUBMENU },
     { "&Open File...",    FL_CTRL + 'o', (Fl_Callback *)open_cb },
     { "&Save File as...", FL_CTRL + 's', (Fl_Callback *)save_cb },
+    { "I&mport PDF...", FL_CTRL + 'm', (Fl_Callback *)import_pdf_cb },
+    { "&Export PDF...", FL_CTRL + 'e', (Fl_Callback *)export_pdf_cb },
     { "I&mport Tags from File...",    FL_CTRL + 'm', (Fl_Callback *)import_cb },
     { "&Print...", FL_CTRL + 'p', (Fl_Callback *)print_cb, 0, FL_MENU_DIVIDER },
     { "&Quit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
@@ -368,7 +420,7 @@ int main(int argc, char** argv) {
     m = new Fl_Menu_Bar(0, 0, 600, 30);
     m->menu(menuitems);
     scroll = new Fl_Scroll(0, 30, win->w(), win->h()-30);
-    gsw_p = new PSEditor(0, 0, 700, 900);
+    psed_p = new PSEditor(0, 0, 700, 900);
     scroll->end();
     
     fl_open_display();
@@ -381,12 +433,12 @@ int main(int argc, char** argv) {
     win->show(1, argv); 
     
     if (in_fp) {
-      gsw_p->load(in_fp);
+      psed_p->load(in_fp);
       fclose(in_fp);
     }
 
     for(int i=0; i<tv_idx; i++) {
-      gsw_p->replace_tag(tv[i].tag, tv[i].value);
+      psed_p->replace_tag(tv[i].tag, tv[i].value);
       free(tv[i].tag);
       free(tv[i].value);
     }

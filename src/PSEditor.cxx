@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.22 2004/11/10 18:32:59 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.23 2005/02/02 18:18:47 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -127,7 +127,7 @@ int PSEditor::load(FILE *fp) {
   }
 }
 
-int PSEditor::load(char *f) {
+int PSEditor::load(const char *f) {
   FILE *fp;
   int ret;
 
@@ -139,6 +139,22 @@ int PSEditor::load(char *f) {
 
   ret = load(fp);
   fclose(fp);
+
+  return ret;
+}
+
+int PSEditor::save(FILE *fp) {
+  int ret;
+
+  if (!file_loaded()) {
+    return 1;
+  }
+  
+  ret = model->save(fp, tmp_fd);
+
+  if (ret == 0) {
+    mod = 0;
+  }
 
   return ret;
 }
@@ -157,13 +173,7 @@ int PSEditor::save(const char* savefile) {
     return 1;
   }
   
-
-  ret = model->save(fp, tmp_fd);
-
-  if (ret == 0) {
-    mod = 0;
-  }
-
+  ret = save(fp);
   fclose(fp);
 
   return ret;
