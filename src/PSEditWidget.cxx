@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.26 2004/11/08 18:56:00 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.27 2004/11/08 19:36:14 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -75,7 +75,8 @@ void PSEditWidget::draw() {
   }
 }
 
-PSEditWidget::PSEditWidget(int X,int Y,int W, int H) : GsWidget(X, Y, W, H) {
+PSEditWidget::PSEditWidget(int X,int Y,int W, int H): GsWidget(X, Y, W, H) {
+
   model = new PSEditModel(paper_x, paper_y, xdpi, ydpi);
   cur_size = 12;
   show_tags = 1;
@@ -161,15 +162,24 @@ void PSEditWidget::append_text(const char *s) {
   }
 }
 
-void PSEditWidget::move(int x1, int y1, int last_x, int last_y) {
+void PSEditWidget::move(int x1, int y1) {
   PSEditText *t;
+  int old_bbx, old_bby, old_bbw, old_bbh;
+
+  t = model->get_cur_text();
+  if (t) {
+    old_bbx = bb_x(t);
+    old_bby = bb_y(t);
+    old_bbw = bb_w(t);
+    old_bbh = bb_h(t);
+  }
 
   model->move(x1, y1);
   mod++;
-  t = model->get_cur_text();
+
   if (t) {
+    damage(4, old_bbx, old_bby, old_bbw, old_bbh);
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
-    damage(4, last_x - 10, last_y - fl_height() - 20, bb_w(t), bb_h(t));
   }
 }
 

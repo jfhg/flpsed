@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.20 2004/11/08 18:10:34 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.21 2004/11/08 19:36:14 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -43,10 +43,7 @@ int PSEditor::handle(int event) {
 	fl_beep();
 	return 0;
       }
-      
-      x_last = Fl::event_x()-x();
-      y_last = Fl::event_y()-y();
-   
+         
       mark_x = Fl::event_x()-x();
       mark_y = Fl::event_y()-y();
 
@@ -64,16 +61,9 @@ int PSEditor::handle(int event) {
       return 1;
     }
 
-    x_last = -1;
-    y_last = -1;
-
     break;
   case FL_DRAG:
-    move(Fl::event_x()-x(), Fl::event_y()-y(), x_last-x(), y_last-y());
-
-    x_last = Fl::event_x()-x();
-    y_last = Fl::event_y()-y();
-
+    move(Fl::event_x()-x(), Fl::event_y()-y());
     return 1;
     break;
   case FL_KEYBOARD:
@@ -87,28 +77,28 @@ int PSEditor::handle(int event) {
 	if (t) {
 	  int x = t->get_x();
 	  int y = t->get_y();
-	  move(x - 1, y, x, y);
+	  move(x - 1, y);
 	}
       } else if (key == FL_Right) {
 	PSEditText *t = model->get_cur_text();
 	if (t) {
 	  int x = t->get_x();
 	  int y = t->get_y();
-	  move(x + 1, y, x, y);
+	  move(x + 1, y);
 	}
       } else if (key == FL_Up) {
 	PSEditText *t = model->get_cur_text();
 	if (t) {
 	  int x = t->get_x();
 	  int y = t->get_y();
-	  move(x, y - 1, x, y);
+	  move(x, y - 1);
 	}
       } else if (key == FL_Down) {
 	PSEditText *t = model->get_cur_text();
 	if (t) {
 	  int x = t->get_x();
 	  int y = t->get_y();
-	  move(x, y + 1, x, y);
+	  move(x, y + 1);
 	}
       } else if (key == FL_Tab) {
 	next_text();

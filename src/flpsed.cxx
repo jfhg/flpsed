@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.22 2004/10/26 16:58:49 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.23 2004/11/08 19:36:14 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -221,7 +221,8 @@ int main(int argc, char** argv) {
   char c, *sep, *tmp, **my_argv;
   int err, bflag = 0, dflag = 0;
   Fl_Window *win;
-  Fl_Menu_Bar* m;
+  Fl_Menu_Bar *m;
+  Fl_Int_Input *x_in, *y_in;
   Fl_Scroll *scroll;
   struct {char *tag; char *value;} tv[TV_LEN];
   int tv_idx = 0, my_argc;
