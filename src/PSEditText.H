@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditText.H,v 1.1 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: PSEditText.H,v 1.2 2004/10/21 20:12:36 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -50,7 +50,6 @@ public:
   int get_color();
   int get_x();
   int get_y();
-  void draw(int off_x,int off_y);
 };
 
 #endif

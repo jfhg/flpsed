@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.1 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.2 2004/10/21 20:12:36 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -101,6 +101,10 @@ int PSEditModel::set_cur_text(int x1, int y1, int p) {
     }
   }
   return 1;
+}
+
+int PSEditModel::is_cur_text(PSEditText *t) {
+  return (t && t == cur_text);
 }
 
 void PSEditModel::append_text(const char *s) {

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.18 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.19 2004/10/21 20:12:36 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -43,7 +43,31 @@ void PSEditWidget::clear_text() {
 
 void PSEditWidget::draw() {
   GsWidget::draw();
-
+  PSEditText *t = model->get_text(page);
+  
+  while (t) {
+    fl_color((Fl_Color) t->get_color());
+    fl_font(FL_HELVETICA, t->get_size());
+    fl_draw(t->get_text(), t->get_x() + x(), t->get_y() + y());
+    if (model->is_cur_text(t)) {
+      fl_draw_box(FL_BORDER_FRAME, 
+		  t->get_x()+x()-1, 
+		  t->get_y()+y()-fl_height()+fl_descent(),
+		  (int) fl_width(t->get_text())+2, 
+		  fl_height(), 
+		  FL_BLACK);
+    }
+    
+    if (t->get_tag() && show_tags) {
+      int text_height = fl_height() - fl_descent();
+      fl_color(FL_BLUE);
+      fl_font(FL_COURIER, 10);
+      fl_draw(t->get_tag(), t->get_x() + x(), 
+	      t->get_y() + y() - text_height - 1);
+    }
+  
+    t = t->get_next();
+  }
 }
 
 PSEditWidget::PSEditWidget(int X,int Y,int W, int H) : GsWidget(X, Y, W, H) {
@@ -132,6 +156,7 @@ void PSEditWidget::set_show_tags(int s) {
 int PSEditWidget::set_tag(const char *t) {
   if (model->set_tag(t) == 0) {
     mod++;
+    redraw();
     return 0;
   } else {
     return 1;
