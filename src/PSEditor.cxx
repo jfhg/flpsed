@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.5 2004/07/18 20:49:43 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.6 2004/07/20 18:53:29 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -34,26 +34,36 @@ PSEditor::PSEditor(int X,int Y,int W, int H) : PSEditWidget(X, Y, W, H) {
 
 int PSEditor::handle(int event) {
   switch(event) {
-  case FL_PUSH:
-    if (!file_loaded()) {
-      fl_beep();
-      return 0;
-    }
-    
-    mark_x = Fl::event_x()-x();
-    mark_y = Fl::event_y()-y();
-    fprintf(stderr, "==> %d %d\n", mark_x, mark_y);    
-    if (!set_cur_text(mark_x, mark_y) == 0) {
-      new_text(mark_x, mark_y, "");
-      mod++;
-    }
+  case FL_PUSH:    
+    if (Fl::event_button() == 1) {
+      if (!file_loaded()) {
+	fl_beep();
+	return 0;
+      }
+      
+      mark_x = Fl::event_x()-x();
+      mark_y = Fl::event_y()-y();
+      fprintf(stderr, "==> %d %d\n", mark_x, mark_y);    
+      if (!set_cur_text(mark_x, mark_y) == 0) {
+	new_text(mark_x, mark_y, "");
+	mod++;
+      }
 
-    Fl::focus(this);
-    return 1;
+      Fl::focus(this);
+      return 1;
+    }
+    break;
+  case FL_RELEASE:
+    if (Fl::event_button() == 2) {
+      Fl::paste(*this, 0);
+      return 1;
+    }
+    break;
   case FL_DRAG:
     move(Fl::event_x()-x(), Fl::event_y()-y());
     mod++;
     return 1;
+    break;
   case FL_KEYBOARD:
     {
       int del;
@@ -76,10 +86,17 @@ int PSEditor::handle(int event) {
       
       return 1;
     }
+    break;
+  case FL_PASTE:
+    append_text(Fl::event_text());
+    return 1;
+    break;
   case FL_FOCUS:
     return 1;
+    break;
   case FL_UNFOCUS:
     return 0;
+    break;
   }
   return 0;
 }
