@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.H,v 1.11 2004/10/26 18:08:57 hofmann Exp $"
+// "$Id: PSEditWidget.H,v 1.12 2004/11/08 18:10:34 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -56,7 +56,9 @@ public:
   void new_text(int x1, int y1, const char *s);
 
   int set_cur_text(int x1, int y1);
-
+  
+  int next_text();
+  
   void append_text(const char *s);
 
   void move(int x1, int y1, int last_x, int last_y);
@@ -89,13 +91,13 @@ public:
 
   int replace_tag(char* tag, char* text);
 
-  int PSEditWidget::bb_x(PSEditText *t);
+  int bb_x(PSEditText *t);
 
-  int PSEditWidget::bb_y(PSEditText *t);
+  int bb_y(PSEditText *t);
 
-  int PSEditWidget::bb_w(PSEditText *t);
+  int bb_w(PSEditText *t);
   
-  int PSEditWidget::bb_h(PSEditText *t);
+  int bb_h(PSEditText *t);
 };
 
 #endif

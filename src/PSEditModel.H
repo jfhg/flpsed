@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditModel.H,v 1.9 2004/10/26 16:58:49 hofmann Exp $"
+// "$Id: PSEditModel.H,v 1.10 2004/11/08 18:10:34 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -71,6 +71,8 @@ public:
   int get_max_pages();
 
   int set_cur_text(int x1, int y1, int p);
+
+  int next_text(int p);
 
   int is_cur_text(PSEditText *t);
 

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.24 2004/10/26 18:08:57 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.25 2004/11/08 18:10:34 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -92,6 +92,7 @@ void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
   t_old = model->get_cur_text();
 
   model->new_text(x1, y1, s, cur_size, p);
+  mod++;
 
   t = model->get_cur_text();
 
@@ -128,11 +129,32 @@ int PSEditWidget::set_cur_text(int x1, int y1) {
   return 1;
 }
 
+int PSEditWidget::next_text() {
+  PSEditText *t_new, *t_old;
+  int ret;
+
+  t_old = model->get_cur_text();
+
+  ret = model->next_text(page);
+  mod++;
+  t_new = model->get_cur_text();
+ 
+  if (t_new) {
+    damage(4, bb_x(t_new), bb_y(t_new), bb_w(t_new), bb_h(t_new));
+  }
+
+  if (t_old) {
+    damage(4, bb_x(t_old), bb_y(t_old), bb_w(t_old), bb_h(t_old));
+  }
+
+  return ret;
+}
+
 void PSEditWidget::append_text(const char *s) {
   PSEditText *t;
 
   model->append_text(s);
-
+  mod++;
   t = model->get_cur_text();
   if (t) {
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
@@ -143,6 +165,7 @@ void PSEditWidget::move(int x1, int y1, int last_x, int last_y) {
   PSEditText *t;
 
   model->move(x1, y1);
+  mod++;
   t = model->get_cur_text();
   if (t) {
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
@@ -161,7 +184,8 @@ void PSEditWidget::rm_char() {
   }
 
   model->rm_char();
-  
+  mod++;
+
   if (t) {
     damage(4, bb_x(t), bb_y(t), width, bb_h(t));
   }

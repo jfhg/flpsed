@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.19 2004/10/26 18:37:56 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.20 2004/11/08 18:10:34 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -52,7 +52,6 @@ int PSEditor::handle(int event) {
 
       if (!set_cur_text(mark_x, mark_y) == 0) {
 	new_text(mark_x, mark_y, "");
-	mod++;
       }
 
       Fl::focus(this);
@@ -75,7 +74,6 @@ int PSEditor::handle(int event) {
     x_last = Fl::event_x()-x();
     y_last = Fl::event_y()-y();
 
-    mod++;
     return 1;
     break;
   case FL_KEYBOARD:
@@ -84,15 +82,42 @@ int PSEditor::handle(int event) {
       int key = Fl::event_key();
       if (key == FL_BackSpace) {
 	rm_char();  
-	mod++;
+      } else if (key == FL_Left) {
+	PSEditText *t = model->get_cur_text();
+	if (t) {
+	  int x = t->get_x();
+	  int y = t->get_y();
+	  move(x - 1, y, x, y);
+	}
+      } else if (key == FL_Right) {
+	PSEditText *t = model->get_cur_text();
+	if (t) {
+	  int x = t->get_x();
+	  int y = t->get_y();
+	  move(x + 1, y, x, y);
+	}
+      } else if (key == FL_Up) {
+	PSEditText *t = model->get_cur_text();
+	if (t) {
+	  int x = t->get_x();
+	  int y = t->get_y();
+	  move(x, y - 1, x, y);
+	}
+      } else if (key == FL_Down) {
+	PSEditText *t = model->get_cur_text();
+	if (t) {
+	  int x = t->get_x();
+	  int y = t->get_y();
+	  move(x, y + 1, x, y);
+	}
+      } else if (key == FL_Tab) {
+	next_text();
       } else if (Fl::compose(del)) {
 	if (del > 0) {
 	  for (int i=0; i<del; i++) rm_char();
-	  mod++;
 	}
 	if (Fl::event_length()) {
 	  append_text(Fl::event_text());
-	  mod++;
 	}
       } else {
 	return 0;

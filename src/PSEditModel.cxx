@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.9 2004/10/26 18:11:14 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.10 2004/11/08 18:10:34 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -109,6 +109,24 @@ int PSEditModel::set_cur_text(int x1, int y1, int p) {
     }
   }
   return 1;
+}
+
+int PSEditModel::next_text(int p) {
+  PSEditText *t;
+
+  if (p < 0 || p >= max_pages) {
+    return 1;
+  }
+  
+  if (cur_text) {
+    cur_text = cur_text->get_next();
+    return 0;
+  } else if (text[p]) {
+    cur_text = text[p];
+    return 0;
+  } else {
+    return 1;
+  }
 }
 
 int PSEditModel::is_cur_text(PSEditText *t) {
