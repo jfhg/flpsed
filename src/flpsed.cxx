@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.19 2004/10/25 20:58:55 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.20 2004/10/26 16:12:19 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -204,14 +204,15 @@ Fl_Menu_Item menuitems[] = {
 #define TV_LEN 256
 
 int main(int argc, char** argv) {
-  char c, *sep, *tmp;
+  char c, *sep, *tmp, **my_argv;
   int err, batch = 0;
   Fl_Window *win;
   Fl_Menu_Bar* m;
   Fl_Scroll *scroll;
   struct {char *tag; char *value;} tv[TV_LEN];
-  int tv_idx = 0;
-
+  int tv_idx = 0, my_argc;
+  FILE *in_fp = NULL, *out_fp = NULL;
+  
   err = 0;
   while ((c = getopt(argc, argv, "bt:")) != EOF) {
     switch (c) {  
@@ -251,14 +252,48 @@ int main(int argc, char** argv) {
     exit(1);
   }
 
-  //  argc -= optind;
-  //  argv += optind;
+  my_argc = argc - optind;
+  my_argv = argv + optind;
+
+  if (my_argc >= 1) {
+    in_fp = fopen(my_argv[0], "r");
+    if (!in_fp) {
+      perror("fopen");
+      exit(1);
+    }
+  }
+  
   if (batch) {
+    //
+    // Batch Mode 
+    //
+    
     PSEditModel *m = new PSEditModel(594, 841, 75.0, 75.0);
-    int tmp_fd = m->load(argv[argc - 2]);
+    int tmp_fd;
+
+    if (!in_fp) {
+      in_fp = stdin;
+    }
+ 
+    if (my_argc >= 2) {
+      out_fp = fopen(my_argv[1], "w");
+      if (!in_fp) {
+	perror("fopen");
+	exit(1);
+      }
+    } else {
+      out_fp = stdout;
+    }
+
+    tmp_fd= m->load(in_fp);
+
     if (tmp_fd == -1) {
       fprintf(stderr, "Could not load %s\n", argv[argc - 2]);
       exit(1);
+    }
+    
+    if (in_fp != stdin) {
+      fclose(in_fp);
     }
     
     for(int i=0; i<tv_idx; i++) {
@@ -267,31 +302,44 @@ int main(int argc, char** argv) {
       free(tv[i].value);
     }
 	
-    m->save(argv[argc - 1], tmp_fd);
+    m->save(out_fp, tmp_fd);
 
-    exit(0);
-  }
-			 
+    if (out_fp != stdout) {
+      fclose(out_fp);
+    }
+
+  } else {
+    // 
+    // Interactive Mode
+    //
+
+    win = new Fl_Window(600,700);
+    m = new Fl_Menu_Bar(0, 0, 600, 30);
+    m->menu(menuitems);
+    scroll = new Fl_Scroll(0, 30, win->w(), win->h()-30);
+    gsw_p = new PSEditor(0, 0, 700, 900);
+    scroll->end();
     
+    fl_open_display();
+    Fl::add_handler(xev_handler);
+    
+    win->resizable(scroll);
+    
+    win->end();
+    win->callback((Fl_Callback *)quit_cb);
+    win->show(1, argv); 
+    
+    if (in_fp) {
+      gsw_p->load(in_fp);
+      fclose(in_fp);
+    }
 
+    for(int i=0; i<tv_idx; i++) {
+      gsw_p->replace_tag(tv[i].tag, tv[i].value);
+      free(tv[i].tag);
+      free(tv[i].value);
+    }
 
-  win = new Fl_Window(600,700);
-  m = new Fl_Menu_Bar(0, 0, 600, 30);
-  m->menu(menuitems);
-  scroll = new Fl_Scroll(0, 30, win->w(), win->h()-30);
-  gsw_p = new PSEditor(0, 0, 700, 900);
-  scroll->end();
-
-  fl_open_display();
-  Fl::add_handler(xev_handler);
-
-  win->resizable(scroll);
-
-  win->end();
-  win->callback((Fl_Callback *)quit_cb);
-  win->show(1, argv); 
-
- 
-  return Fl::run();
+    return Fl::run();
+  }
 }
-

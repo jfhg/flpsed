@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.6 2004/10/25 20:58:55 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.7 2004/10/26 16:12:19 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -217,20 +217,13 @@ int PSEditModel::ps_y(int y1) {
   return paper_y - (int)((float) y1 * 72.0 / ydpi);
 }
 
-int PSEditModel::load(char *f) {
-  FILE *fp;
+int PSEditModel::load(FILE *fp) {
   char tmpname[256];
   char linebuf[1024];
   int ret;
   PSParser *p1 = new PSParser_1(this);
   PSParser *p2 = new PSParser_2(this);
   int tmp_fd;
-
-  fp = fopen(f, "r");
-  if (!fp) {
-    fprintf(stderr, "Could not open file %s.\n", f);
-    return -1;
-  }
 
   strncpy(tmpname, "/tmp/PSEditorXXXXXX", 256);
   tmp_fd = mkstemp(tmpname);
@@ -251,7 +244,6 @@ int PSEditModel::load(char *f) {
     }
   }
 
-  fclose(fp);
   lseek(tmp_fd, 0L, SEEK_SET);
 
   delete(p1);
@@ -262,7 +254,7 @@ int PSEditModel::load(char *f) {
 
 
 
-int PSEditModel::save(const char* savefile, int tmp_fd) {
+int PSEditModel::save(FILE *sfp, int tmp_fd) {
   off_t pos = lseek(tmp_fd, 0, SEEK_CUR); // save current position
 
   if (pos == -1) {
@@ -273,7 +265,7 @@ int PSEditModel::save(const char* savefile, int tmp_fd) {
   FILE *fp = fdopen(tmp_fd, "r");
 
   rewind(fp);
-  FILE *sfp = fopen(savefile, "w");
+
   PSWriter *pw;
   
   pw = new PSLevel1Writer(this);
@@ -282,7 +274,6 @@ int PSEditModel::save(const char* savefile, int tmp_fd) {
 
   delete(pw);
    
-  fclose(sfp);
   lseek(tmp_fd, pos, SEEK_SET);           // restore current position
 
   return 0;

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditModel.H,v 1.6 2004/10/25 20:58:55 hofmann Exp $"
+// "$Id: PSEditModel.H,v 1.7 2004/10/26 16:12:19 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -60,8 +60,8 @@ public:
   int ps_to_display_y(int y1);
   int ps_x(int x1);
   int ps_y(int y1);
-  int PSEditModel::load(char *f);  
-  int save(const char* savefile, int tmp_fd);
+  int PSEditModel::load(FILE *fp);  
+  int save(FILE *sfp, int tmp_fd);
 
 };
 
