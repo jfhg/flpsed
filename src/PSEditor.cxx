@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.14 2004/10/23 19:57:14 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.15 2004/10/24 18:28:37 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -116,47 +116,19 @@ int PSEditor::handle(int event) {
 
 
 int PSEditor::load(char *f) {
-  FILE *fp;
-  char tmpname[256];
-  char linebuf[1024];
-  int ret;
-  PSParser *p1 = new PSParser_1(model);
-  PSParser *p2 = new PSParser_2(model);
+  if (tmp_fd) {
+    close(tmp_fd);
+    tmp_fd = -1;
+  }
   
-  fp = fopen(f, "r");
-  if (!fp) {
-    fprintf(stderr, "Could not open file %s.\n", f);
-    return 1;
-  }
-
-  strncpy(tmpname, "/tmp/PSEditorXXXXXX", 256);
-  tmp_fd = mkstemp(tmpname);
+  tmp_fd = model->load(f);
   if (tmp_fd < 0) {
-    fprintf(stderr, "Could not create temporary file (errno %d).\n", errno);
     return 1;
+  } else {
+    mod = 0;
+    loaded = 1;
+    return GsWidget::load(tmp_fd);
   }
-  unlink(tmpname);
-
-  clear_text();
-
-  while (fgets(linebuf, 1024, fp) != NULL) {
-    if (!p2->parse(linebuf) && !p1->parse(linebuf)) {
-      ret = write(tmp_fd, linebuf, strlen(linebuf));
-      if (ret != strlen(linebuf)) {
-	fprintf(stderr, "Error while writing to temporary file\n");
-      }
-    }
-  }
-
-  fclose(fp);
-  lseek(tmp_fd, 0L, SEEK_SET);
-
-  delete(p1);
-  delete(p2);
-
-  mod = 0;
-  loaded = 1;
-  return GsWidget::load(tmp_fd);
 }
 
 int PSEditor::save(const char* savefile) {

@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.4 2004/10/23 19:57:14 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.5 2004/10/24 18:28:37 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include "Postscript.H"
 #include "PSEditText.H"
 #include "PSEditModel.H"
 
@@ -214,4 +215,47 @@ int PSEditModel::ps_x(int x1) {
 
 int PSEditModel::ps_y(int y1) {
   return paper_y - (int)((float) y1 * 72.0 / ydpi);
+}
+
+int PSEditModel::load(char *f) {
+  FILE *fp;
+  char tmpname[256];
+  char linebuf[1024];
+  int ret;
+  PSParser *p1 = new PSParser_1(this);
+  PSParser *p2 = new PSParser_2(this);
+  int tmp_fd;
+
+  fp = fopen(f, "r");
+  if (!fp) {
+    fprintf(stderr, "Could not open file %s.\n", f);
+    return -1;
+  }
+
+  strncpy(tmpname, "/tmp/PSEditorXXXXXX", 256);
+  tmp_fd = mkstemp(tmpname);
+  if (tmp_fd < 0) {
+    fprintf(stderr, "Could not create temporary file (errno %d).\n", errno);
+    return -1;
+  }
+  unlink(tmpname);
+
+  clear();
+
+  while (fgets(linebuf, 1024, fp) != NULL) {
+    if (!p2->parse(linebuf) && !p1->parse(linebuf)) {
+      ret = write(tmp_fd, linebuf, strlen(linebuf));
+      if (ret != strlen(linebuf)) {
+	fprintf(stderr, "Error while writing to temporary file\n");
+      }
+    }
+  }
+
+  fclose(fp);
+  lseek(tmp_fd, 0L, SEEK_SET);
+
+  delete(p1);
+  delete(p2);
+
+  return tmp_fd;
 }

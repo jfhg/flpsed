@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.8 2004/10/12 17:14:16 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.9 2004/10/24 18:28:37 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -67,7 +67,7 @@ void GsWidget::setProps() {
   atoms[4] = XInternAtom(fl_display,"DONE" , false);
    
   snprintf(data, 512, "%lu %d %d %d %d %d %g %g",
-	  0, 0, 0, 0, paper_x, paper_y, xdpi, ydpi);
+	   0, 0, 0, 0, paper_x, paper_y, xdpi, ydpi);
 
   int xid = fl_xid(window());
 
@@ -84,7 +84,7 @@ void GsWidget::setProps() {
 
 void GsWidget::kill_gs() {
   int status;
-
+  fprintf(stderr, "Killing...\n");
   if (gs_pid > 0) {
     kill(gs_pid, SIGTERM);
     waitpid(gs_pid, &status, 0);
@@ -219,8 +219,8 @@ int GsWidget::handleX11(int ev) {
       damage(FL_DAMAGE_ALL);
       fl_cursor(FL_CURSOR_DEFAULT);
     } else if(fl_xevent->xclient.message_type == atoms[4] ) {
-      kill_gs();                            // DONE received
-      fl_cursor(FL_CURSOR_DEFAULT);
+      kill_gs();                         
+      fl_cursor(FL_CURSOR_DEFAULT);   // DONE received
     }
     return 1;
   }
