@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.11 2004/06/29 20:05:39 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.12 2004/07/06 16:57:37 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -254,9 +254,23 @@ void PSEditWidget::to_ps(FILE *f, int p) {
   if (!text[p]) {
     return;
   }
-  
+  fprintf(f, "dup %d eq {\n", p);
   text[p]->to_ps(f);
+  fprintf(f, "} if\n");
 }
+#define PS_HEADER "%% Begin PSEditWidget\n" \
+"/PSEditWidgetPageCount 0 def\n" \
+"<< /EndPage {\n" \
+"pop\n" \
+"PSEditWidgetPageCount 0 eq { %% if PSEditWidgetPageCount is undefined,\n" \
+"1 add                        %% use showpage counter instead.\n" \
+"} {\n" \
+"PSEditWidgetPageCount\n" \
+"} ifelse\n"
+
+
+#define PS_TRAILER "true } >> setpagedevice\n" \
+"%% End PSEditWidget\n"
 
 int PSEditWidget::save(const char* savefile) {
   if (!file_loaded()) {
@@ -266,16 +280,27 @@ int PSEditWidget::save(const char* savefile) {
   rewind(fp);
   FILE *sfp = fopen(savefile, "w");
   char linebuf[1024];
-  int p = 1;
+  int done=0, page = 1;
   
   while (fgets(linebuf, 1024, fp) != NULL) {
-    if (strcmp(linebuf, "showpage\n") == 0) {
-      if (p < max_pages) {
-	to_ps(sfp, p);
+    if (!done && strncmp(linebuf, "%%EndSetup", 10) == 0) {
+      done++;
+
+      fprintf(sfp, PS_HEADER);
+
+      for (int i=1;i<max_pages;i++) {
+	to_ps(sfp, i);
       }
-      p++;
+
+      fprintf(sfp, PS_TRAILER);
+  
     }
+
     fprintf(sfp, "%s", linebuf);
+
+    if (strncmp(linebuf, "%%Page:", 7) == 0) {
+      fprintf(sfp, "/PSEditWidgetPageCount %d def %% PSEditWidget\n", page++);
+    }
   }
   
   fclose(sfp);
