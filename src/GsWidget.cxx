@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.15 2005/02/07 17:49:54 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.16 2005/02/28 20:01:39 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -246,7 +246,7 @@ int GsWidget::zoom(int p) {
 
   if (offscreen) {
     fl_delete_offscreen(offscreen);
-    offscreen = NULL;
+    offscreen = 0;
   }
 
   w(initial_width * zoom_percent / 100);
