@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.23 2005/02/02 18:18:47 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.24 2005/02/07 17:54:03 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -40,7 +40,6 @@ int PSEditor::handle(int event) {
   case FL_PUSH:    
     if (Fl::event_button() == 1) {
       if (!file_loaded()) {
-	fl_beep();
 	return 0;
       }
          
