@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.15 2004/10/24 18:28:37 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.16 2004/10/25 20:58:55 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -31,6 +31,7 @@ PSEditor::PSEditor(int X,int Y,int W, int H) : PSEditWidget(X, Y, W, H) {
   mod = 0;
   ps_level = 1;
 }
+
 
 int PSEditor::handle(int event) {
   int mark_x, mark_y;
@@ -118,10 +119,10 @@ int PSEditor::handle(int event) {
 int PSEditor::load(char *f) {
   if (tmp_fd) {
     close(tmp_fd);
-    tmp_fd = -1;
   }
   
   tmp_fd = model->load(f);
+
   if (tmp_fd < 0) {
     return 1;
   } else {
@@ -132,28 +133,14 @@ int PSEditor::load(char *f) {
 }
 
 int PSEditor::save(const char* savefile) {
-  off_t pos = lseek(tmp_fd, 0, SEEK_CUR); // save current position
-
   if (!file_loaded()) {
     return 1;
   }
-  FILE *fp = fdopen(tmp_fd, "r");
-  rewind(fp);
-  FILE *sfp = fopen(savefile, "w");
-  PSWriter *pw;
   
-  if (ps_level == 2) {
-    pw = new PSLevel2Writer(model);
-  } else {
-    pw = new PSLevel1Writer(model);
+  if (model->save(savefile, tmp_fd) != 0) {
+    return 1;
   }
-
-  pw->write(fp, sfp);
-
-  delete(pw);
-   
-  fclose(sfp);
-  lseek(tmp_fd, pos, SEEK_SET);           // restore current position
+  
   mod = 0;
   return 0;
 }

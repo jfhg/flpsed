@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.18 2004/10/21 21:02:05 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.19 2004/10/25 20:58:55 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -201,12 +201,79 @@ Fl_Menu_Item menuitems[] = {
   { 0 }
 };
   
+#define TV_LEN 256
+
 int main(int argc, char** argv) {
   char c, *sep, *tmp;
-  int err;
+  int err, batch = 0;
   Fl_Window *win;
   Fl_Menu_Bar* m;
   Fl_Scroll *scroll;
+  struct {char *tag; char *value;} tv[TV_LEN];
+  int tv_idx = 0;
+
+  err = 0;
+  while ((c = getopt(argc, argv, "bt:")) != EOF) {
+    switch (c) {  
+    case 'b':
+      batch = 1;
+      break;
+    case 't':
+      tmp = strdup(optarg);
+      if (!tmp) {
+	perror("strdup");
+	exit(1);
+      }
+      sep = strchr(tmp, '=');
+      if (!sep) {
+	fprintf(stderr, "Cannot parse %s\n", optarg);
+	free(tmp);
+	continue;
+      }
+      *sep = '\0';
+
+      if (tv_idx >= TV_LEN) {
+	fprintf(stderr, "More than %d tag/value pairs; ignoring %s->%s\n", 
+		TV_LEN, tmp, sep+1);
+      } else {
+	tv[tv_idx].tag = strdup(tmp);
+	tv[tv_idx].value = strdup(sep+1);
+	tv_idx++;
+      }
+      free(tmp);
+      break;
+    default:
+      err++;
+    }
+  }
+  
+  if (err) {
+    exit(1);
+  }
+
+  //  argc -= optind;
+  //  argv += optind;
+  if (batch) {
+    PSEditModel *m = new PSEditModel(594, 841, 75.0, 75.0);
+    int tmp_fd = m->load(argv[argc - 2]);
+    if (tmp_fd == -1) {
+      fprintf(stderr, "Could not load %s\n", argv[argc - 2]);
+      exit(1);
+    }
+    
+    for(int i=0; i<tv_idx; i++) {
+      m->replace_tag(tv[i].tag, tv[i].value);
+      free(tv[i].tag);
+      free(tv[i].value);
+    }
+	
+    m->save(argv[argc - 1], tmp_fd);
+
+    exit(0);
+  }
+			 
+    
+
 
   win = new Fl_Window(600,700);
   m = new Fl_Menu_Bar(0, 0, 600, 30);
@@ -224,42 +291,6 @@ int main(int argc, char** argv) {
   win->callback((Fl_Callback *)quit_cb);
   win->show(1, argv); 
 
-  if (argc > 1) {
-    gsw_p->load(argv[argc - 1]);
-  }
-
-  err = 0;
-  while ((c = getopt(argc, argv, "t:")) != EOF) {
-    switch (c) {
-    case 't':
-      tmp = strdup(optarg);
-      if (!tmp) {
-	perror("strdup");
-	exit(1);
-      }
-      sep = strchr(tmp, '=');
-      if (!sep) {
-	fprintf(stderr, "Cannot parse %s\n", optarg);
-	free(tmp);
-	continue;
-      }
-      *sep = '\0';
-      gsw_p->replace_tag(tmp, sep+1);
-      free(tmp);
-      break;
-    default:
-      err++;
-    }
-  }
-  
-  if (err) {
-    exit(1);
-  }
-
-
-  argc -= optind;
-  argv += optind;
-  
  
   return Fl::run();
 }

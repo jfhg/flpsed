@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.5 2004/10/24 18:28:37 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.6 2004/10/25 20:58:55 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -258,4 +258,32 @@ int PSEditModel::load(char *f) {
   delete(p2);
 
   return tmp_fd;
+}
+
+
+
+int PSEditModel::save(const char* savefile, int tmp_fd) {
+  off_t pos = lseek(tmp_fd, 0, SEEK_CUR); // save current position
+
+  if (pos == -1) {
+    perror("lseek");
+    return 1;
+  }
+
+  FILE *fp = fdopen(tmp_fd, "r");
+
+  rewind(fp);
+  FILE *sfp = fopen(savefile, "w");
+  PSWriter *pw;
+  
+  pw = new PSLevel1Writer(this);
+  
+  pw->write(fp, sfp);
+
+  delete(pw);
+   
+  fclose(sfp);
+  lseek(tmp_fd, pos, SEEK_SET);           // restore current position
+
+  return 0;
 }
