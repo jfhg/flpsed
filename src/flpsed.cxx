@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.17 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.18 2004/10/21 21:02:05 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -224,6 +224,10 @@ int main(int argc, char** argv) {
   win->callback((Fl_Callback *)quit_cb);
   win->show(1, argv); 
 
+  if (argc > 1) {
+    gsw_p->load(argv[argc - 1]);
+  }
+
   err = 0;
   while ((c = getopt(argc, argv, "t:")) != EOF) {
     switch (c) {
@@ -247,12 +251,16 @@ int main(int argc, char** argv) {
       err++;
     }
   }
-
+  
   if (err) {
     exit(1);
   }
-  
 
+
+  argc -= optind;
+  argv += optind;
+  
+ 
   return Fl::run();
 }
 

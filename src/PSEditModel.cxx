@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.2 2004/10/21 20:12:36 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.3 2004/10/21 21:02:05 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -37,6 +37,7 @@ PSEditModel::PSEditModel(int x1, int y1, float dx, float dy) {
   xdpi      = dx;
   ydpi      = dy;
   max_pages = 32;
+  page = 0;
   text = (PSEditText**) malloc(sizeof(PSEditText*) * max_pages);
   if (!text) {
     perror("malloc");
@@ -45,15 +46,16 @@ PSEditModel::PSEditModel(int x1, int y1, float dx, float dy) {
   for (int i = 0; i < max_pages; i++) {
     text[i] = NULL;
   }
+
   cur_text = NULL;
 }
 
 void PSEditModel::set_page(int p) {
   int old_max_pages;
 
-  old_max_pages = max_pages;
-  
   if (p >= max_pages) {
+    old_max_pages = max_pages;
+
     max_pages = p + max_pages;
     text = (PSEditText**) realloc(text, sizeof(PSEditText*) * max_pages);
     if (!text) {
@@ -81,6 +83,8 @@ void PSEditModel::clear() {
 }
 
 void PSEditModel::new_text(int x1, int y1, const char *s, int size, int p) {
+  set_page(p);
+
   cur_text = new PSEditText(x1, y1, s, size);
   if (text[p]) {
     text[p]->append(cur_text);
@@ -161,6 +165,24 @@ char *PSEditModel::get_tag() {
   } else {
     return NULL;
   }
+}
+
+int PSEditModel::replace_tag(char *tag, char *txt) {
+  PSEditText *t;
+  int p, ret = 0;
+  fprintf(stderr, "%s => %s\n", tag, txt);
+  for (p = 0; p < max_pages; p++) {
+    t = get_text(p);
+    while (t) {
+      if (t->get_tag() && strcmp(t->get_tag(), tag) == 0) {
+	t->set_text(txt);
+	ret++;
+      }
+      t = t->get_next();
+    }
+  }
+
+  return ret;
 }
 
 PSEditText *PSEditModel::get_text(int p) {

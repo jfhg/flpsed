@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditText.cxx,v 1.1 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: PSEditText.cxx,v 1.2 2004/10/21 21:02:05 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -93,6 +93,19 @@ PSEditText *PSEditText::get_match(int x1, int y1) {
   } else {
       return NULL;
   }
+}
+
+int PSEditText::set_text(const char *t) {
+  if (s) {
+    free(s);
+  }
+  if (t) {
+    s = strdup(t);
+  } else {
+    s = NULL;
+  }
+
+  return 0;
 }
 
 char *PSEditText::get_text() {

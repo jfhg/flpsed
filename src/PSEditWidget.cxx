@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.19 2004/10/21 20:12:36 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.20 2004/10/21 21:02:05 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -176,8 +176,6 @@ int PSEditWidget::file_loaded() {
 }
 
 int PSEditWidget::replace_tag(char *tag, char *text) {
-  fprintf(stderr, "%s => %s\n", tag, text);
-
-  return 0;
+    return model->replace_tag(tag, text);
 }
 

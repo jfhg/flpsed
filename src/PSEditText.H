@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditText.H,v 1.2 2004/10/21 20:12:36 hofmann Exp $"
+// "$Id: PSEditText.H,v 1.3 2004/10/21 21:02:05 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -42,6 +42,7 @@ public:
   void move(int x1, int y1);
   void append(PSEditText *g);
   PSEditText *get_match(int x1, int y1);
+  int set_text(const char *t);
   char *get_text();
   char *get_tag();
   int set_tag(const char *t);
