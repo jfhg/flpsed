@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.27 2004/11/08 19:36:14 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.28 2004/11/08 19:54:54 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -284,12 +284,12 @@ int PSEditWidget::replace_tag(char *tag, char *text) {
 }
 
 int PSEditWidget::bb_x(PSEditText *t) {
-  return t->get_x() - 10;
+  return t->get_x() + x() - 10;
 }
 
 int PSEditWidget::bb_y(PSEditText *t) {
   fl_font(FLPSED_FONT, t->get_size());
-  return t->get_y() - fl_height() - 20;
+  return t->get_y() - fl_height() + y() - 20;
 }
 
 int PSEditWidget::bb_w(PSEditText *t) {
