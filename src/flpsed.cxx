@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.13 2004/10/11 14:44:47 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.14 2004/10/12 16:41:43 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -198,10 +198,10 @@ int main(int argc, char** argv) {
   window.show(1, argv); 
 
 
-  //  for (int i=0; i<100; i++) Fl::check();
-  //  if (argc >= 2) {
-  //    gsw_p->load(argv[1]);
-  //  }
+
+  if (argc >= 2) {
+    gsw_p->load(argv[1]);
+  }
 
   return Fl::run();
 }

@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.6 2004/07/07 17:17:54 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.7 2004/10/12 16:41:43 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -42,6 +42,11 @@ void GsWidget::draw() {
     fl_color(FL_WHITE);
     fl_rectf(0, 0, w(), h());
     fl_end_offscreen();
+
+    if (reload_needed) {
+      reload();
+      reload_needed = 0;
+    }
   }
   fl_push_clip(x(), y(), w(), h());
   fl_copy_offscreen(x(), y(), w(), h(), offscreen, 0, 0); 
@@ -94,7 +99,6 @@ bool GsWidget::gs_active() {
 }
 
 GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) { 
-  int w, h;
   offscreen = 0;
   gs_pid = 0;
   page = 0;
@@ -103,6 +107,7 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
   paper_x = 594; // DIN A4
   paper_y = 841; //
   in_fd = -1;
+  reload_needed = 0;
 }
   
 GsWidget::~GsWidget() {
@@ -130,6 +135,12 @@ int GsWidget::load(int fd) {
 
   fl_cursor(FL_CURSOR_WAIT);
   kill_gs();
+
+  if (!offscreen) {
+    reload_needed = 1;
+    return 0;
+  }
+
   setProps();
     
   pid_t pid = fork();

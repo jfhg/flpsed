@@ -1,5 +1,5 @@
 // 
-// "$Id: GsWidget.H,v 1.1.1.1 2004/06/21 18:05:58 hofmann Exp $"
+// "$Id: GsWidget.H,v 1.2 2004/10/12 16:41:43 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -40,7 +40,7 @@ class GsWidget : public Fl_Widget {
   Atom atoms[5];
   pid_t gs_pid;
   int display_x, display_y;
-  int in_fd;
+  int in_fd, reload_needed;
 
 protected:
   int page;
