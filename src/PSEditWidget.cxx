@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.10 2004/06/29 17:26:20 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.11 2004/06/29 20:05:39 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -55,6 +55,7 @@ static struct {
   {"germandbls", "ß"}, 
   {"parenleft", "("}, 
   {"parenright", ")"}, 
+  {"backslash", "\\"}, 
   {NULL, NULL}};
 
 static const char * glyph_to_char(char *glyph) {
