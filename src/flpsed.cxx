@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.12 2004/07/09 17:22:55 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.13 2004/10/11 14:44:47 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -80,6 +80,13 @@ void open_cb() {
   }  
 }
 
+void import_cb() {
+  char *file = fl_file_chooser("Import Overlay from File?", "*.ps", filename);
+  if(file != NULL) {
+    gsw_p->import(file);
+  }  
+}
+
 void first_cb() {
   gsw_p->reload();
 }
@@ -147,6 +154,7 @@ Fl_Menu_Item menuitems[] = {
   { "&File",              0, 0, 0, FL_SUBMENU },
     { "&Open File...",    FL_CTRL + 'o', (Fl_Callback *)open_cb },
     { "&Save File as...", FL_CTRL + 's', (Fl_Callback *)save_cb },
+    { "I&mport Tags from File...",    FL_CTRL + 'm', (Fl_Callback *)import_cb },
     { "&Print...", FL_CTRL + 'p', (Fl_Callback *)print_cb, 0, FL_MENU_DIVIDER },
     { "&Quit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
     { 0 },

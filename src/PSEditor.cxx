@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.8 2004/07/28 20:15:48 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.9 2004/10/11 14:44:47 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -110,14 +110,21 @@ int PSEditor::file_loaded() {
   return loaded;
 }
 
+
 int PSEditor::load(char *f) {
-  FILE *fp = fopen(f, "r");
+  FILE *fp;
   char tmpname[256];
   char linebuf[1024];
   int size, ret, ret1, ret2;
   PSParser *p1 = new PSParser_1(this);
   PSParser *p2 = new PSParser_2(this);
   
+  fp = fopen(f, "r");
+  if (!fp) {
+    fprintf(stderr, "Could not open file %s.\n", f);
+    return 1;
+  }
+
   strncpy(tmpname, "/tmp/PSEditorXXXXXX", 256);
   tmp_fd = mkstemp(tmpname);
   if (tmp_fd < 0) {
@@ -129,7 +136,6 @@ int PSEditor::load(char *f) {
   clear_text();
 
   while (fgets(linebuf, 1024, fp) != NULL) {
-    
     if (!p2->parse(linebuf) && !p1->parse(linebuf)) {
       ret = write(tmp_fd, linebuf, strlen(linebuf));
       if (ret != strlen(linebuf)) {
@@ -137,6 +143,7 @@ int PSEditor::load(char *f) {
       }
     }
   }
+
   fclose(fp);
   lseek(tmp_fd, 0L, SEEK_SET);
 
@@ -173,6 +180,36 @@ int PSEditor::save(const char* savefile) {
   lseek(tmp_fd, pos, SEEK_SET);           // restore current position
   mod = 0;
   return 0;
+}
+
+int PSEditor::import(char *f) {
+  FILE *fp;
+  char linebuf[1024];
+  PSParser *p1;
+  PSParser *p2;
+
+  if (!file_loaded()) {
+    return 1;
+  }
+  
+  fp = fopen(f, "r");
+  if (!fp) {
+    fprintf(stderr, "Could not open file %s.\n", f);
+    return 1;
+  }
+
+  p1 = new PSParser_1(this);
+  p2 = new PSParser_2(this);
+  while (fgets(linebuf, 1024, fp) != NULL) {
+    if (!p2->parse(linebuf)) {
+      p1->parse(linebuf);
+    }
+  }
+
+  delete(p1);
+  delete(p2);
+
+  mod = 1;
 }
 
 int PSEditor::get_ps_level() {
