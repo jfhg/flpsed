@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.17 2004/10/26 16:12:19 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.18 2004/10/26 16:58:49 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -203,16 +203,4 @@ int PSEditor::import(char *f) {
 
   mod = 1;
   return 0;
-}
-
-int PSEditor::get_ps_level() {
-  return ps_level;
-}
-
-void PSEditor::set_ps_level(int l) {
-  if (l == 2) {
-    ps_level = 2;
-  } else {
-    ps_level = 1;
-  }
 }

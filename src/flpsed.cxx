@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.21 2004/10/26 16:41:40 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.22 2004/10/26 16:58:49 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -148,7 +148,6 @@ void size_cb(Fl_Widget *w, void *) {
 }
 
 void show_tags_cb(Fl_Widget* w, void*d) {
-  fprintf(stderr, "===> %d\n", ((int) d));
   gsw_p->set_show_tags((int) d);
 }
 
@@ -189,7 +188,7 @@ Fl_Menu_Item menuitems[] = {
   { 0 },
 
   { "&Tags", 0, 0, 0, FL_SUBMENU },
-    { "Sh&ow Tags", FL_CTRL + 'o', (Fl_Callback *)show_tags_cb, (void *)1, FL_MENU_RADIO|FL_MENU_VALUE},
+    { "Show &Tags", FL_CTRL + 't', (Fl_Callback *)show_tags_cb, (void *)1, FL_MENU_RADIO|FL_MENU_VALUE},
     { "&Hide Tags", FL_CTRL + 'h', (Fl_Callback *)show_tags_cb, (void *)0, FL_MENU_RADIO},
     { "&Edit Tag",  FL_CTRL + 'e', (Fl_Callback *)edit_tag_cb },
     { 0 },
@@ -204,7 +203,8 @@ Fl_Menu_Item menuitems[] = {
 
 void usage() {
   fprintf(stderr,
-	  "usage: flpsed [-d] [-b] [-t <tag>=<value>] [<infile>] [<outfile>]\n"
+	  "usage: flpsed [-hbd] [-t <tag>=<value>] [<infile>] [<outfile>]\n"
+	  "   -h                 print this message\n"
 	  "   -b                 batch mode (no gui)\n"
 	  "   -d                 dump tags and values from a document\n"
 	  "                      to stdout (this implies -b)\n"
@@ -228,8 +228,12 @@ int main(int argc, char** argv) {
   FILE *in_fp = NULL, *out_fp = NULL;
   
   err = 0;
-  while ((c = getopt(argc, argv, "dbt:")) != EOF) {
+  while ((c = getopt(argc, argv, "hdbt:")) != EOF) {
     switch (c) {  
+    case 'h':
+      usage();
+      exit(0);
+      break;
     case 'b':
       bflag = 1;
       break;
