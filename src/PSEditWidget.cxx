@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.25 2004/11/08 18:10:34 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.26 2004/11/08 18:56:00 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -136,7 +136,7 @@ int PSEditWidget::next_text() {
   t_old = model->get_cur_text();
 
   ret = model->next_text(page);
-  mod++;
+
   t_new = model->get_cur_text();
  
   if (t_new) {

@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.10 2004/11/08 18:10:34 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.11 2004/11/08 18:56:00 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -120,6 +120,9 @@ int PSEditModel::next_text(int p) {
   
   if (cur_text) {
     cur_text = cur_text->get_next();
+  }
+
+  if (cur_text) {
     return 0;
   } else if (text[p]) {
     cur_text = text[p];
