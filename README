@@ -1,0 +1,37 @@
+=======
+flpsed
+=======
+
+
+flpsed is a pseudo PostScript editor. Pseudo, because you can't actually 
+edit existing PostScript documents, but you can add arbitrary text lines to
+existing documents.
+It is useful for filling in forms etc. 
+
+Usage:
+- open an existing PostScript document.
+- click anywhere on the document and type a text line.
+- adjust the size of your text line
+- the frame around the text shows, which text line has the focus.
+- remove text, by hitting BackSpace.
+- navigate within the document with the Page->next or Page->first menu buttons.
+- save your document and preview it with ghostview or something
+  similar.
+- if you reopen the document with flpsed, you can edit the added text lines.
+
+Features:
+- add arbitrary text to existing PostScript documents.
+- reedit text, that has been added with flpsed.
+
+Restrictions:
+- flpsed probably does not work on all existing PostScript documents.
+  You simply have to test it.
+- the view size is currently hardcoded DIN A4.
+- flpsed is alpha software, so please backup your files, befor trying to 
+  modify them.
+
+Building:
+- flpsed only works on X11-based systems.
+- you need to have ghostscript installed.
+- you need to have fltk-1.1.x from www.fltk.org installed.
+- unpack the tarball and type "make".
