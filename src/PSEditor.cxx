@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.13 2004/10/21 21:02:05 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.14 2004/10/23 19:57:14 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -33,6 +33,8 @@ PSEditor::PSEditor(int X,int Y,int W, int H) : PSEditWidget(X, Y, W, H) {
 }
 
 int PSEditor::handle(int event) {
+  int mark_x, mark_y;
+
   switch(event) {
   case FL_PUSH:    
     if (Fl::event_button() == 1) {
@@ -41,6 +43,9 @@ int PSEditor::handle(int event) {
 	return 0;
       }
       
+      x_last = Fl::event_x()-x();
+      y_last = Fl::event_y()-y();
+   
       mark_x = Fl::event_x()-x();
       mark_y = Fl::event_y()-y();
 
@@ -58,9 +63,17 @@ int PSEditor::handle(int event) {
       Fl::paste(*this, 0);
       return 1;
     }
+
+    x_last = -1;
+    y_last = -1;
+
     break;
   case FL_DRAG:
-    move(Fl::event_x()-x(), Fl::event_y()-y());
+    move(Fl::event_x()-x(), Fl::event_y()-y(), x_last-x(), y_last-y());
+
+    x_last = Fl::event_x()-x();
+    y_last = Fl::event_y()-y();
+
     mod++;
     return 1;
     break;

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.20 2004/10/21 21:02:05 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.21 2004/10/23 19:57:14 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -79,11 +79,24 @@ PSEditWidget::PSEditWidget(int X,int Y,int W, int H) : GsWidget(X, Y, W, H) {
 int PSEditWidget::next() {
   model->set_page(page);
   return GsWidget::next();
-}  
+}
 
 void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
+  PSEditText *t_old;
+  
+  t_old = model->get_cur_text();
+
   model->new_text(x1, y1, s, cur_size, p);
-  redraw();
+
+  fl_font(FL_HELVETICA, cur_size);
+  damage(4, x1 - 10, y1 - fl_height() - 20, 
+	 fl_width(s) + 20, fl_height() + 30);
+
+  if (t_old) {
+    fl_font(FL_HELVETICA, t_old->get_size());
+    damage(4, t_old->get_x() - 10, t_old->get_y() - fl_height() - 20, 
+	   fl_width(t_old->get_text()) + 20, fl_height() + 30);
+  }
 }
 
 void PSEditWidget::new_text(int x1, int y1, const char *s) {
@@ -91,26 +104,69 @@ void PSEditWidget::new_text(int x1, int y1, const char *s) {
 }
 
 int PSEditWidget::set_cur_text(int x1, int y1) {
+  PSEditText *t_new, *t_old;
+
+  t_old = model->get_cur_text();
+
   if (model->set_cur_text(x1, y1, page) == 0) {
-    redraw();
+
+    t_new = model->get_cur_text();
+
+    if (t_new) {
+      fl_font(FL_HELVETICA, t_new->get_size());
+      damage(4, t_new->get_x() - 10, t_new->get_y() - fl_height() - 20, 
+	     fl_width(t_new->get_text()) + 20, fl_height() + 30);
+    }
+    if (t_old) {
+      fl_font(FL_HELVETICA, t_old->get_size());
+      damage(4, t_old->get_x() - 10, t_old->get_y() - fl_height() - 20, 
+	     fl_width(t_old->get_text()) + 20, fl_height() + 30);
+    }
     return 0;
   }
   return 1;
 }
 
 void PSEditWidget::append_text(const char *s) {
+  PSEditText *t;
+
   model->append_text(s);
-  redraw();
+
+  t = model->get_cur_text();
+  if (t) {
+    fl_font(FL_HELVETICA, t->get_size());
+    damage(4, t->get_x() - 10, t->get_y() - fl_height() - 20, fl_width(t->get_text()) + 20, fl_height() + 30);
+  }
 }
 
-void PSEditWidget::move(int x1, int y1) {
+void PSEditWidget::move(int x1, int y1, int last_x, int last_y) {
+  PSEditText *t;
+
   model->move(x1, y1);
-  redraw();
+  t = model->get_cur_text();
+  if (t) {
+    fl_font(FL_HELVETICA, t->get_size());
+    damage(4, x1 - 10, y1 - fl_height() - 20, fl_width(t->get_text()) + 20, fl_height() + 30);
+    damage(4, last_x - 10, last_y - fl_height() - 20, fl_width(t->get_text()) + 20, fl_height() + 30);
+
+  }
 }
 
 void PSEditWidget::rm_char() {
+  PSEditText *t;
+  int width;
+
+  t = model->get_cur_text();
+  if (t) {
+    fl_font(FL_HELVETICA, t->get_size());
+    width = fl_width(t->get_text());
+  }
+
   model->rm_char();
-  redraw();
+  
+  if (t) {
+    damage(4, t->get_x() - 10, t->get_y() - fl_height() - 20, width + 20, fl_height() + 30);
+  }
 }
 
 

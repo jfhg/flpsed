@@ -1,8 +1,13 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.3.0
+ - Add support for tags (see README).
+ - Add batch processing mode.
+ - Load PostScript file given on the command line.
+
 flpsed-0.2.1
- - fix segfault when reloading documents
+ - Fix segfault when reloading documents
 
 flpsed-0.2
  - Change internal format to allow for more compatible PostScript code.

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.10 2004/10/21 19:55:36 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.11 2004/10/23 19:57:14 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -291,7 +291,7 @@ int PSWriter::write_text(FILE *out, PSEditText *t) {
   
   s = t->get_text();
 
-  if (strcmp(s, "") != 0) {
+  if (strcmp(s, "") != 0 || t->get_tag() != NULL) {
     fprintf(out, size_format, t->get_size());
     fprintf(out, pos_format, 
 	    pse->ps_x(t->get_x()), 
