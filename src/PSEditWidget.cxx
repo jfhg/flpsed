@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.9 2004/06/28 19:43:16 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.10 2004/06/29 17:26:20 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -269,7 +269,9 @@ int PSEditWidget::save(const char* savefile) {
   
   while (fgets(linebuf, 1024, fp) != NULL) {
     if (strcmp(linebuf, "showpage\n") == 0) {
-      to_ps(sfp, p);
+      if (p < max_pages) {
+	to_ps(sfp, p);
+      }
       p++;
     }
     fprintf(sfp, "%s", linebuf);
