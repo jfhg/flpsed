@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.23 2004/11/08 19:36:14 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.24 2004/11/10 18:32:59 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -291,7 +291,7 @@ int main(int argc, char** argv) {
     // Batch Mode 
     //
     
-    PSEditModel *m = new PSEditModel(594, 841, 75.0, 75.0);
+    PSEditModel *m = new PSEditModel();
     int tmp_fd;
 
     if (!in_fp) {

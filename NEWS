@@ -1,6 +1,11 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.3.1
+ - Fix redraw problem after scrolling.
+ - Allow moving of text with arrow keys.
+ - Tab key now cycles through text fields.
+
 flpsed-0.3.0
  - Add support for tags (thanks to Reimar Bauer for his thoughts on this).
  - Add batch processing mode.

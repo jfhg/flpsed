@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.21 2004/11/08 19:36:14 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.22 2004/11/10 18:32:59 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -73,33 +73,13 @@ int PSEditor::handle(int event) {
       if (key == FL_BackSpace) {
 	rm_char();  
       } else if (key == FL_Left) {
-	PSEditText *t = model->get_cur_text();
-	if (t) {
-	  int x = t->get_x();
-	  int y = t->get_y();
-	  move(x - 1, y);
-	}
+	rel_move(-1, 0);
       } else if (key == FL_Right) {
-	PSEditText *t = model->get_cur_text();
-	if (t) {
-	  int x = t->get_x();
-	  int y = t->get_y();
-	  move(x + 1, y);
-	}
+	rel_move(1, 0);
       } else if (key == FL_Up) {
-	PSEditText *t = model->get_cur_text();
-	if (t) {
-	  int x = t->get_x();
-	  int y = t->get_y();
-	  move(x, y - 1);
-	}
+	rel_move(0, 1);
       } else if (key == FL_Down) {
-	PSEditText *t = model->get_cur_text();
-	if (t) {
-	  int x = t->get_x();
-	  int y = t->get_y();
-	  move(x, y + 1);
-	}
+	rel_move(0, -1);
       } else if (key == FL_Tab) {
 	next_text();
       } else if (Fl::compose(del)) {

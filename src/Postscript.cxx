@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.12 2004/10/26 18:32:07 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.13 2004/11/10 18:32:59 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -123,8 +123,7 @@ int PSParser_1::parse(char *line) {
       cur_size = size;
       return 1; // line was recognized 
     } else if (sscanf(line, PS_POS_FORMAT, &x1, &y1) == 2) {
-      pse->new_text(pse->ps_to_display_x(x1), pse->ps_to_display_y(y1), 
-		    "", cur_size, page);
+      pse->new_text(x1, y1, "", cur_size, page);
       return 1;
     } else if (sscanf(line, PS_GLYPH_FORMAT, glyph) == 1) {
       pse->append_text(glyph_to_char(glyph));
@@ -163,8 +162,7 @@ int PSParser_2::parse(char *line) {
     cur_size = size;
     return 1; 
   } else if (inside && sscanf(line, PSEDIT_POS_FORMAT, &x1, &y1) == 2) {
-    pse->new_text(pse->ps_to_display_x(x1), pse->ps_to_display_y(y1),"",
-		  cur_size, page);
+    pse->new_text(x1, y1, "", cur_size, page);
     return 1;
   } else if (inside && sscanf(line, PSEDIT_GLYPH_FORMAT, buf) == 1) {
     pse->append_text(glyph_to_char(buf));
@@ -293,9 +291,7 @@ int PSWriter::write_text(FILE *out, PSEditText *t) {
 
   if (strcmp(s, "") != 0 || t->get_tag() != NULL) {
     fprintf(out, size_format, t->get_size());
-    fprintf(out, pos_format, 
-	    pse->ps_x(t->get_x()), 
-	    pse->ps_y(t->get_y()));
+    fprintf(out, pos_format, t->get_x(), t->get_y());
     if (t->get_tag()) {
       fprintf(out, tag_format, t->get_tag());
     }

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.28 2004/11/08 19:54:54 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.29 2004/11/10 18:32:59 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -49,15 +49,19 @@ void PSEditWidget::clear_text() {
 void PSEditWidget::draw() {
   GsWidget::draw();
   PSEditText *t = model->get_text(page);
-  
+  int t_x, t_y;
+
   while (t) {
+    t_x = ps_to_display_x(t->get_x());
+    t_y = ps_to_display_y(t->get_y());
+
     fl_color((Fl_Color) t->get_color());
     fl_font(FLPSED_FONT, t->get_size());
-    fl_draw(t->get_text(), t->get_x() + x(), t->get_y() + y());
+    fl_draw(t->get_text(), t_x + x(), t_y + y());
     if (model->is_cur_text(t)) {
       fl_draw_box(FL_BORDER_FRAME, 
-		  t->get_x()+x()-1, 
-		  t->get_y()+y()-fl_height()+fl_descent(),
+		  t_x + x()-1, 
+		  t_y + y()-fl_height()+fl_descent(),
 		  (int) fl_width(t->get_text())+2, 
 		  fl_height(), 
 		  FL_BLACK);
@@ -67,8 +71,8 @@ void PSEditWidget::draw() {
       int text_height = fl_height() - fl_descent();
       fl_color(FL_BLUE);
       fl_font(FLPSED_TAG_FONT, FLPSED_TAG_FONT_SIZE);
-      fl_draw(t->get_tag(), t->get_x() + x(), 
-	      t->get_y() + y() - text_height - 1);
+      fl_draw(t->get_tag(), t_x + x(), 
+	      t_y + y() - text_height - 1);
     }
   
     t = t->get_next();
@@ -77,7 +81,7 @@ void PSEditWidget::draw() {
 
 PSEditWidget::PSEditWidget(int X,int Y,int W, int H): GsWidget(X, Y, W, H) {
 
-  model = new PSEditModel(paper_x, paper_y, xdpi, ydpi);
+  model = new PSEditModel();
   cur_size = 12;
   show_tags = 1;
 }
@@ -92,7 +96,7 @@ void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
   
   t_old = model->get_cur_text();
 
-  model->new_text(x1, y1, s, cur_size, p);
+  model->new_text(ps_x(x1), ps_y(y1), s, cur_size, p);
   mod++;
 
   t = model->get_cur_text();
@@ -115,7 +119,7 @@ int PSEditWidget::set_cur_text(int x1, int y1) {
 
   t_old = model->get_cur_text();
 
-  if (model->set_cur_text(x1, y1, page) == 0) {
+  if (model->set_cur_text(ps_x(x1), ps_y(y1), page) == 0) {
 
     t_new = model->get_cur_text();
 
@@ -174,7 +178,28 @@ void PSEditWidget::move(int x1, int y1) {
     old_bbh = bb_h(t);
   }
 
-  model->move(x1, y1);
+  model->move(ps_x(x1), ps_y(y1));
+  mod++;
+
+  if (t) {
+    damage(4, old_bbx, old_bby, old_bbw, old_bbh);
+    damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
+  }
+}
+
+void PSEditWidget::rel_move(int dx, int dy) {
+  PSEditText *t;
+  int old_bbx, old_bby, old_bbw, old_bbh;
+
+  t = model->get_cur_text();
+  if (t) {
+    old_bbx = bb_x(t);
+    old_bby = bb_y(t);
+    old_bbw = bb_w(t);
+    old_bbh = bb_h(t);
+  }
+
+  model->move(t->get_x() + dx, t->get_y() + dy);
   mod++;
 
   if (t) {
@@ -284,12 +309,12 @@ int PSEditWidget::replace_tag(char *tag, char *text) {
 }
 
 int PSEditWidget::bb_x(PSEditText *t) {
-  return t->get_x() + x() - 10;
+  return ps_to_display_x(t->get_x()) + x() - 10;
 }
 
 int PSEditWidget::bb_y(PSEditText *t) {
   fl_font(FLPSED_FONT, t->get_size());
-  return t->get_y() - fl_height() + y() - 20;
+  return ps_to_display_y(t->get_y()) - fl_height() + y() - 20;
 }
 
 int PSEditWidget::bb_w(PSEditText *t) {
@@ -313,3 +338,18 @@ int PSEditWidget::bb_h(PSEditText *t) {
 }
 
   
+int PSEditWidget::ps_to_display_x(int x1) {
+  return (int) ((float) x1 * xdpi / 72.0);
+}
+
+int PSEditWidget::ps_to_display_y(int y1) {
+  return (int) ((float) (paper_y - y1) * xdpi / 72.0);
+}
+
+int PSEditWidget::ps_x(int x1) {
+  return (int) ((float) x1 * 72.0 / xdpi);
+}
+
+int PSEditWidget::ps_y(int y1) {
+  return paper_y - (int)((float) y1 * 72.0 / ydpi);
+}

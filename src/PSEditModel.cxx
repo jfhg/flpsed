@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.11 2004/11/08 18:56:00 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.12 2004/11/10 18:32:59 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -32,11 +32,7 @@
 #include "PSEditModel.H"
 
 
-PSEditModel::PSEditModel(int x1, int y1, float dx, float dy) {
-  paper_x   = x1;
-  paper_y   = y1;
-  xdpi      = dx;
-  ydpi      = dy;
+PSEditModel::PSEditModel() {
   max_pages = 32;
   page = 0;
   text = (PSEditText**) malloc(sizeof(PSEditText*) * max_pages);
@@ -238,22 +234,6 @@ PSEditText *PSEditModel::get_text(int p) {
   } else {
     return text[p];
   }
-}
-
-int PSEditModel::ps_to_display_x(int x1) {
-  return (int) ((float) x1 * xdpi / 72.0);
-}
-
-int PSEditModel::ps_to_display_y(int y1) {
-  return (int) ((float) (paper_y - y1) * xdpi / 72.0);
-}
-
-int PSEditModel::ps_x(int x1) {
-  return (int) ((float) x1 * 72.0 / xdpi);
-}
-
-int PSEditModel::ps_y(int y1) {
-  return paper_y - (int)((float) y1 * 72.0 / ydpi);
 }
 
 int PSEditModel::load(FILE *fp) {
