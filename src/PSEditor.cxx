@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.2 2004/07/09 18:28:19 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.3 2004/07/09 21:27:00 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -112,12 +112,7 @@ int PSEditor::load(char *f) {
 
   while (fgets(linebuf, 1024, fp) != NULL) {
     
-    ret1 = p1->parse(linebuf);
-    if (ret1 == 0 || ret1 == 2) {
-      ret2 = p2->parse(linebuf);
-    }
-
-    if (!ret1 && !ret2) {
+    if (!p2->parse(linebuf) && !p1->parse(linebuf)) {
       ret = write(tmp_fd, linebuf, strlen(linebuf));
       if (ret != strlen(linebuf)) {
 	fprintf(stderr, "Error while writing to temporary file\n");

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.3 2004/07/09 18:28:19 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.4 2004/07/09 21:27:01 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -25,8 +25,24 @@
 
 #define PS_POS_FORMAT       "newpath %d %d moveto %% PSEditWidget\n"
 #define PS_TEXT_FORMAT      "(%s) show %% PSEditWidget\n"
-#define PS_FONT_SIZE_FORMAT "/HelveticaNeue-Roman findfont %d scalefont setfont %% PSEditWidget\n"
+#define PS_SIZE_FORMAT "/HelveticaNeue-Roman findfont %d scalefont setfont %% PSEditWidget\n"
 #define PS_GLYPH_FORMAT     "/%s glyphshow %% PSEditWidget\n"
+
+//
+// PSEditWidget internal format as PostScript comments
+//
+
+#define PSEDIT_BEGIN "%% PSEditWidget Begin\n"
+#define PSEDIT_END   "%% PSEditWidget End\n"
+
+#define PSEDIT_PAGE_FORMAT  "%% PSEditWidget: PAGE %d\n"
+#define PSEDIT_POS_FORMAT   "%% PSEditWidget: POS %d %d\n"
+#define PSEDIT_TEXT_FORMAT_PRINT  "%% PSEditWidget: TEXT (%s)\n"
+#define PSEDIT_TEXT_FORMAT_SCAN   "%% PSEditWidget: TEXT (%[^)])\n"
+#define PSEDIT_SIZE_FORMAT  "%% PSEditWidget: SIZE %d\n"
+#define PSEDIT_GLYPH_FORMAT "%% PSEditWidget: GLYPH %s\n"
+
+#define PSEDIT_PAGE_MARKER  "/PSEditWidgetPageCount %d def %% PSEditWidget\n"
 
 static struct {
   const char *glyph;
@@ -70,12 +86,6 @@ static const char * char_to_glyph(char *c) {
   return NULL;
 }
 
-
-//
-// Postscript parser methods
-//
-
-
 PSParser::PSParser(PSEditWidget *p) {
   pse = p;
 }
@@ -83,6 +93,7 @@ PSParser::PSParser(PSEditWidget *p) {
 int PSParser::parse(char *line) {
   return 0;
 }
+
 
 PSParser_1::PSParser_1(PSEditWidget *p) : PSParser(p) {
   page = 1;
@@ -97,7 +108,7 @@ int PSParser_1::parse(char *line) {
   }
   
   if (strstr(line, "% PSEditWidget")) {
-    if (sscanf(line, PS_FONT_SIZE_FORMAT, &size) == 1) {
+    if (sscanf(line, PS_SIZE_FORMAT, &size) == 1) {
       pse->set_cur_size(size);
       return 1; // line was recognized 
     } else if (sscanf(line, PS_POS_FORMAT, &x1, &y1) == 2) {
@@ -105,7 +116,6 @@ int PSParser_1::parse(char *line) {
 		    "", page);
       return 1;
     } else if (sscanf(line, PS_GLYPH_FORMAT, glyph) == 1) {
-      fprintf(stderr, "GLYPH %s\n", glyph);
       pse->append_text(glyph_to_char(glyph));
       return 1;
     } else if ((s = strchr(line, '(')) &&
@@ -115,22 +125,49 @@ int PSParser_1::parse(char *line) {
       pse->append_text(s);
       return 1;
     }
-    return 2; // line should be removed, but passed to other parsers 
-  } else {
     return 0; // line not recognized
+  } else {
+    return 0; 
   }
 }
 
 PSParser_2::PSParser_2(PSEditWidget *p) : PSParser(p) {
   page = 1;
+  inside = 0;
 }
 
 int PSParser_2::parse(char *line) {
-  return 0; // line not recognized
+  int x1, y1, size, page, dummy;
+  char buf[2028];
+  
+  if (!inside && strcmp(line, PSEDIT_BEGIN) == 0) {
+    inside = 1;
+    return 1; // line was recognized 
+  } else if (inside && strcmp(line, PSEDIT_END) == 0) {
+    inside = 0;
+    return 1;
+  } else if (inside && sscanf(line, PSEDIT_PAGE_FORMAT, &page) == 1) {
+    return 1; 
+  } else if (inside && sscanf(line, PSEDIT_SIZE_FORMAT, &size) == 1) {
+    pse->set_cur_size(size);
+    return 1; 
+  } else if (inside && sscanf(line, PSEDIT_POS_FORMAT, &x1, &y1) == 2) {
+    pse->new_text(pse->ps_to_display_x(x1), pse->ps_to_display_y(y1),"",page);
+    return 1;
+  } else if (inside && sscanf(line, PSEDIT_GLYPH_FORMAT, buf) == 1) {
+    pse->append_text(glyph_to_char(buf));
+    return 1;
+  } else if (inside && sscanf(line, PSEDIT_TEXT_FORMAT_SCAN, buf) == 1) {
+    pse->append_text(buf);
+    return 1;
+  } else if (inside) {
+    return 1;
+  } else if (sscanf(line, PSEDIT_PAGE_MARKER, &dummy) == 1) {
+    return 1; 
+  } else {
+    return 0; // line not recognized
+  }
 }
-
-
-
 
 
 //
@@ -150,6 +187,17 @@ int PSWriter::write(FILE *in, FILE *out) {
     if (!done && strncmp(linebuf, "%%EndSetup", 10) == 0) {
       done++;
 
+      fprintf(out, "\n");
+      fprintf(out, "%s", PSEDIT_BEGIN);
+      fprintf(out, "\n");
+
+      write_internal_format(out);
+      pos_format   = PS_POS_FORMAT;
+      size_format  = PS_SIZE_FORMAT;
+      text_format  = PS_TEXT_FORMAT;
+      glyph_format = PS_GLYPH_FORMAT;
+
+      fprintf(out, "\n");
       fprintf(out, ps_header());
 
       for (int i=1;i<pse->get_max_pages();i++) {
@@ -161,12 +209,29 @@ int PSWriter::write(FILE *in, FILE *out) {
       }
       
       fprintf(out, ps_trailer());
+      fprintf(out, "\n");
+      fprintf(out, "%s", PSEDIT_END);
+      fprintf(out, "\n");
     }
 
     fprintf(out, "%s", linebuf);
 
     if (strncmp(linebuf, "%%Page:", 7) == 0) {
-      fprintf(out, "/PSEditWidgetPageCount %d def %% PSEditWidget\n", page++);
+      fprintf(out, PSEDIT_PAGE_MARKER, page++);
+    }
+  }
+}
+
+void PSWriter::write_internal_format(FILE *out) {
+  pos_format   = PSEDIT_POS_FORMAT;
+  size_format  = PSEDIT_SIZE_FORMAT;
+  text_format  = PSEDIT_TEXT_FORMAT_PRINT;
+  glyph_format = PSEDIT_GLYPH_FORMAT;
+
+  for (int i=1;i<pse->get_max_pages();i++) {
+    if (pse->get_text(i)) {
+      fprintf(out, PSEDIT_PAGE_FORMAT, i);
+      write_text(out, pse->get_text(i));
     }
   }
 }
@@ -177,7 +242,7 @@ void PSWriter::write_string(FILE *out, char *s) {
   if (strlen(s) == 0) {
     return;
   } else if ((glyph = char_to_glyph(s)) != NULL) {
-    fprintf(out, PS_GLYPH_FORMAT, glyph);
+    fprintf(out, glyph_format, glyph);
     write_string(out, &(s[1]));
     return;
   } else {
@@ -185,13 +250,13 @@ void PSWriter::write_string(FILE *out, char *s) {
       if ((glyph = char_to_glyph(&(s[i]))) != NULL) {
 	char *s1 = strdup(s);
 	s1[i] = '\0';
-	fprintf(out, PS_TEXT_FORMAT, s1);
+	fprintf(out, text_format, s1);
 	free(s1);
 	write_string(out, &(s[i]));
 	return;
 	}
     }
-    fprintf(out, PS_TEXT_FORMAT, s);
+    fprintf(out, text_format, s);
   }
   return;
 }
@@ -206,8 +271,8 @@ int PSWriter::write_text(FILE *out, PSText *t) {
   s = t->get_text();
 
   if (strcmp(s, "") != 0) {
-    fprintf(out, PS_FONT_SIZE_FORMAT, t->get_size());
-    fprintf(out, PS_POS_FORMAT, 
+    fprintf(out, size_format, t->get_size());
+    fprintf(out, pos_format, 
 	    pse->ps_x(t->get_x()), 
 	    pse->ps_y(t->get_y()));
     write_string(out, s);
@@ -232,9 +297,6 @@ PSLevel1Writer::PSLevel1Writer(PSEditWidget *p) : PSWriter(p) {};
 
 char * PSLevel1Writer::ps_header() {
   return		  \
-    "%%\n" \
-    "%% Begin PSEditWidget\n"	 \
-    "%%\n" \
     "/PSEditWidgetPageCount 0 def\n"		\
     "/PSEditWidgetPC 0 def\n"			\
     "/PSEditWidgetshowpage /showpage load def\n"	\
@@ -247,10 +309,7 @@ char * PSLevel1Writer::ps_header() {
 }
 
 char * PSLevel1Writer::ps_trailer() {
-  return  "PSEditWidgetshowpage} def\n" \
-    "%%\n" \
-    "%% End PSEditWidget\n" \
-    "%%\n";
+  return  "PSEditWidgetshowpage} def\n";
 }
 
 
@@ -258,9 +317,6 @@ PSLevel2Writer::PSLevel2Writer(PSEditWidget *p) : PSWriter(p) {};
 
 char * PSLevel2Writer::ps_header() {
   return		  \
-    "%%\n" \
-    "%% Begin PSEditWidget\n"	 \
-    "%%\n" \
     "/PSEditWidgetPageCount 0 def\n"		\
     "<< /EndPage {\n"				\
     "pop\n"								\
@@ -273,8 +329,5 @@ char * PSLevel2Writer::ps_header() {
 }
 
 char * PSLevel2Writer::ps_trailer() {
-  return  "true } >> setpagedevice\n" \
-    "%%\n" \
-    "%% End PSEditWidget\n" \
-    "%%\n";
+  return  "true } >> setpagedevice\n";
 }
