@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.18 2004/10/26 16:58:49 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.19 2004/10/26 18:37:56 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -200,7 +200,8 @@ int PSEditor::import(char *f) {
 
   delete(p1);
   delete(p2);
-
+  
   mod = 1;
+  redraw();
   return 0;
 }
