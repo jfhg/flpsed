@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.15 2004/10/12 17:14:16 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.16 2004/10/12 20:52:23 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -62,6 +62,7 @@ PSEditWidget::PSEditWidget(int X,int Y,int W, int H) : GsWidget(X, Y, W, H) {
   }
   cur_text = NULL;
   cur_size = 12;
+  show_tags = 1;
 }
   
 int PSEditWidget::next() {
@@ -168,6 +169,15 @@ int PSEditWidget::get_max_pages() {
   return max_pages;
 }
 
+int PSEditWidget::get_show_tags() {
+  return show_tags;
+}
+
+void PSEditWidget::set_show_tags(int s) {
+  show_tags = s;
+  redraw();
+}
+
 PSText *PSEditWidget::get_text(int p) {
   if (p >= max_pages) {
     return 0;
@@ -176,12 +186,36 @@ PSText *PSEditWidget::get_text(int p) {
   }
 }
 
+int PSEditWidget::set_tag(const char *t) {
+  if (cur_text) {
+    mod++;
+    return cur_text->set_tag(t);
+  } else {
+    return 1;
+  }
+}
 
+char *PSEditWidget::get_tag() {
+  if (cur_text) {
+    return cur_text->get_tag();
+  } else {
+    return NULL;
+  }
+}
+
+int PSEditWidget::modified() {
+  return mod;
+}
+
+int PSEditWidget::file_loaded() {
+  return loaded;
+}
 
 PSText::PSText(PSEditWidget *g, int x1, int y1, const char *s1, int size1) {
   x = x1;
   y = y1;
   s = strdup(s1);
+  tag = NULL;
   c = FL_BLACK;
   size = size1;
   next = NULL;
@@ -194,6 +228,9 @@ PSText::~PSText() {
   }
   if (s) {
     free(s);
+  }
+  if (tag) {
+    free(tag);
   }
 }
   
@@ -246,8 +283,17 @@ void PSText::draw(int off_x,int off_y) {
   fl_font(FL_HELVETICA, size);
   fl_draw(s, x + off_x, y + off_y);
   if (gsew->cur_text == this) {
-    fl_draw_box(FL_BORDER_FRAME, x+off_x-1, y+off_y-fl_height()+fl_descent(), (int) fl_width(s)+2, fl_height(), FL_BLACK);
+    fl_draw_box(FL_BORDER_FRAME, x+off_x-1, y+off_y-fl_height()+fl_descent(),
+		(int) fl_width(s)+2, fl_height(), FL_BLACK);
   }
+
+  if (tag && gsew->get_show_tags()) {
+    int text_height = fl_height() - fl_descent();
+    fl_color(FL_BLUE);
+    fl_font(FL_COURIER, 10);
+     fl_draw(tag, x + off_x, y + off_y - text_height - 1);
+  }
+  
   if (p->next) {
     p->next->draw(off_x, off_y);
   }
@@ -255,6 +301,19 @@ void PSText::draw(int off_x,int off_y) {
 
 char *PSText::get_text() {
   return s;
+}
+
+char *PSText::get_tag() {
+  return tag;
+}
+
+int PSText::set_tag(const char *t) {
+  if (tag) {
+    free(tag);
+  }
+  tag = strdup(t);
+  gsew->redraw();
+  return 0;
 }
 
 int PSText::get_size() {

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.H,v 1.6 2004/07/09 17:22:55 hofmann Exp $"
+// "$Id: PSEditWidget.H,v 1.7 2004/10/12 20:52:23 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -33,8 +33,11 @@ private:
   PSText **text;
   int max_pages;
   int cur_size;
+  int show_tags;
 
 protected:
+  int loaded;
+  int mod;
   void clear_text();
   void draw();
 
@@ -58,13 +61,20 @@ public:
   void set_size(int s);
   int get_size();
   int get_max_pages();
+  char *get_tag();
+  int set_tag(const char *t);
+  int get_show_tags();
+  void set_show_tags(int s);
   PSText * get_text(int p);
+  int modified();
+  int file_loaded();
 };
 
 
 class PSText {
   int x, y;
   char *s;
+  char *tag;
   PSText *next;
   PSEditWidget *gsew;
   
@@ -80,6 +90,8 @@ public:
   void append(PSText *g);
   PSText *get_match(int x1, int y1);
   char *get_text();
+  char *get_tag();
+  int set_tag(const char *t);
   int get_size();
   PSText *get_next();
   Fl_Color get_color();

@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.14 2004/10/12 16:41:43 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.15 2004/10/12 20:52:23 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -148,7 +148,21 @@ void size_cb(Fl_Widget *w, void *) {
   }
 }
 
+void show_tags_cb(Fl_Widget* w, void*d) {
+  fprintf(stderr, "===> %d\n", ((int) d));
+  gsw_p->set_show_tags((int) d);
+}
 
+void edit_tag_cb() {
+  char *tag = gsw_p->get_tag();
+  const char *new_tag;
+  new_tag = fl_input("Tag Name", tag?tag:"");
+  if (strcmp(new_tag, "") != 0) {
+    gsw_p->set_tag(new_tag);
+  } else {
+    gsw_p->set_tag(NULL);
+  }
+}
 
 Fl_Menu_Item menuitems[] = {
   { "&File",              0, 0, 0, FL_SUBMENU },
@@ -172,6 +186,12 @@ Fl_Menu_Item menuitems[] = {
     { "18",  0, (Fl_Callback *)size_cb },
     { "24",  0, (Fl_Callback *)size_cb },
   { 0 },
+
+  { "&Tags", 0, 0, 0, FL_SUBMENU },
+    { "Sh&ow Tags", FL_CTRL + 'o', (Fl_Callback *)show_tags_cb, (void *)1, FL_MENU_RADIO|FL_MENU_VALUE},
+    { "&Hide Tags", FL_CTRL + 'h', (Fl_Callback *)show_tags_cb, (void *)0, FL_MENU_RADIO},
+    { "&Edit Tag",  FL_CTRL + 'e', (Fl_Callback *)edit_tag_cb },
+    { 0 },
 
   { "&Help", 0, 0, 0, FL_SUBMENU },
     { "About",  0, (Fl_Callback *)about_cb },

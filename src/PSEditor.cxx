@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.10 2004/10/12 17:14:16 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.11 2004/10/12 20:52:23 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -102,13 +102,7 @@ int PSEditor::handle(int event) {
 }
 
 
-int PSEditor::modified() {
-  return mod;
-}
 
-int PSEditor::file_loaded() {
-  return loaded;
-}
 
 
 int PSEditor::load(char *f) {

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.H,v 1.3 2004/10/11 14:44:47 hofmann Exp $"
+// "$Id: PSEditor.H,v 1.4 2004/10/12 20:52:23 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -29,11 +29,8 @@
 class PSEditor : public PSEditWidget {
  private:
   int mark_x, mark_y;
-  int loaded;
-  int mod;
   int tmp_fd;
   int ps_level;
-
   int handle(int event);
 
 public: 
@@ -41,8 +38,6 @@ public:
   int load(char *f); 
   int save(const char* savefile);
   int import(char *f); 
-  int modified();
-  int file_loaded();
   void set_ps_level(int l);
   int get_ps_level();
 };
