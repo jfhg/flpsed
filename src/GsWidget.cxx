@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.4 2004/06/25 18:14:05 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.5 2004/06/28 19:43:16 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -152,7 +152,11 @@ int GsWidget::load(int fd) {
     argv[5] = "-dNOPLATFONTS";
     argv[6] = "-";
     argv[7] = NULL;
-    execvp(argv[0], argv); 
+    execvp(argv[0], argv);
+    fprintf(stderr, "Could not exec gs (errno %d)\n", errno);
+    fprintf(stderr, "Please install ghostscript and make sure 'gs' "
+	    "is in the PATH.\n");
+    exit(1);
   } else {
     gs_pid = pid;
     page = 0;

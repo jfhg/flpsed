@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.8 2004/06/25 18:14:05 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.9 2004/06/28 19:43:16 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -204,8 +204,8 @@ int PSEditWidget::load(char *f) {
   char *s, *e, glyph[1024];
   int size, ret;
   
-  strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX.ps", 256);
-  tmp_fd = mkstemps(tmpname, 3);
+  strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", 256);
+  tmp_fd = mkstemp(tmpname);
   if (tmp_fd < 0) {
     fprintf(stderr, "Could not create temporary file (errno %d).\n", errno);
     return 1;
@@ -379,7 +379,7 @@ void PSText::draw(int off_x,int off_y) {
   fl_font(FL_HELVETICA, size);
   fl_draw(s, x + off_x, y + off_y);
   if (gsew->cur_text == this) {
-    fl_draw_box(FL_BORDER_FRAME, x+off_x-1, y+off_y-fl_height()+fl_descent(), fl_width(s)+2, fl_height(), FL_BLACK);
+    fl_draw_box(FL_BORDER_FRAME, x+off_x-1, y+off_y-fl_height()+fl_descent(), (int) fl_width(s)+2, fl_height(), FL_BLACK);
   }
   if (p->next) {
     p->next->draw(off_x, off_y);

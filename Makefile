@@ -7,7 +7,7 @@ OBJECTS=GsWidget.o PSEditWidget.o flpsed.o
 	$(CC) -c $(CFLAGS) $*.cxx
 
 flpsed: $(OBJECTS)
-	$(CC) -g -o flpsed $(OBJECTS) -L/usr/X11R6/lib -lfltk -lm
+	$(CC) -g -o flpsed $(OBJECTS) -L/usr/X11R6/lib -lfltk -lX11 -lm
 
 clean:
 	rm -f flpsed $(OBJECTS)

@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.9 2004/06/25 18:14:05 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.10 2004/06/28 19:43:16 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -170,8 +170,8 @@ void print_cb() {
     return;
   }
 
-  strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX.ps", 256);
-  tmp_fd = mkstemps(tmpname, 3);
+  strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", 256);
+  tmp_fd = mkstemp(tmpname);
 
   if (tmp_fd >= 0) {
     close(tmp_fd);
