@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.1 2004/07/09 17:22:55 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.2 2004/07/09 18:28:19 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -41,7 +41,7 @@ int PSEditor::handle(int event) {
     
     mark_x = Fl::event_x()-x();
     mark_y = Fl::event_y()-y();
-    
+    fprintf(stderr, "==> %d %d\n", mark_x, mark_y);    
     if (!set_cur_text(mark_x, mark_y) == 0) {
       new_text(mark_x, mark_y, "");
       mod++;

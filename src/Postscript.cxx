@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.2 2004/07/09 17:22:55 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.3 2004/07/09 18:28:19 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -153,7 +153,11 @@ int PSWriter::write(FILE *in, FILE *out) {
       fprintf(out, ps_header());
 
       for (int i=1;i<pse->get_max_pages();i++) {
-	write_text(out, pse->get_text(i));
+	if (pse->get_text(i)) {
+	  fprintf(out, "dup %d eq { \n", i);
+	  write_text(out, pse->get_text(i));
+	  fprintf(out, "} if\n");
+	}
       }
       
       fprintf(out, ps_trailer());
@@ -228,7 +232,9 @@ PSLevel1Writer::PSLevel1Writer(PSEditWidget *p) : PSWriter(p) {};
 
 char * PSLevel1Writer::ps_header() {
   return		  \
+    "%%\n" \
     "%% Begin PSEditWidget\n"	 \
+    "%%\n" \
     "/PSEditWidgetPageCount 0 def\n"		\
     "/PSEditWidgetPC 0 def\n"			\
     "/PSEditWidgetshowpage /showpage load def\n"	\
@@ -242,7 +248,9 @@ char * PSLevel1Writer::ps_header() {
 
 char * PSLevel1Writer::ps_trailer() {
   return  "PSEditWidgetshowpage} def\n" \
-    "%% End PSEditWidget\n";
+    "%%\n" \
+    "%% End PSEditWidget\n" \
+    "%%\n";
 }
 
 
@@ -250,7 +258,9 @@ PSLevel2Writer::PSLevel2Writer(PSEditWidget *p) : PSWriter(p) {};
 
 char * PSLevel2Writer::ps_header() {
   return		  \
+    "%%\n" \
     "%% Begin PSEditWidget\n"	 \
+    "%%\n" \
     "/PSEditWidgetPageCount 0 def\n"		\
     "<< /EndPage {\n"				\
     "pop\n"								\
@@ -264,5 +274,7 @@ char * PSLevel2Writer::ps_header() {
 
 char * PSLevel2Writer::ps_trailer() {
   return  "true } >> setpagedevice\n" \
-    "%% End PSEditWidget\n";
+    "%%\n" \
+    "%% End PSEditWidget\n" \
+    "%%\n";
 }
