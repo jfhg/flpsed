@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.33 2005/01/28 15:08:28 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.34 2005/02/02 16:49:12 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -177,12 +177,10 @@ void PSEditWidget::move(int x1, int y1) {
     old_bby = bb_y(t);
     old_bbw = bb_w(t);
     old_bbh = bb_h(t);
-  }
 
-  model->move(ps_x(x1), ps_y(y1));
-  mod++;
+    model->move(ps_x(x1), ps_y(y1));
+    mod++;
 
-  if (t) {
     damage(4, old_bbx, old_bby, old_bbw, old_bbh);
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
   }
@@ -198,12 +196,10 @@ void PSEditWidget::rel_move(int dx, int dy) {
     old_bby = bb_y(t);
     old_bbw = bb_w(t);
     old_bbh = bb_h(t);
-  }
 
-  model->move(t->get_x() + dx, t->get_y() + dy);
-  mod++;
+    model->move(t->get_x() + dx, t->get_y() + dy);
+    mod++;
 
-  if (t) {
     damage(4, old_bbx, old_bby, old_bbw, old_bbh);
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
   }
