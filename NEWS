@@ -1,6 +1,10 @@
 flpsed ChangeLog
 =================
-
+flpsed-0.3.4
+ - Switched to automake/autoconf (thanks to Peter Seiderer).
+ - Fixed a compile problem on amd64 (Debian bug 303406).
+ - Added compilation instructions for Mac OS X (by Michael Grossman).
+	
 flpsed-0.3.3
  - Implement PDF import/export based on pdftops and ps2pdf.
  - Fix segfault when using arrow keys on empty document 
