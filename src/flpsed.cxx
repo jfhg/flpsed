@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.32 2005/02/28 19:53:58 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.33 2005/04/07 17:03:14 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -234,7 +234,7 @@ void zoom_cb(Fl_Widget *w, void *) {
 }
 
 void show_tags_cb(Fl_Widget* w, void*d) {
-  psed_p->set_show_tags((int) d);
+  psed_p->set_show_tags(d==NULL?0:1);
 }
 
 void edit_tag_cb() {
