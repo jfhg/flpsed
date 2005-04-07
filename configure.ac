@@ -38,5 +38,8 @@ AC_ARG_WITH([fltk-dir], AS_HELP_STRING([--with-fltk-dir=DIR], [fltk is installed
 AC_CHECK_HEADERS([FL/Fl.H], [], [echo "Error: FL/Fl.H not found. Try './configure --with-fltk-dir=DIR'"; exit 1;])
 AC_CHECK_LIB([fltk], [open], [], [echo "Error: libfltk.so not found. Try './configure --with-fltk-dir=DIR'"; exit 1;])
 
+# Check for X11
+AC_CHECK_LIB([X11], [open], [], [echo "Error: libX11.so not found."; exit 1;])
+
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
