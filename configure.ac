@@ -34,9 +34,14 @@ AC_TYPE_SIGNAL
 AC_CHECK_FUNCS([dup2 setenv strchr strdup strrchr strstr])
 
 # Check for fltk
-AC_ARG_WITH([fltk-dir], AS_HELP_STRING([--with-fltk-dir=DIR], [fltk is installed in DIR]), [CPPFLAGS="-I$withval/include ${_cppflags}" LDFLAGS="-L$withval/lib $LDFLAGS"], [CPPFLAGS="-I/usr/X11R6/include ${_cppflags}" LDFLAGS="-L/usr/X11R6/lib $LDFLAGS"])
-AC_CHECK_HEADERS([FL/Fl.H], [], [echo "Error: FL/Fl.H not found. Try './configure --with-fltk-dir=DIR'"; exit 1;])
-AC_CHECK_LIB([fltk], [open], [], [echo "Error: libfltk.so not found. Try './configure --with-fltk-dir=DIR'"; exit 1;])
+AC_PATH_PROG(FLTKCONFIG,fltk-config)
+if test "x$FLTKCONFIG" = x; then
+	echo "fltk-config not found"
+	exit 1
+fi
+CFLAGS="`$FLTKCONFIG --cflags` $CFLAGS"
+CXXFLAGS="`$FLTKCONFIG --cflags` $CXXFLAGS"
+LIBS="`$FLTKCONFIG --ldflags` $LIBS"
 
 # Check for X11
 AC_CHECK_LIB([X11], [open], [], [echo "Error: libX11.so not found."; exit 1;])
