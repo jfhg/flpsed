@@ -1,5 +1,5 @@
 //
-// "$Id: GsWidget.cxx,v 1.16 2005/02/28 20:01:39 hofmann Exp $"
+// "$Id: GsWidget.cxx,v 1.17 2005/04/19 20:22:23 hofmann Exp $"
 //
 // GsWidget routines.
 //
@@ -75,7 +75,9 @@ void GsWidget::setProps() {
 		  XA_STRING, 8, PropModeReplace,
 		  (unsigned char*) data, strlen(data));
     
-  snprintf(data, 512, "%s %d %d", "Color", 0, 65535);
+  snprintf(data, 512, "%s %d %d", "Color", 
+    (int) BlackPixel(fl_display, DefaultScreen(fl_display)),
+    (int) WhitePixel(fl_display, DefaultScreen(fl_display)));
     
   XChangeProperty(fl_display, xid, atoms[1],
 		  XA_STRING, 8, PropModeReplace,
