@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.33 2005/04/07 17:03:14 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.34 2005/04/29 18:08:44 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -315,8 +315,8 @@ void usage() {
 #define TV_LEN 256
 
 int main(int argc, char** argv) {
-  char c, *sep, *tmp, **my_argv;
-  int err, bflag = 0, dflag = 0;
+  char *sep, *tmp, **my_argv;
+  int c, err, bflag = 0, dflag = 0;
   Fl_Window *win;
   Fl_Menu_Bar *m;
   struct {char *tag; char *value;} tv[TV_LEN];
