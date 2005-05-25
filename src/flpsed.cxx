@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.34 2005/04/29 18:08:44 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.35 2005/05/25 17:47:33 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -262,7 +262,7 @@ Fl_Menu_Item menuitems[] = {
     { 0 },
 
   { "&Page", 0, 0, 0, FL_SUBMENU },
-    { "F&irst",        FL_CTRL + 'i', (Fl_Callback *)first_cb },
+    { "&First",        FL_CTRL + 'f', (Fl_Callback *)first_cb },
     { "&Next",       FL_CTRL + 'n', (Fl_Callback *)next_cb },
     { 0 },
 
