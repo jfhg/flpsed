@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.35 2005/05/25 17:47:33 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.36 2005/05/25 18:50:39 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -255,8 +255,8 @@ Fl_Menu_Item menuitems[] = {
     { "&Open File...",    FL_CTRL + 'o', (Fl_Callback *)open_cb },
     { "&Save File as...", FL_CTRL + 's', (Fl_Callback *)save_cb },
     { "I&mport Tags from File...",    FL_CTRL + 'm', (Fl_Callback *)import_cb },
-    { "&Import PDF...", FL_CTRL + 'I', (Fl_Callback *)import_pdf_cb },
-    { "&Export PDF...", FL_CTRL + 'E', (Fl_Callback *)export_pdf_cb },
+    { "&Import PDF...", FL_CTRL + 'i', (Fl_Callback *)import_pdf_cb },
+    { "E&xport PDF...", FL_CTRL + 'x', (Fl_Callback *)export_pdf_cb },
     { "&Print...", FL_CTRL + 'p', (Fl_Callback *)print_cb, 0, FL_MENU_DIVIDER },
     { "&Quit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
     { 0 },
