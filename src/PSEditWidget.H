@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.H,v 1.15 2005/01/27 21:07:09 hofmann Exp $"
+// "$Id: PSEditWidget.H,v 1.16 2005/06/05 19:57:57 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -70,8 +70,6 @@ public:
   void rm_char();
 
   int reload();
-
-  void set_cur_size(int s);
 
   void set_size(int s);
 

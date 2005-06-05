@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.35 2005/02/03 18:10:17 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.36 2005/06/05 19:57:57 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -229,10 +229,6 @@ int PSEditWidget::reload() {
   return GsWidget::reload();
 }
 
-void PSEditWidget::set_cur_size(int s) {
-  cur_size = s;
-}
-
 void PSEditWidget::set_size(int s) {
   PSEditText *t;
   int old_x, old_y, old_w, old_h;
@@ -245,7 +241,7 @@ void PSEditWidget::set_size(int s) {
     old_h = bb_h(t);
   }
 
-  set_cur_size(s);
+  cur_size = s;
   model->set_size(s);
 
   if (t) {
