@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.38 2005/06/17 19:56:32 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.39 2005/06/17 20:00:44 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -44,6 +44,7 @@
 
 #include "PSEditor.H"
 #include "util.h"
+#include "../config.h"
 
 PSEditor *psed_p   = NULL;
 Fl_Scroll *scroll = NULL;
@@ -209,8 +210,9 @@ void print_cb() {
 
 void about_cb() {
   fl_message("flpsed -- a pseudo PostScript editor\n"
+	     "Version %s\n\n"
 	     "(c) Johannes Hofmann 2004, 2005\n\n"
-	     "PostScript is a registered trademark of Adobe Systems");
+	     "PostScript is a registered trademark of Adobe Systems", VERSION);
 }
 
 Fl_Choice *size_c;
@@ -378,7 +380,7 @@ int main(int argc, char** argv) {
   FILE *in_fp = NULL, *out_fp = NULL;
   
   err = 0;
-  while ((c = getopt(argc, argv, "hdbt:")) != EOF) {
+  while ((c = getopt(argc, argv, "hdbt:")) != -1) {
     switch (c) {  
     case 'h':
       usage();
