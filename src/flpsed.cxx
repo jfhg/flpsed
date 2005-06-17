@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.37 2005/06/17 18:20:42 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.38 2005/06/17 19:56:32 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -495,7 +495,9 @@ int main(int argc, char** argv) {
     m = new Fl_Menu_Bar(0, 0, 600, 30);
     m->menu(menuitems);
 
-    Fl_Box b(FL_UP_BOX, 0, 30, 600, 25, "");
+    Fl_Box props_box(FL_UP_BOX, 0, 30, 600, 25, "");
+    Fl_Group props(0, 30, 600, 25);
+    props.resizable(NULL);
     size_c = new Fl_Choice(30, 32, 50, 21, NULL);
     size_c->menu(size_menu); 
     size_c->callback(size_cb);
@@ -506,6 +508,7 @@ int main(int argc, char** argv) {
     color_b->callback(color_cb, color_b);
     color_b->shortcut(FL_ALT + 'c');
     color_b->tooltip("Text Color");
+    props.end();
 
     scroll = new Fl_Scroll(0, 55, win->w(), win->h()-55);
     psed_p = new PSEditor(0, 0, 700, 900);
