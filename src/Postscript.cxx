@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.17 2005/06/17 18:24:34 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.18 2005/06/17 18:27:17 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -25,12 +25,11 @@
 #include <string.h>
 #include "Postscript.H"
 
-#define PS_POS_FORMAT   "newpath %d %d moveto %% PSEditWidget\n"
-#define PS_TEXT_FORMAT  "(%s) show %% PSEditWidget\n"
-#define PS_SIZE_FORMAT  "/HelveticaNeue-Roman findfont %d scalefont setfont"\
-                        " %% PSEditWidget\n"
-#define PS_COLOR_FORMAT  "%lf %lf %lf setrgbcolor %% PSEditWidget\n"
-#define PS_GLYPH_FORMAT "/%s glyphshow %% PSEditWidget\n"
+#define PS_POS_FORMAT   "newpath %d %d moveto\n"
+#define PS_TEXT_FORMAT  "(%s) show\n"
+#define PS_SIZE_FORMAT  "/HelveticaNeue-Roman findfont %d scalefont setfont\n"
+#define PS_COLOR_FORMAT  "%lf %lf %lf setrgbcolor\n"
+#define PS_GLYPH_FORMAT "/%s glyphshow\n"
 #define PS_TAG_FORMAT   ""
 
 //
