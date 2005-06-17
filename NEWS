@@ -1,5 +1,13 @@
 flpsed ChangeLog
 =================
+
+flpsed-0.3.5
+ - Add text color support.
+ - Move text properties (currently text size and color) to own toolbar.
+ - Fix keyboard shortcuts (noticed by Spec).
+ - Updated Mac OS X compile instructions 
+   (based on feedback from Jonathan Dueck).
+
 flpsed-0.3.4
  - Switched to automake/autoconf (thanks to Peter Seiderer).
  - Fixed a compile problem on amd64 (Debian bug 303406).

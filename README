@@ -41,7 +41,7 @@ Building:
 - flpsed only works on X11-based systems.
 - You need to have ghostscript installed.
 - You need to have fltk-1.1.x from www.fltk.org installed.
-- Unpack the tarball and type "make".
+- Unpack the tarball and type "./configire", "make", and "make install".
 
 
 
@@ -82,11 +82,10 @@ DO NOT INSTALL the Fink package called fltk, as this appears to be for
 building aqua fltk applications rather than X11 apps.
 
 You must unset the C-preprocessor macro __APPLE__ to get flpsed to compile
-under OS X. This is done by adding -U__APPLE__ to the CFLAGS in the Makefile.
-
-
+under OS X. This is can be done by calling 
+"CPPFLAGS=-U__APPLE__; export CPPFLAGS" before running "./configure".
 
 
 Johannes Hofmann
 (Johannes.Hofmann@gmx.de)
-January 28, 2005
+June 17, 2005
