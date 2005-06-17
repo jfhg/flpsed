@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditText.H,v 1.4 2004/11/08 18:10:34 hofmann Exp $"
+// "$Id: PSEditText.H,v 1.5 2005/06/17 18:20:42 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -23,6 +23,56 @@
 
 #ifndef PSEditText_H
 #define PSEditText_H
+
+#include <math.h>
+
+class PSEditColor {
+ public:
+  double r, g, b;
+
+  PSEditColor() {
+    r = 0.0;
+    g = 0.0;
+    b = 0.0;
+  }
+
+  PSEditColor(double r1, double g1, double b1) {
+    set(r1, g1, b1);
+  }
+
+  void set(unsigned char r1, unsigned char g1, unsigned char b1) {
+    r = r1 / 256.0;
+    g = g1 / 256.0;
+    b = b1 / 256.0;
+  }
+
+  void set(double r1, double g1, double b1) {
+    r = r1;
+    g = g1;
+    b = b1;
+  }
+
+  void set(const PSEditColor *c) {
+    r = c->r;
+    g = c->g;
+    b = c->b;
+  }
+
+  unsigned char get_r() {
+    return (unsigned char) rint(r * 256.0);
+  }
+
+  unsigned char get_g() {
+    return (unsigned char) rint(g * 256.0);
+  }
+
+  unsigned char get_b() {
+    return (unsigned char) rint(b * 256.0);
+  }
+
+
+};
+
 class PSEditText;
 
 class PSEditText {
@@ -35,11 +85,12 @@ class PSEditText {
   PSEditText *next;
   
 public:
-  int c;
+
+  PSEditColor text_color;
 
   int size;
   
-  PSEditText(int x1, int y1, const char *s1, int size1);
+  PSEditText(int x1, int y1, const char *s1, int size1, PSEditColor *c);
 
   ~PSEditText();
 
@@ -64,8 +115,6 @@ public:
   int get_size();
 
   PSEditText *get_next();
-
-  int get_color();
 
   int get_x();
 

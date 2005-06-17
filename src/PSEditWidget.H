@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.H,v 1.16 2005/06/05 19:57:57 hofmann Exp $"
+// "$Id: PSEditWidget.H,v 1.17 2005/06/17 18:20:42 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -27,15 +27,21 @@
 #include "GsWidget.H"
 #include "PSEditModel.H"
 
+typedef void (PSEditCallback)(); 
+
 class PSText;
 
 class PSEditWidget : public GsWidget {
 private:
   int cur_size;
 
+  PSEditColor cur_text_color;
+
   int show_tags;
 
   int zoom_percent;
+
+  PSEditCallback *property_changed_cb;
 
 protected:
   PSEditModel *model;
@@ -75,6 +81,10 @@ public:
 
   int get_size();
 
+  void set_color(const PSEditColor *c);
+
+  void get_color(PSEditColor *c);
+
   int get_max_pages();
 
   char *get_tag();
@@ -94,6 +104,9 @@ public:
   int replace_tag(char* tag, char* text);
 
   int zoom(int p);
+
+  void property_changed_callback(PSEditCallback *cb) {
+    property_changed_cb = cb;};
 
  private:
   int bb_x(PSEditText *t);

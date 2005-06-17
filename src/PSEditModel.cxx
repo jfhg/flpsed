@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.13 2005/02/28 17:56:51 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.14 2005/06/17 18:20:42 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -79,10 +79,11 @@ void PSEditModel::clear() {
   }
 }
 
-void PSEditModel::new_text(int x1, int y1, const char *s, int size, int p) {
+void PSEditModel::new_text(int x1, int y1, const char *s, 
+			   int size, int p, PSEditColor *c) {
   set_page(p);
 
-  cur_text = new PSEditText(x1, y1, s, size);
+  cur_text = new PSEditText(x1, y1, s, size, c);
   if (text[p]) {
     text[p]->append(cur_text);
   } else {
@@ -164,6 +165,23 @@ void PSEditModel::set_size(int s) {
 int PSEditModel::get_size() {
   if (cur_text) {
     return cur_text->size;
+  } else {
+    return -1;
+  }
+}
+
+void PSEditModel::set_color(PSEditColor *c) {
+  if (cur_text) {
+    cur_text->text_color.set(c->r, c->g, c->b); 
+  }
+}
+
+int PSEditModel::get_color(PSEditColor *c) {
+  if (cur_text) {
+    c->set(cur_text->text_color.r, 
+	   cur_text->text_color.g,
+	   cur_text->text_color.b);
+    return 0;
   } else {
     return -1;
   }

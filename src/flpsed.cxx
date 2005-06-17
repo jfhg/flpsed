@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.36 2005/05/25 18:50:39 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.37 2005/06/17 18:20:42 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -40,6 +40,7 @@
 #include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Item.H>
+#include <FL/Fl_Color_Chooser.H>
 
 #include "PSEditor.H"
 #include "util.h"
@@ -212,12 +213,63 @@ void about_cb() {
 	     "PostScript is a registered trademark of Adobe Systems");
 }
 
+Fl_Choice *size_c;
+Fl_Button *color_b;
+
+struct {
+  char *label;
+  int size;
+} text_sizes[] = {
+  {"8", 8},
+  {"10", 10},
+  {"12", 12},
+  {"14", 14},
+  {"18", 18},
+  {"24", 24},
+  {NULL, 0}
+};
+
+void property_changed_cb() {
+  PSEditColor c;
+  int size;
+
+  psed_p->get_color(&c);
+  color_b->color(fl_rgb_color(c.get_r(), c.get_g(), c.get_b()));
+  color_b->redraw();
+
+  size = psed_p->get_size();
+  for (int i=0; text_sizes[i].label != NULL; i++) {
+    if (size == text_sizes[i].size) {
+      size_c->value(i);
+      size_c->redraw();
+    }
+  }
+}
+
 void size_cb(Fl_Widget *w, void *) {
   Fl_Menu_* mw = (Fl_Menu_*)w;
   const Fl_Menu_Item* m = mw->mvalue();
   if (m) {
     psed_p->set_size(atoi(m->label()));
   }
+}
+
+void color_cb(Fl_Widget *w, void *v) {
+  uchar r, g, b;
+  PSEditColor pc;
+
+  psed_p->get_color(&pc);
+
+  r = pc.get_r();
+  g = pc.get_g();
+  b = pc.get_b();
+
+  if (!fl_color_chooser("Text Color", r, g, b)) return;
+  Fl_Button* button = (Fl_Button*)v;
+  pc.set(r, g, b);
+  psed_p->set_color(&pc);
+  button->color(fl_rgb_color(r, g, b));
+  button->parent()->redraw();
 }
 
 void zoom_cb(Fl_Widget *w, void *) {
@@ -275,15 +327,6 @@ Fl_Menu_Item menuitems[] = {
     { "250 %",  0, (Fl_Callback *)zoom_cb },
     { 0 },
 
-  { "&Size", 0, 0, 0, FL_SUBMENU },
-    { "8",  0, (Fl_Callback *)size_cb },
-    { "10",  0, (Fl_Callback *)size_cb },
-    { "12",  0, (Fl_Callback *)size_cb },    
-    { "14",  0, (Fl_Callback *)size_cb },
-    { "18",  0, (Fl_Callback *)size_cb },
-    { "24",  0, (Fl_Callback *)size_cb },
-  { 0 },
-
   { "&Tags", 0, 0, 0, FL_SUBMENU },
     { "Show &Tags", FL_CTRL + 't', (Fl_Callback *)show_tags_cb, (void *)1, FL_MENU_RADIO|FL_MENU_VALUE},
     { "&Hide Tags", FL_CTRL + 'h', (Fl_Callback *)show_tags_cb, (void *)0, FL_MENU_RADIO},
@@ -296,7 +339,18 @@ Fl_Menu_Item menuitems[] = {
 
   { 0 }
 };
-  
+
+
+
+Fl_Menu_Item size_menu[] = {
+{ text_sizes[0].label,  0, (Fl_Callback *)size_cb },
+{ text_sizes[1].label,  0, (Fl_Callback *)size_cb },
+{ text_sizes[2].label,  0, (Fl_Callback *)size_cb },    
+{ text_sizes[3].label,  0, (Fl_Callback *)size_cb },
+{ text_sizes[4].label,  0, (Fl_Callback *)size_cb },
+{ text_sizes[5].label,  0, (Fl_Callback *)size_cb },
+{ 0 }
+};
 
 void usage() {
   fprintf(stderr,
@@ -440,8 +494,22 @@ int main(int argc, char** argv) {
     win = new Fl_Window(600,700);
     m = new Fl_Menu_Bar(0, 0, 600, 30);
     m->menu(menuitems);
-    scroll = new Fl_Scroll(0, 30, win->w(), win->h()-30);
+
+    Fl_Box b(FL_UP_BOX, 0, 30, 600, 25, "");
+    size_c = new Fl_Choice(30, 32, 50, 21, NULL);
+    size_c->menu(size_menu); 
+    size_c->callback(size_cb);
+    size_c->tooltip("Text Size");
+
+    color_b = new Fl_Button(100, 32, 21, 21);
+    color_b->color(FL_BLACK);
+    color_b->callback(color_cb, color_b);
+    color_b->shortcut(FL_ALT + 'c');
+    color_b->tooltip("Text Color");
+
+    scroll = new Fl_Scroll(0, 55, win->w(), win->h()-55);
     psed_p = new PSEditor(0, 0, 700, 900);
+    psed_p->property_changed_callback(property_changed_cb);
     scroll->end();
     
     fl_open_display();

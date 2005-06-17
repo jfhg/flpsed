@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditText.cxx,v 1.2 2004/10/21 21:02:05 hofmann Exp $"
+// "$Id: PSEditText.cxx,v 1.3 2005/06/17 18:20:42 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -30,13 +30,14 @@
 #include "PSEditText.H"
 
 
-PSEditText::PSEditText(int x1, int y1, const char *s1, int size1) {
+PSEditText::PSEditText(int x1, int y1, const char *s1, 
+		       int size1, PSEditColor *c) {
   x = x1;
   y = y1;
   s = strdup(s1);
   tag = NULL;
-  c = 0;
   size = size1;
+  text_color.set(c->r, c->g, c->b);
   next = NULL;
 }
 
@@ -131,10 +132,6 @@ int PSEditText::set_tag(const char *t) {
 
 int PSEditText::get_size() {
   return size;
-}
-
-int PSEditText::get_color() {
-  return c;
 }
 
 PSEditText* PSEditText::get_next() {

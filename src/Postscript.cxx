@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.15 2005/04/19 20:29:58 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.16 2005/06/17 18:20:42 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -29,6 +29,7 @@
 #define PS_TEXT_FORMAT  "(%s) show %% PSEditWidget\n"
 #define PS_SIZE_FORMAT  "/HelveticaNeue-Roman findfont %d scalefont setfont"\
                         " %% PSEditWidget\n"
+#define PS_COLOR_FORMAT  "%lf %lf %lf setrgbcolor %% PSEditWidget\n"
 #define PS_GLYPH_FORMAT "/%s glyphshow %% PSEditWidget\n"
 #define PS_TAG_FORMAT   ""
 
@@ -44,6 +45,7 @@
 #define PSEDIT_TEXT_FORMAT_PRINT  "%% PSEditWidget: TEXT (%s)\n"
 #define PSEDIT_TEXT_FORMAT_SCAN   "%% PSEditWidget: TEXT (%[^)])\n"
 #define PSEDIT_SIZE_FORMAT        "%% PSEditWidget: SIZE %d\n"
+#define PSEDIT_COLOR_FORMAT       "%% PSEditWidget: COLOR %lf %lf %lf\n"
 #define PSEDIT_GLYPH_FORMAT       "%% PSEditWidget: GLYPH %s\n"
 #define PSEDIT_TAG_FORMAT         "%% PSEditWidget: TAG %s\n"
 
@@ -208,6 +210,7 @@ PSParser_1::PSParser_1(PSEditModel *p) : PSParser(p) {
 int PSParser_1::parse(char *line) {
   int x1, y1, size;
   char *s, *e, glyph[1024];
+  PSEditColor c;
 
   if (strcmp(line, "showpage\n") == 0) {
     page++;
@@ -218,7 +221,7 @@ int PSParser_1::parse(char *line) {
       cur_size = size;
       return 1; // line was recognized 
     } else if (sscanf(line, PS_POS_FORMAT, &x1, &y1) == 2) {
-      pse->new_text(x1, y1, "", cur_size, page);
+      pse->new_text(x1, y1, "", cur_size, page, &c);
       return 1;
     } else if (sscanf(line, PS_GLYPH_FORMAT, glyph) == 1) {
       pse->append_text(glyph_to_char(glyph));
@@ -243,6 +246,7 @@ PSParser_2::PSParser_2(PSEditModel *p) : PSParser(p) {
 
 int PSParser_2::parse(char *line) {
   int x1, y1, size, dummy;
+  PSEditColor c;
   char buf[2028];
   
   if (!inside && strcmp(line, PSEDIT_BEGIN) == 0) {
@@ -256,8 +260,13 @@ int PSParser_2::parse(char *line) {
   } else if (inside && sscanf(line, PSEDIT_SIZE_FORMAT, &size) == 1) {
     cur_size = size;
     return 1; 
+  } else if (inside && sscanf(line, PSEDIT_COLOR_FORMAT, &c.r, &c.g, &c.b)
+	     == 3) {
+    fprintf(stderr, "==> c %f %f %f\n", c.r, c.g, c.b);
+    cur_text_color.set(&c);
+    return 1; 
   } else if (inside && sscanf(line, PSEDIT_POS_FORMAT, &x1, &y1) == 2) {
-    pse->new_text(x1, y1, "", cur_size, page);
+    pse->new_text(x1, y1, "", cur_size, page, &cur_text_color);
     return 1;
   } else if (inside && sscanf(line, PSEDIT_GLYPH_FORMAT, buf) == 1) {
     pse->append_text(glyph_to_char(buf));
@@ -325,6 +334,7 @@ void PSWriter::write_main_block(FILE *out) {
   write_internal_format(out);
   pos_format   = PS_POS_FORMAT;
   size_format  = PS_SIZE_FORMAT;
+  color_format = PS_COLOR_FORMAT;
   text_format  = PS_TEXT_FORMAT;
   glyph_format = PS_GLYPH_FORMAT;
   tag_format   = PS_TAG_FORMAT;
@@ -350,6 +360,7 @@ void PSWriter::write_main_block(FILE *out) {
 void PSWriter::write_internal_format(FILE *out) {
   pos_format   = PSEDIT_POS_FORMAT;
   size_format  = PSEDIT_SIZE_FORMAT;
+  color_format = PSEDIT_COLOR_FORMAT;
   text_format  = PSEDIT_TEXT_FORMAT_PRINT;
   glyph_format = PSEDIT_GLYPH_FORMAT;
   tag_format   = PSEDIT_TAG_FORMAT;
@@ -398,6 +409,10 @@ int PSWriter::write_text(FILE *out, PSEditText *t) {
 
   if (strcmp(s, "") != 0 || t->get_tag() != NULL) {
     fprintf(out, size_format, t->get_size());
+    fprintf(out, color_format, 
+	    t->text_color.r,
+	    t->text_color.g,
+	    t->text_color.b);
     fprintf(out, pos_format, t->get_x(), t->get_y());
     if (t->get_tag()) {
       fprintf(out, tag_format, t->get_tag());

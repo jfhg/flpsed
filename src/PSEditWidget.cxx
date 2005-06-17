@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditWidget.cxx,v 1.36 2005/06/05 19:57:57 hofmann Exp $"
+// "$Id: PSEditWidget.cxx,v 1.37 2005/06/17 18:20:42 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -55,7 +55,11 @@ void PSEditWidget::draw() {
     t_x = ps_to_display_x(t->get_x());
     t_y = ps_to_display_y(t->get_y());
 
-    fl_color((Fl_Color) t->get_color());
+    fl_color(fl_rgb_color(t->text_color.get_r(),
+			  t->text_color.get_g(),
+			  t->text_color.get_b()));
+			  
+
     fl_font(FLPSED_FONT, t->get_size() * zoom_percent / 100);
     fl_draw(t->get_text(), t_x + x(), t_y + y());
     if (model->is_cur_text(t)) {
@@ -80,15 +84,29 @@ void PSEditWidget::draw() {
 }
 
 PSEditWidget::PSEditWidget(int X,int Y,int W, int H): GsWidget(X, Y, W, H) {
-
   model = new PSEditModel();
   cur_size = 12;
+  cur_text_color.set(0.0, 0.0, 0.0);
   show_tags = 1;
   zoom_percent = 100;
+  property_changed_cb = NULL;
 }
   
 int PSEditWidget::next() {
-  model->set_page(page);
+  model->set_page(page);  
+  PSEditText *t_new;
+
+  t_new = model->get_cur_text();
+
+  if (t_new) {
+    cur_text_color.set(&t_new->text_color);
+    cur_size = t_new->size;
+
+    if (property_changed_cb) {
+      property_changed_cb();
+    }
+  }  
+
   return GsWidget::next();
 }
 
@@ -97,7 +115,7 @@ void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
   
   t_old = model->get_cur_text();
 
-  model->new_text(ps_x(x1), ps_y(y1), s, cur_size, p);
+  model->new_text(ps_x(x1), ps_y(y1), s, cur_size, p, &cur_text_color);
   mod++;
 
   t = model->get_cur_text();
@@ -125,11 +143,18 @@ int PSEditWidget::set_cur_text(int x1, int y1) {
     t_new = model->get_cur_text();
 
     if (t_new) {
+      cur_text_color.set(&t_new->text_color);
+      cur_size = t_new->size;
+      if (property_changed_cb) {
+	property_changed_cb();
+      }
+
       damage(4, bb_x(t_new), bb_y(t_new), bb_w(t_new), bb_h(t_new));
     }
     if (t_old) {
       damage(4, bb_x(t_old), bb_y(t_old), bb_w(t_old), bb_h(t_old));
     }
+
     return 0;
   }
   return 1;
@@ -146,13 +171,19 @@ int PSEditWidget::next_text() {
   t_new = model->get_cur_text();
  
   if (t_new) {
+    cur_text_color.set(&t_new->text_color);
+    cur_size = t_new->size;
+    if (property_changed_cb) {
+      property_changed_cb();
+    }
+
     damage(4, bb_x(t_new), bb_y(t_new), bb_w(t_new), bb_h(t_new));
   }
 
   if (t_old) {
     damage(4, bb_x(t_old), bb_y(t_old), bb_w(t_old), bb_h(t_old));
   }
-
+  
   return ret;
 }
 
@@ -226,6 +257,11 @@ void PSEditWidget::rm_char() {
 
 int PSEditWidget::reload() {
   model->set_page(0);
+
+  if (property_changed_cb) {
+    property_changed_cb();
+  }
+
   return GsWidget::reload();
 }
 
@@ -260,6 +296,26 @@ int PSEditWidget::get_size() {
   } else {
     return cur_size;
   }
+}
+
+void PSEditWidget::set_color(const PSEditColor *c) {
+  PSEditText *t;
+  uchar *p;
+  
+  t = model->get_cur_text();
+
+  p = (uchar*) &c;
+  cur_text_color.set(c);
+
+  model->set_color(&cur_text_color);
+
+  if (t) {
+    damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
+  }
+}
+
+void PSEditWidget::get_color(PSEditColor *c) {
+  c->set(&cur_text_color);
 }
 
 int PSEditWidget::get_max_pages() {

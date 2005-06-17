@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.H,v 1.6 2005/02/28 19:53:58 hofmann Exp $"
+// "$Id: Postscript.H,v 1.7 2005/06/17 18:20:42 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -32,6 +32,8 @@ class PSParser {
   PSEditModel *pse;
 
   int cur_size;
+
+  PSEditColor cur_text_color;
 
   int page;
 
@@ -67,6 +69,8 @@ class PSWriter {
   char * size_format;
 
   char * text_format;
+
+  char * color_format;
 
   char * glyph_format;
 
