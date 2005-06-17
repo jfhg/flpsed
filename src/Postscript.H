@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.H,v 1.7 2005/06/17 18:20:42 hofmann Exp $"
+// "$Id: Postscript.H,v 1.8 2005/06/17 18:24:34 hofmann Exp $"
 //
 // X11 header file for the Fast Light Tool Kit (FLTK).
 //
@@ -41,13 +41,6 @@ class PSParser {
   PSParser(PSEditModel *p);
 
   virtual int parse(char *line);
-};
-  
-class PSParser_1 : public PSParser {
- public:
-  PSParser_1(PSEditModel *p);
-
-  int parse(char *line);
 };
 
 class PSParser_2 : public PSParser {

@@ -1,5 +1,5 @@
 // 
-// "$Id: Postscript.cxx,v 1.16 2005/06/17 18:20:42 hofmann Exp $"
+// "$Id: Postscript.cxx,v 1.17 2005/06/17 18:24:34 hofmann Exp $"
 //
 // Postscript handling routines.
 //
@@ -202,43 +202,6 @@ int PSParser::parse(char *line) {
   return 0;
 }
 
-
-PSParser_1::PSParser_1(PSEditModel *p) : PSParser(p) {
-  page = 1;
-}
-
-int PSParser_1::parse(char *line) {
-  int x1, y1, size;
-  char *s, *e, glyph[1024];
-  PSEditColor c;
-
-  if (strcmp(line, "showpage\n") == 0) {
-    page++;
-  }
-  
-  if (strstr(line, "% PSEditWidget")) {
-    if (sscanf(line, PS_SIZE_FORMAT, &size) == 1) {
-      cur_size = size;
-      return 1; // line was recognized 
-    } else if (sscanf(line, PS_POS_FORMAT, &x1, &y1) == 2) {
-      pse->new_text(x1, y1, "", cur_size, page, &c);
-      return 1;
-    } else if (sscanf(line, PS_GLYPH_FORMAT, glyph) == 1) {
-      pse->append_text(glyph_to_char(glyph));
-      return 1;
-    } else if ((s = strchr(line, '(')) &&
-	       (e = strrchr(line, ')'))) {
-      *e = '\0';
-      s++;
-      pse->append_text(s);
-      return 1;
-    }
-    return 0; // line not recognized
-  } else {
-    return 0; 
-  }
-}
-
 PSParser_2::PSParser_2(PSEditModel *p) : PSParser(p) {
   page = 1;
   inside = 0;
@@ -262,7 +225,6 @@ int PSParser_2::parse(char *line) {
     return 1; 
   } else if (inside && sscanf(line, PSEDIT_COLOR_FORMAT, &c.r, &c.g, &c.b)
 	     == 3) {
-    fprintf(stderr, "==> c %f %f %f\n", c.r, c.g, c.b);
     cur_text_color.set(&c);
     return 1; 
   } else if (inside && sscanf(line, PSEDIT_POS_FORMAT, &x1, &y1) == 2) {

@@ -1,5 +1,5 @@
 // 
-// "$Id: PSEditor.cxx,v 1.24 2005/02/07 17:54:03 hofmann Exp $"
+// "$Id: PSEditor.cxx,v 1.25 2005/06/17 18:24:34 hofmann Exp $"
 //
 // PSEditor routines.
 //
@@ -181,7 +181,6 @@ int PSEditor::save(const char* savefile) {
 int PSEditor::import(char *f) {
   FILE *fp;
   char linebuf[1024];
-  PSParser *p1;
   PSParser *p2;
 
   if (!file_loaded()) {
@@ -194,15 +193,11 @@ int PSEditor::import(char *f) {
     return 1;
   }
 
-  p1 = new PSParser_1(model);
   p2 = new PSParser_2(model);
   while (fgets(linebuf, 1024, fp) != NULL) {
-    if (!p2->parse(linebuf)) {
-      p1->parse(linebuf);
-    }
+    p2->parse(linebuf);
   }
 
-  delete(p1);
   delete(p2);
   
   mod = 1;

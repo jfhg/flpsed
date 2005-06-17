@@ -1,5 +1,5 @@
 //
-// "$Id: PSEditModel.cxx,v 1.14 2005/06/17 18:20:42 hofmann Exp $"
+// "$Id: PSEditModel.cxx,v 1.15 2005/06/17 18:24:34 hofmann Exp $"
 //
 // PSEditWidget routines.
 //
@@ -256,7 +256,6 @@ int PSEditModel::load(FILE *fp) {
   char tmpname[256];
   char linebuf[1024];
   ssize_t ret;
-  PSParser *p1 = new PSParser_1(this);
   PSParser *p2 = new PSParser_2(this);
   int tmp_fd;
 
@@ -271,7 +270,7 @@ int PSEditModel::load(FILE *fp) {
   clear();
 
   while (fgets(linebuf, sizeof(linebuf), fp) != NULL) {
-    if (!p2->parse(linebuf) && !p1->parse(linebuf)) {
+    if (!p2->parse(linebuf)) {
       ret = write(tmp_fd, linebuf, strlen(linebuf));
       if (ret != strlen(linebuf)) {
 	fprintf(stderr, "Error while writing to temporary file\n");
@@ -281,7 +280,6 @@ int PSEditModel::load(FILE *fp) {
 
   lseek(tmp_fd, 0L, SEEK_SET);
 
-  delete(p1);
   delete(p2);
 
   return tmp_fd;
