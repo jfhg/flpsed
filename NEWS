@@ -2,7 +2,8 @@ flpsed ChangeLog
 =================
 
 flpsed-0.3.5
- - Add text color support.
+ - Add text color support. Click on the (initially) black button and 
+   increase the brightness using the vertical slider.
  - Move text properties (currently text size and color) to own toolbar.
  - Fix keyboard shortcuts (noticed by Spec).
  - Updated Mac OS X compile instructions 
