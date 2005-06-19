@@ -1,5 +1,5 @@
 // 
-// "$Id: flpsed.cxx,v 1.39 2005/06/17 20:00:44 hofmann Exp $"
+// "$Id: flpsed.cxx,v 1.40 2005/06/19 10:10:57 hofmann Exp $"
 //
 // flpsed program.
 //
@@ -527,6 +527,8 @@ int main(int argc, char** argv) {
     win->show(1, argv); 
     
     if (in_fp) {
+      sleep(1); // this seems to be necessary on fast systems to make the
+                // GHOSTVIEW property available to ghostsscript.
       psed_p->load(in_fp);
       fclose(in_fp);
     }
