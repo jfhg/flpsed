@@ -218,7 +218,7 @@ void about_cb() {
 Fl_Choice *size_c;
 Fl_Button *color_b;
 
-struct {
+static struct {
   char *label;
   int size;
 } text_sizes[] = {
