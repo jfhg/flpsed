@@ -394,10 +394,6 @@ int main(int argc, char** argv) {
       break;
     case 't':
       tmp = strdup(optarg);
-      if (!tmp) {
-	perror("strdup");
-	exit(1);
-      }
       sep = strchr(tmp, '=');
       if (!sep) {
 	fprintf(stderr, "Cannot parse %s\n", optarg);
