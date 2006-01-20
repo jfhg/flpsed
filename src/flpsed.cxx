@@ -356,11 +356,12 @@ Fl_Menu_Item size_menu[] = {
 
 void usage() {
   fprintf(stderr,
-	  "usage: flpsed [-hbd] [-t <tag>=<value>] [<infile>] [<outfile>]\n"
+	  "usage: flpsed [-hbdz] [-t <tag>=<value>] [<infile>] [<outfile>]\n"
 	  "   -h                 print this message\n"
 	  "   -b                 batch mode (no gui)\n"
 	  "   -d                 dump tags and values from a document\n"
 	  "                      to stdout (this implies -b)\n"
+	  "   -z <zoom>          set the zoom percentage (e.g. 200)\n"
 	  "   -t <tag>=<value>   set text to <value> where tag is <tag>\n"
 	  "   <infile>           optional input file; in batch mode if no\n"
 	  "                      input file is given, input is read from stdin\n"
@@ -384,9 +385,10 @@ int main(int argc, char** argv) {
   struct {char *tag; char *value;} tv[TV_LEN];
   int tv_idx = 0, my_argc;
   FILE *in_fp = NULL, *out_fp = NULL;
+  int zoom_val = 0;
   
   err = 0;
-  while ((c = getopt(argc, argv, "hdbt:g:d:f:i:s:")) != -1) {
+  while ((c = getopt(argc, argv, "hdbt:z:g:d:f:i:s:")) != -1) {
     switch (c) {  
     case 'h':
       usage();
@@ -417,6 +419,9 @@ int main(int argc, char** argv) {
 	tv_idx++;
       }
       free(tmp);
+      break;
+    case 'z':
+      zoom_val = atoi(optarg);
       break;
     default:
       i = optind -1;
@@ -524,6 +529,7 @@ int main(int argc, char** argv) {
     psed_p = new PSEditor(0, 0, 700, 900);
     psed_p->property_changed_callback(property_changed_cb);
     scroll->end();
+
     
     fl_open_display();
     Fl::add_handler(xev_handler);
@@ -533,7 +539,12 @@ int main(int argc, char** argv) {
     win->end();
     win->callback((Fl_Callback *)quit_cb);
     win->show(1, argv); 
-    
+   
+
+    if (zoom_val) {
+       psed_p->zoom(zoom_val);
+    }
+
     if (in_fp) {
       sleep(1); // this seems to be necessary on fast systems to make the
                 // GHOSTVIEW property available to ghostsscript.
