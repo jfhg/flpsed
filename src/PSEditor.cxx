@@ -194,7 +194,7 @@ int PSEditor::import(char *f) {
   }
 
   p2 = new PSParser_2(model);
-  while (fgets(linebuf, 1024, fp) != NULL) {
+  while (fgets(linebuf, sizeof(linebuf), fp) != NULL) {
     p2->parse(linebuf);
   }
 
