@@ -34,8 +34,10 @@
 #include <FL/Fl_Window.H>
 #include <FL/x.H>
 
+#include "PostscriptDSC.H"
 
 class GsWidget : public Fl_Widget {
+  PostscriptDSC *dsc;
   int gs_win;
   Atom atoms[5];
   pid_t gs_pid;
@@ -61,6 +63,8 @@ public:
 
   int load(int fd);
 
+  int load_page(int p);
+
   int reload();
 
   int next();
@@ -73,8 +77,14 @@ public:
 
 private:
   void setProps();
+	
+  void exec_gs();
 
   void kill_gs();
+
+  int fd_copy(int to, int from, size_t len);
+
+  int feed_page(int p);
 
   bool gs_active();
 };

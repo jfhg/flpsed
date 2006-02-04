@@ -7,6 +7,7 @@ flpsed_SOURCES = \
 	PSEditText.cxx \
 	PSEditModel.cxx \
 	Postscript.cxx \
+	PostscriptDSC.cxx \
 	flpsed.cxx \
 	util.c
 
@@ -15,6 +16,7 @@ noinst_HEADERS = \
 	PSEditModel.H \
 	PSEditText.H \
 	Postscript.H \
+	PostscriptDSC.H \
 	PSEditor.H \
 	PSEditWidget.H \
 	util.h

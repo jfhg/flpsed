@@ -33,7 +33,9 @@
 #include <FL/fl_draw.H>
 
 #include "GsWidget.H"
+#include "PostscriptDSC.H"
 
+#define MIN(A,B) ((A)<(B)?(A):(B))
 
 void GsWidget::draw() {
   if (!offscreen) {
@@ -111,6 +113,7 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
   initial_height = H;
   in_fd = -1;
   reload_needed = 0;
+  dsc = new PostscriptDSC();
 }
   
 GsWidget::~GsWidget() {
@@ -130,11 +133,24 @@ int GsWidget::load(char *f) {
 }
 
 int GsWidget::load(int fd) {
+  pid_t pid;
+
   if (in_fd >= 0 && fd != in_fd) {
     close (in_fd);
   }
 
   in_fd = fd;
+
+  if (dsc->parse(in_fd) == 0) {
+    int bb_x, bb_y, bb_w, bb_h;
+
+    dsc->print();
+    dsc->get_bounding_box(&bb_x, &bb_y, &bb_w, &bb_h);
+    paper_x = bb_w;
+    paper_y = bb_h;
+  }
+
+  lseek(in_fd, 0L, SEEK_SET);
 
   fl_cursor(FL_CURSOR_WAIT);
   kill_gs();
@@ -146,36 +162,120 @@ int GsWidget::load(int fd) {
 
   setProps();
     
-  pid_t pid = fork();
+  pid = fork();
   if (pid == (pid_t) 0) {
-    char *argv[16];
-    char gvenv[256];
-    int d_null = open("/dev/null", O_WRONLY);
-      
-    dup2(d_null, STDOUT_FILENO);
-    close(d_null);
     dup2(in_fd, STDIN_FILENO);
-    snprintf(gvenv, 256, "%d %d", (int) fl_xid(window()), (int) offscreen);
-
-    setenv("GHOSTVIEW", gvenv, 1);
-    argv[0] = "gs";
-    argv[1] = "-dSAFER";
-    argv[2] = "-dQUIET";
-    argv[3] = "-sDEVICE=x11alpha";
-    argv[4] = "-dNOPLATFONTS";
-    argv[5] = "-";
-    argv[6] = NULL;
-    execvp(argv[0], argv);
-    perror("exec");
-    fprintf(stderr, "Please install ghostscript and make sure 'gs' "
-	    "is in the PATH.\n");
-    exit(1);
+    exec_gs();
   } else {
     gs_pid = pid;
     page = 0;
   }
   
   return 0;
+}
+
+int
+GsWidget::load_page(int p) {
+  pid_t pid;
+
+  if (p < 1 || p > dsc->get_pages()) {
+    fprintf(stderr, "Page %d not found in document\n", p);
+    return 1;
+  }
+ 
+  fl_cursor(FL_CURSOR_WAIT);
+  kill_gs();
+
+  setProps();
+  
+  pid = fork();
+
+  if (pid == (pid_t) 0) {
+    feed_page(p);
+    exit(0);
+  } else {
+    gs_pid = pid;
+  }  
+}
+
+int GsWidget::feed_page(int p) {
+  pid_t pid;
+  int pdes[2];
+
+  if (pipe(pdes) < 0) {
+    return 1; 
+  }
+
+  pid = fork();
+
+  if (pid == (pid_t) 0) {
+    close(pdes[1]);
+    dup2(pdes[0], STDIN_FILENO);
+    exec_gs();
+  } else {
+    size_t len;
+
+    close(pdes[0]);
+
+    lseek(in_fd, 0L, SEEK_SET);
+    len = dsc->get_setup_len();
+    if (fd_copy(pdes[1], in_fd, len) != 0) {
+      exit(1);
+    }
+    
+    lseek(in_fd, dsc->get_page_off(p), SEEK_SET);
+    len = dsc->get_page_len(p);
+    if (fd_copy(pdes[1], in_fd, len) != 0) {
+      exit(1);
+    }
+
+  }
+
+}
+
+int GsWidget::fd_copy(int to, int from, size_t len) {
+  size_t n, r;
+  char buf[1024];
+
+  n = 0;
+  while(len > 0) {
+    r = read(from, buf, MIN(sizeof(buf), len));
+
+    write(STDOUT_FILENO, buf, r);
+    if (r < 0) {
+      perror("read");
+      return 1;
+    }
+    write(to, buf, r);
+    len -= r;
+  }
+
+  return 0;
+}
+
+void GsWidget::exec_gs() {
+  char *argv[16];
+  char gvenv[256];
+  int d_null = open("/dev/null", O_WRONLY);
+      
+  dup2(d_null, STDOUT_FILENO);
+  close(d_null);
+
+  snprintf(gvenv, 256, "%d %d", (int) fl_xid(window()), (int) offscreen);
+    
+  setenv("GHOSTVIEW", gvenv, 1);
+  argv[0] = "gs";
+  argv[1] = "-dSAFER";
+  argv[2] = "-dQUIET";
+  argv[3] = "-sDEVICE=x11alpha";
+  argv[4] = "-dNOPLATFONTS";
+  argv[5] = "-";
+  argv[6] = NULL;
+  execvp(argv[0], argv);
+  perror("exec");
+  fprintf(stderr, "Please install ghostscript and make sure 'gs' "
+            "is in the PATH.\n");
+  exit(1);
 }
 
 int GsWidget::reload() {

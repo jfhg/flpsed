@@ -82,6 +82,8 @@ void open_cb() {
   char *file = fl_file_chooser("Open File?", "*.ps", filename);
   if(file != NULL) {
     psed_p->load(file);
+
+    psed_p->load_page(2);
   }  
 }
 
