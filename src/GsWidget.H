@@ -71,6 +71,8 @@ public:
 
   int next();
 
+  int prev();
+
   int handleX11(int ev);
 
   int zoom(int p);

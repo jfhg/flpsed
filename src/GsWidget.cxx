@@ -114,7 +114,7 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
   initial_height = H;
   in_fd = -1;
   reload_needed = 0;
-  dsc = new PostscriptDSC();
+  dsc = NULL;
 }
   
 GsWidget::~GsWidget() {
@@ -137,8 +137,12 @@ int GsWidget::open_file(int fd) {
   if (in_fd >= 0 && fd != in_fd) {
     close (in_fd);
   }
-
   in_fd = fd;
+
+  if (dsc) {
+    delete(dsc);
+  }
+  dsc = new PostscriptDSC();
 
   if (dsc->parse(in_fd) == 0) {
     int bb_x, bb_y, bb_w, bb_h;
@@ -147,7 +151,14 @@ int GsWidget::open_file(int fd) {
     dsc->get_bounding_box(&bb_x, &bb_y, &bb_w, &bb_h);
     paper_x = bb_w;
     paper_y = bb_h;
+  } else {
+    delete(dsc);
+    dsc = NULL;
+    paper_x = 594; // DIN A4
+    paper_y = 841; //
   }
+
+  page = 0;
 
   return 0;
 }
@@ -155,6 +166,10 @@ int GsWidget::open_file(int fd) {
 
 int GsWidget::load() {
   pid_t pid;
+
+  if (dsc) {
+    return load_page(0);
+  }
 
   if (in_fd < 0) {
     return 1;
@@ -178,7 +193,7 @@ int GsWidget::load() {
     exec_gs();
   } else {
     gs_pid = pid;
-    page = 0;
+    page = 1;
   }
   
   return 0;
@@ -193,13 +208,18 @@ GsWidget::load_page(int p) {
     return 1;
   }
 
-  if (p < 1 || p > dsc->get_pages()) {
+  if (p < 0 || p >= dsc->get_pages()) {
     fprintf(stderr, "Page %d not found in document\n", p);
     return 1;
   }
  
   fl_cursor(FL_CURSOR_WAIT);
   kill_gs();
+
+  if (!offscreen) {
+    reload_needed = 1;
+    return 0;
+  }
 
   if (pipe(pdes) < 0) {
     perror("pipe");
@@ -295,7 +315,11 @@ int GsWidget::reload() {
   int ret;
 
   if (in_fd >= 0) {
-    open_file(in_fd);
+    if (dsc) {
+      load_page(page);
+    } else {
+      load();
+    }
     return 0;
   } else {
     return 1;
@@ -303,35 +327,54 @@ int GsWidget::reload() {
 }
     
 int GsWidget::next() {
-  if (!gs_active()) {
-    return 1;
+  if (dsc) {
+    load_page(page + 1);
   } else {
-    fl_cursor(FL_CURSOR_WAIT);
+    if (!gs_active()) {
+      return 1;
+    } else {
+      fl_cursor(FL_CURSOR_WAIT);
 
-    XEvent e;
-    e.xclient.type = ClientMessage;
-    e.xclient.display = fl_display;
-    e.xclient.window = gs_win;
-    e.xclient.message_type = atoms[2];
-    e.xclient.format = 32;
+      XEvent e;
+      e.xclient.type = ClientMessage;
+      e.xclient.display = fl_display;
+      e.xclient.window = gs_win;
+      e.xclient.message_type = atoms[2];
+      e.xclient.format = 32;
 
-    XSendEvent(fl_display, gs_win, false, 0, &e);
-    XFlush(fl_display);
+      XSendEvent(fl_display, gs_win, false, 0, &e);
+      XFlush(fl_display);
+    }
   }
 
   return 0;
+}
+
+int GsWidget::prev() {
+  if (dsc) {
+    load_page(page - 1);
+    return 0;
+  } else {
+    return 1;
+  }
 }
 
 int GsWidget::handleX11(int ev) {
   if (fl_xevent->type == ClientMessage) {
     gs_win = fl_xevent->xclient.data.l[0];
     
-    if(fl_xevent->xclient.message_type == atoms[3]) {
-      page++;                               // PAGE revceived
+    if(fl_xevent->xclient.message_type == atoms[3]) { // PAGE received
       damage(FL_DAMAGE_ALL);
       fl_cursor(FL_CURSOR_DEFAULT);
+      if (dsc) {
+        kill_gs();
+      } else {
+        page++;
+      }
     } else if(fl_xevent->xclient.message_type == atoms[4] ) {
-      reload();                            // go back to page 1 
+      if (!dsc) {
+        reload();                            // go back to page 1 
+      }
     }
     return 1;
   }

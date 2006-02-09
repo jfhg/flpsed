@@ -35,6 +35,9 @@ PostscriptDSC::PostscriptDSC() {
   page_len = NULL;
 }
 
+PostscriptDSC::~PostscriptDSC() {
+}
+
 int 
 PostscriptDSC::parse(int fd) {
   FILE *fp;
@@ -42,7 +45,7 @@ PostscriptDSC::parse(int fd) {
   int x, y, w, h;
   int p1, p2, ps;
   int i = 0;
-
+  
   bb_x = 0;
   bb_y = 0;
   bb_w = 594; // A4 
@@ -80,8 +83,8 @@ PostscriptDSC::parse(int fd) {
       page_len = (size_t*) malloc(sizeof(size_t) * (pages + 1));
       memset(page_len, 0, sizeof(size_t) * (pages + 1));
     } else if (sscanf(linebuf, "%%%%Page: %d %d", &p1, &p2) == 2) {
-      if (p2 > pages) {
-        fprintf(stderr, "Page %d > Pages (%d)\n", p1, pages);
+      if (p1 > pages || p1 < 1) {
+        fprintf(stderr, "Page %d out of range (0 - %d)\n", p1, pages);
         return 1;
       } 
       if (page_off[p1] != NULL) {
@@ -99,6 +102,10 @@ PostscriptDSC::parse(int fd) {
       }
     }      
   }
+
+  page_len[p1] = ftello(fp) - page_off[p1];
+
+  return 0;
 }
 
 void
@@ -121,12 +128,12 @@ PostscriptDSC::get_setup_len() {
 
 size_t
 PostscriptDSC::get_page_off(int p) {
-  return page_off[p];
+  return page_off[p+1];
 }
 
 size_t
 PostscriptDSC::get_page_len(int p) {
-  return page_len[p];
+  return page_len[p+1];
 }
 
 void
@@ -135,7 +142,7 @@ PostscriptDSC::print() {
 
   printf("x %d, y %d, w %d, h %d\n", bb_x, bb_y, bb_w, bb_h);
   printf("setup_len %d\n", setup_len);
-  for (i=0; i<pages; i++) {
+  for (i=1; i<=pages; i++) {
     printf("p %d, off %d, len %d\n", i, page_off[i], page_len[i]);
   }
 }

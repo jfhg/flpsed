@@ -82,7 +82,7 @@ void open_cb() {
   if(file != NULL) {
 
     psed_p->open_file(file);
-    psed_p->load_page(2);
+    psed_p->load();
   }  
 }
 
@@ -164,7 +164,7 @@ void import_cb() {
 }
 
 void first_cb() {
-  psed_p->reload();
+  psed_p->load();
 }
 
 void next_cb() {
@@ -528,9 +528,8 @@ int main(int argc, char** argv) {
     win->show(1, argv); 
     
     if (in_fp) {
-      sleep(1); // this seems to be necessary on fast systems to make the
-                // GHOSTVIEW property available to ghostsscript.
       psed_p->open_file(in_fp);
+      psed_p->load();
       fclose(in_fp);
     }
 

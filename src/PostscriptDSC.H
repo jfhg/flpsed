@@ -32,7 +32,7 @@ class PostscriptDSC {
   public:
     PostscriptDSC();
     ~PostscriptDSC();
-
+    
     int parse(int fd);
     int get_pages();
     void get_bounding_box(int *x, int *y, int *w, int *h);
