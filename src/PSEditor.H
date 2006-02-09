@@ -37,9 +37,9 @@ class PSEditor : public PSEditWidget {
 public: 
   PSEditor(int X,int Y,int W, int H);  
 
-  int load(FILE *fp); 
+  int open_file(FILE *fp); 
 
-  int load(const char *f); 
+  int open_file(const char *f); 
 
   int save(FILE *fp);
 

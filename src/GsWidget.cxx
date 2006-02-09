@@ -29,6 +29,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <signal.h>
 
 #include <FL/fl_draw.H>
 
@@ -68,7 +69,7 @@ void GsWidget::setProps() {
   atoms[3] = XInternAtom(fl_display,"PAGE" , false);
   atoms[4] = XInternAtom(fl_display,"DONE" , false);
    
-  snprintf(data, 512, "%d %d %d %d %d %d %d.0 %d.0",
+  snprintf(data, sizeof(data), "%d %d %d %d %d %d %d.0 %d.0",
 	   0, 0, 0, 0, paper_x, paper_y, xdpi, ydpi);
 
   int xid = fl_xid(window());
@@ -77,7 +78,7 @@ void GsWidget::setProps() {
 		  XA_STRING, 8, PropModeReplace,
 		  (unsigned char*) data, strlen(data));
     
-  snprintf(data, 512, "%s %d %d", "Color", 
+  snprintf(data, sizeof(data), "%s %d %d", "Color", 
     (int) BlackPixel(fl_display, DefaultScreen(fl_display)),
     (int) WhitePixel(fl_display, DefaultScreen(fl_display)));
     
@@ -123,18 +124,16 @@ GsWidget::~GsWidget() {
   }
 }
 
-int GsWidget::load(char *f) {
+int GsWidget::open_file(char *f) {
   int fd = open(f, O_RDONLY); 
   if (fd == -1) {
     perror("open");
     return 1;
   }
-  return load(fd);
+  return open_file(fd);
 }
 
-int GsWidget::load(int fd) {
-  pid_t pid;
-
+int GsWidget::open_file(int fd) {
   if (in_fd >= 0 && fd != in_fd) {
     close (in_fd);
   }
@@ -148,6 +147,17 @@ int GsWidget::load(int fd) {
     dsc->get_bounding_box(&bb_x, &bb_y, &bb_w, &bb_h);
     paper_x = bb_w;
     paper_y = bb_h;
+  }
+
+  return 0;
+}
+
+
+int GsWidget::load() {
+  pid_t pid;
+
+  if (in_fd < 0) {
+    return 1;
   }
 
   lseek(in_fd, 0L, SEEK_SET);
@@ -177,6 +187,11 @@ int GsWidget::load(int fd) {
 int
 GsWidget::load_page(int p) {
   pid_t pid;
+  int pdes[2];
+
+  if (in_fd < 0) {
+    return 1;
+  }
 
   if (p < 1 || p > dsc->get_pages()) {
     fprintf(stderr, "Page %d not found in document\n", p);
@@ -186,51 +201,46 @@ GsWidget::load_page(int p) {
   fl_cursor(FL_CURSOR_WAIT);
   kill_gs();
 
-  setProps();
-  
-  pid = fork();
-
-  if (pid == (pid_t) 0) {
-    feed_page(p);
-    exit(0);
-  } else {
-    gs_pid = pid;
-  }  
-}
-
-int GsWidget::feed_page(int p) {
-  pid_t pid;
-  int pdes[2];
-
   if (pipe(pdes) < 0) {
-    return 1; 
+    perror("pipe");
+    return 1;
   }
 
-  pid = fork();
+  lseek(in_fd, 0L, SEEK_SET);
+  setProps();
 
+  pid = fork();
   if (pid == (pid_t) 0) {
+    close(in_fd);
     close(pdes[1]);
     dup2(pdes[0], STDIN_FILENO);
     exec_gs();
   } else {
     size_t len;
 
+    gs_pid = pid;
+    page = p;
+
     close(pdes[0]);
 
     lseek(in_fd, 0L, SEEK_SET);
     len = dsc->get_setup_len();
     if (fd_copy(pdes[1], in_fd, len) != 0) {
-      exit(1);
+      close(pdes[1]);
+      return 1;
     }
-    
+
     lseek(in_fd, dsc->get_page_off(p), SEEK_SET);
     len = dsc->get_page_len(p);
     if (fd_copy(pdes[1], in_fd, len) != 0) {
-      exit(1);
+      close(pdes[1]);
+      return 1;
     }
 
-  }
+    close(pdes[1]);
+  }  
 
+  return 0;
 }
 
 int GsWidget::fd_copy(int to, int from, size_t len) {
@@ -239,13 +249,15 @@ int GsWidget::fd_copy(int to, int from, size_t len) {
 
   n = 0;
   while(len > 0) {
+    Fl::check(); // let fltk do its stuff - otherwise
+                 // gs can't get the GHOSTVIEW property
     r = read(from, buf, MIN(sizeof(buf), len));
 
-    write(STDOUT_FILENO, buf, r);
     if (r < 0) {
       perror("read");
       return 1;
     }
+
     write(to, buf, r);
     len -= r;
   }
@@ -259,9 +271,9 @@ void GsWidget::exec_gs() {
   int d_null = open("/dev/null", O_WRONLY);
       
   dup2(d_null, STDOUT_FILENO);
-  close(d_null);
 
-  snprintf(gvenv, 256, "%d %d", (int) fl_xid(window()), (int) offscreen);
+  snprintf(gvenv, sizeof(gvenv), "%d %d", 
+    (int) fl_xid(window()), (int) offscreen);
     
   setenv("GHOSTVIEW", gvenv, 1);
   argv[0] = "gs";
@@ -269,8 +281,9 @@ void GsWidget::exec_gs() {
   argv[2] = "-dQUIET";
   argv[3] = "-sDEVICE=x11alpha";
   argv[4] = "-dNOPLATFONTS";
-  argv[5] = "-";
-  argv[6] = NULL;
+  argv[5] = "-dNOPAUSE";
+  argv[6] = "-";
+  argv[7] = NULL;
   execvp(argv[0], argv);
   perror("exec");
   fprintf(stderr, "Please install ghostscript and make sure 'gs' "
@@ -282,12 +295,7 @@ int GsWidget::reload() {
   int ret;
 
   if (in_fd >= 0) {
-    ret = lseek(in_fd, 0L, SEEK_SET);
-    if (ret == -1) {
-      perror("lseek");
-      return 1;
-    }
-    load(in_fd);
+    open_file(in_fd);
     return 0;
   } else {
     return 1;

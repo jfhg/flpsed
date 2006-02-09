@@ -110,7 +110,7 @@ int PSEditor::handle(int event) {
 }
 
 
-int PSEditor::load(FILE *fp) {
+int PSEditor::open_file(FILE *fp) {
   if (tmp_fd) {
     close(tmp_fd);
   }
@@ -122,11 +122,11 @@ int PSEditor::load(FILE *fp) {
   } else {
     mod = 0;
     loaded = 1;
-    return GsWidget::load(tmp_fd);
+    return GsWidget::open_file(tmp_fd);
   }
 }
 
-int PSEditor::load(const char *f) {
+int PSEditor::open_file(const char *f) {
   FILE *fp;
   int ret;
 
@@ -136,7 +136,7 @@ int PSEditor::load(const char *f) {
     return 1;
   }
 
-  ret = load(fp);
+  ret = open_file(fp);
   fclose(fp);
 
   return ret;

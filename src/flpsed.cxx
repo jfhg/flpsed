@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <signal.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -81,8 +80,8 @@ void open_cb() {
   if (!check_save()) return;
   char *file = fl_file_chooser("Open File?", "*.ps", filename);
   if(file != NULL) {
-    psed_p->load(file);
 
+    psed_p->open_file(file);
     psed_p->load_page(2);
   }  
 }
@@ -105,7 +104,7 @@ void import_pdf_cb() {
     p = pexecvp("pdftops", args, &pid, "r");
 
     if (p) {
-      psed_p->load(p);
+      psed_p->open_file(p);
       fclose(p);
       waitpid(pid, &status, 0); 
       if (WEXITSTATUS(status) == 127 || WEXITSTATUS(status) == 126) {
@@ -531,7 +530,7 @@ int main(int argc, char** argv) {
     if (in_fp) {
       sleep(1); // this seems to be necessary on fast systems to make the
                 // GHOSTVIEW property available to ghostsscript.
-      psed_p->load(in_fp);
+      psed_p->open_file(in_fp);
       fclose(in_fp);
     }
 

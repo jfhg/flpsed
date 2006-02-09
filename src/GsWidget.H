@@ -58,10 +58,12 @@ public:
   GsWidget(int X,int Y,int W, int H);
     
   ~GsWidget();
-   
-  int load(char *f);
+  
+  int open_file(char *f);
 
-  int load(int fd);
+  int open_file(int fd);
+
+  int load();
 
   int load_page(int p);
 
@@ -83,8 +85,6 @@ private:
   void kill_gs();
 
   int fd_copy(int to, int from, size_t len);
-
-  int feed_page(int p);
 
   bool gs_active();
 };
