@@ -216,6 +216,8 @@ GsWidget::load_page(int p) {
   fl_cursor(FL_CURSOR_WAIT);
   kill_gs();
 
+  page = p;
+
   if (!offscreen) {
     reload_needed = 1;
     return 0;
@@ -241,7 +243,6 @@ GsWidget::load_page(int p) {
     size_t len;
 
     gs_pid = pid;
-    page = p;
 
     close(pdes[0]);
 
