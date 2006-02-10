@@ -120,14 +120,18 @@ PostscriptDSC::parse(int fd) {
       }
     }      
   }
+  
+  if (page_len && page_off) {
+    page_len[p1 - 1] = ftello(fp) - page_off[p1 - 1];
 
-  page_len[p1 - 1] = ftello(fp) - page_off[p1 - 1];
-
-  for (int i=0; i<pages; i++) {
-    if (page_off[i] == 0 || page_len[i] == 0) {
-      fprintf(stderr, "Page %d not defined\n", i);
-      return 1;
+    for (int i=0; i<pages; i++) {
+      if (page_off[i] == 0 || page_len[i] == 0) {
+        fprintf(stderr, "Page %d not defined\n", i);
+        return 1;
+      }
     }
+  } else {
+    return 1;
   }
 
   return 0;
