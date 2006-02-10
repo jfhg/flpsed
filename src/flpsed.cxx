@@ -40,6 +40,7 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Item.H>
 #include <FL/Fl_Color_Chooser.H>
+#include <FL/Fl_Hold_Browser.H>
 
 #include "PSEditor.H"
 #include "util.h"
@@ -47,6 +48,7 @@
 
 PSEditor *psed_p   = NULL;
 Fl_Scroll *scroll = NULL;
+Fl_Hold_Browser *page_sel = NULL;
 
 int xev_handler(int ev) {
   if (psed_p) {
@@ -76,15 +78,38 @@ int check_save(void) {
 
 char filename[256] = "";
 
+
+void page_sel_cb(Fl_Widget *w, void *) {
+  psed_p->load_page(page_sel->value() - 1);
+}
+
+void page_sel_fill() {
+  char buf[64];
+  int p = psed_p->get_pages();
+
+  page_sel->clear();
+
+  if (p == 0) {
+    return;
+  }
+
+  for(int i=1; i<=p; i++) {
+    snprintf(buf, sizeof(buf), "%d", i);
+    page_sel->add(buf);
+  }
+}
+
 void open_cb() {
   if (!check_save()) return;
   char *file = fl_file_chooser("Open File?", "*.ps", filename);
   if(file != NULL) {
 
     psed_p->open_file(file);
+    page_sel_fill();
     psed_p->load();
   }  
 }
+
 
 void import_pdf_cb() {
   char *file;
@@ -105,6 +130,7 @@ void import_pdf_cb() {
 
     if (p) {
       psed_p->open_file(p);
+      page_sel_fill();
       fclose(p);
       waitpid(pid, &status, 0); 
       if (WEXITSTATUS(status) == 127 || WEXITSTATUS(status) == 126) {
@@ -512,8 +538,10 @@ int main(int argc, char** argv) {
     color_b->shortcut(FL_ALT + 'c');
     color_b->tooltip("Text Color");
     props.end();
-
-    scroll = new Fl_Scroll(0, 55, win->w(), win->h()-55);
+    page_sel = new Fl_Hold_Browser(0, 55, 25, win->h()-55);
+    page_sel->callback(page_sel_cb);
+    page_sel->end();
+    scroll = new Fl_Scroll(25, 55, win->w()-25, win->h()-55);
     psed_p = new PSEditor(0, 0, 700, 900);
     psed_p->property_changed_callback(property_changed_cb);
     scroll->end();
@@ -529,6 +557,7 @@ int main(int argc, char** argv) {
     
     if (in_fp) {
       psed_p->open_file(in_fp);
+      page_sel_fill();
       psed_p->load();
       fclose(in_fp);
     }

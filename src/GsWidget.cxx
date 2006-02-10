@@ -417,3 +417,12 @@ int GsWidget::zoom(int p) {
 
   return 0;
 }
+
+int
+GsWidget::get_pages() {
+  if (dsc) {
+    return dsc->get_pages();
+  } else {
+    return 0;
+  }
+}

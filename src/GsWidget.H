@@ -81,6 +81,8 @@ public:
 
   int get_page();
 
+  int get_pages();
+
 private:
   void setProps();
 	
