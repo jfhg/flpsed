@@ -156,12 +156,20 @@ PostscriptDSC::get_setup_len() {
 
 size_t
 PostscriptDSC::get_page_off(int p) {
-  return page_off[p];
+  if (p < 1 || p > pages) {
+    return 0;
+  } else {
+    return page_off[p - 1];
+  }
 }
 
 size_t
 PostscriptDSC::get_page_len(int p) {
-  return page_len[p];
+  if (p < 1 || p > pages) {
+    return 0;
+  } else {
+    return page_len[p - 1];
+  }
 }
 
 void

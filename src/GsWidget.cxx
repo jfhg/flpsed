@@ -148,7 +148,6 @@ int GsWidget::open_file(int fd) {
   if (dsc->parse(in_fd) == 0) {
     int bb_x, bb_y, bb_w, bb_h;
 
-    dsc->print();
     dsc->get_bounding_box(&bb_x, &bb_y, &bb_w, &bb_h);
     paper_x = bb_w;
     paper_y = bb_h;
@@ -169,7 +168,7 @@ int GsWidget::load() {
   pid_t pid;
 
   if (dsc) {
-    return load_page(0);
+    return load_page(1);
   }
 
   if (in_fd < 0) {
@@ -209,7 +208,7 @@ GsWidget::load_page(int p) {
     return 1;
   }
 
-  if (p < 0 || p >= dsc->get_pages()) {
+  if (p < 1 || p > dsc->get_pages()) {
     fprintf(stderr, "Page %d not found in document\n", p);
     return 1;
   }
