@@ -37,6 +37,7 @@
 #include "PostscriptDSC.H"
 
 class GsWidget : public Fl_Widget {
+private:
   PostscriptDSC *dsc;
   int gs_win;
   Atom atoms[5];
@@ -45,6 +46,7 @@ class GsWidget : public Fl_Widget {
   int in_fd, reload_needed;
   int zoom_percent;
   int initial_width, initial_height;
+  int feeding;
 
 protected:
   int page;

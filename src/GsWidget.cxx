@@ -115,6 +115,7 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
   in_fd = -1;
   reload_needed = 0;
   dsc = NULL;
+  feeding = 0;
 }
   
 GsWidget::~GsWidget() {
@@ -204,7 +205,7 @@ GsWidget::load_page(int p) {
   pid_t pid;
   int pdes[2];
 
-  if (in_fd < 0) {
+  if (feeding || in_fd < 0) {
     return 1;
   }
 
@@ -225,6 +226,8 @@ GsWidget::load_page(int p) {
     perror("pipe");
     return 1;
   }
+  
+  feeding = 1;
 
   lseek(in_fd, 0L, SEEK_SET);
   setProps();
@@ -247,6 +250,7 @@ GsWidget::load_page(int p) {
     len = dsc->get_setup_len();
     if (fd_copy(pdes[1], in_fd, len) != 0) {
       close(pdes[1]);
+      feeding = 0;
       return 1;
     }
 
@@ -254,12 +258,14 @@ GsWidget::load_page(int p) {
     len = dsc->get_page_len(p);
     if (fd_copy(pdes[1], in_fd, len) != 0) {
       close(pdes[1]);
+      feeding = 0;
       return 1;
     }
 
     close(pdes[1]);
   }  
 
+  feeding = 0;
   return 0;
 }
 

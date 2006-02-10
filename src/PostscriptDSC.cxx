@@ -36,6 +36,12 @@ PostscriptDSC::PostscriptDSC() {
 }
 
 PostscriptDSC::~PostscriptDSC() {
+  if (page_off) {
+    free(page_off);
+  }
+  if (page_len) {
+    free(page_len);
+  }
 }
 
 int 
@@ -52,8 +58,15 @@ PostscriptDSC::parse(int fd) {
   bb_h = 841; //
   setup_len = 0;
   pages = 0;
-  page_off = NULL;
-  page_len = NULL;
+
+  if (page_off) {
+    free(page_off);
+    page_off = NULL;
+  }
+  if(page_len) {
+    free(page_len);
+    page_len = NULL;
+  }
 
   fp = fdopen(fd, "r");
   if (!fp) {
@@ -72,38 +85,50 @@ PostscriptDSC::parse(int fd) {
     } else if (sscanf(linebuf, "%%%%Pages: %d", &ps) == 1) {
       if (pages != 0) {
         fprintf(stderr, "Multiple Pages tags found\n");
-        free(page_off);
-        free(page_len);
         return 1;
       }
 
       pages = ps;
-      page_off = (size_t*) malloc(sizeof(size_t) * (pages + 1));
-      memset(page_off, 0, sizeof(size_t) * (pages + 1));
-      page_len = (size_t*) malloc(sizeof(size_t) * (pages + 1));
-      memset(page_len, 0, sizeof(size_t) * (pages + 1));
+      page_off = (size_t*) malloc(sizeof(size_t) * pages);
+      memset(page_off, 0, sizeof(size_t) * pages);
+      page_len = (size_t*) malloc(sizeof(size_t) * pages);
+      memset(page_len, 0, sizeof(size_t) * pages);
+
     } else if (sscanf(linebuf, "%%%%Page: %d %d", &p1, &p2) == 2) {
+
+      if (!page_off || !page_len) {
+        fprintf(stderr, "Number of pages not defined\n");
+        return 1;
+      }
+
       if (p1 > pages || p1 < 1) {
-        fprintf(stderr, "Page %d out of range (0 - %d)\n", p1, pages);
+        fprintf(stderr, "Page %d out of range (1 - %d)\n", p1, pages);
         return 1;
       } 
-      if (page_off[p1] != NULL) {
+      if (page_off[p1 - 1] != 0) {
         fprintf(stderr, "Page %d already defined\n", p1);
         return 1;
       }
-      if (p1 > 1 && page_off[p1 - 1] == NULL) {
+      if (p1 > 1 && page_off[p1 - 2] == NULL) {
         fprintf(stderr, "Page %d not yet defined\n", p1 - 1);
         return 1;
       }
 
-      page_off[p1] = ftello(fp);
+      page_off[p1 - 1] = ftello(fp);
       if (p1 > 1) {
-        page_len[p1 - 1] = page_off[p1] - page_off[p1 - 1];
+        page_len[p1 - 2] = page_off[p1 - 1] - page_off[p1 - 2];
       }
     }      
   }
 
-  page_len[p1] = ftello(fp) - page_off[p1];
+  page_len[p1 - 1] = ftello(fp) - page_off[p1 - 1];
+
+  for (int i=0; i<pages; i++) {
+    if (page_off[i] == 0 || page_len[i] == 0) {
+      fprintf(stderr, "Page %d not defined\n", i);
+      return 1;
+    }
+  }
 
   return 0;
 }
@@ -128,12 +153,12 @@ PostscriptDSC::get_setup_len() {
 
 size_t
 PostscriptDSC::get_page_off(int p) {
-  return page_off[p+1];
+  return page_off[p];
 }
 
 size_t
 PostscriptDSC::get_page_len(int p) {
-  return page_len[p+1];
+  return page_len[p];
 }
 
 void
@@ -142,7 +167,7 @@ PostscriptDSC::print() {
 
   printf("x %d, y %d, w %d, h %d\n", bb_x, bb_y, bb_w, bb_h);
   printf("setup_len %d\n", setup_len);
-  for (i=1; i<=pages; i++) {
+  for (i=0; i<pages; i++) {
     printf("p %d, off %d, len %d\n", i, page_off[i], page_len[i]);
   }
 }
