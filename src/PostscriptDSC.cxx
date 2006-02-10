@@ -85,11 +85,7 @@ PostscriptDSC::parse(int fd) {
       bb_read++;
     } else if (strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0) {
       setup_len = ftello(fp);
-    } else if (sscanf(linebuf, "%%%%Pages: %d", &ps) == 1) {
-      if (pages != 0) {
-        fprintf(stderr, "Multiple Pages tags found\n");
-        return 1;
-      }
+    } else if (pages == 0 && sscanf(linebuf, "%%%%Pages: %d", &ps) == 1) {
 
       pages = ps;
       page_off = (size_t*) malloc(sizeof(size_t) * pages);
