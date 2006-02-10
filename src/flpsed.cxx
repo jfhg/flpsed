@@ -80,7 +80,10 @@ char filename[256] = "";
 
 
 void page_sel_cb(Fl_Widget *w, void *) {
-  psed_p->load_page(page_sel->value() - 1);
+  int p = page_sel->value() - 1;
+  if (p >= 0) {
+    psed_p->load_page(page_sel->value() - 1);
+  }
 }
 
 void page_sel_fill() {
@@ -97,6 +100,7 @@ void page_sel_fill() {
     snprintf(buf, sizeof(buf), "%d", i);
     page_sel->add(buf);
   }
+  page_sel->select(psed_p->get_page() + 1);
 }
 
 void open_cb() {
@@ -105,8 +109,8 @@ void open_cb() {
   if(file != NULL) {
 
     psed_p->open_file(file);
-    page_sel_fill();
     psed_p->load();
+    page_sel_fill();
   }  
 }
 
@@ -130,6 +134,7 @@ void import_pdf_cb() {
 
     if (p) {
       psed_p->open_file(p);
+      psed_p->load();
       page_sel_fill();
       fclose(p);
       waitpid(pid, &status, 0); 
@@ -191,10 +196,12 @@ void import_cb() {
 
 void first_cb() {
   psed_p->load();
+  page_sel->select(psed_p->get_page() + 1);
 }
 
 void next_cb() {
   psed_p->next();
+  page_sel->select(psed_p->get_page() + 1);
 }
 
 void quit_cb() {
@@ -538,10 +545,10 @@ int main(int argc, char** argv) {
     color_b->shortcut(FL_ALT + 'c');
     color_b->tooltip("Text Color");
     props.end();
-    page_sel = new Fl_Hold_Browser(0, 55, 25, win->h()-55);
+    page_sel = new Fl_Hold_Browser(0, 55, 40, win->h()-55);
     page_sel->callback(page_sel_cb);
     page_sel->end();
-    scroll = new Fl_Scroll(25, 55, win->w()-25, win->h()-55);
+    scroll = new Fl_Scroll(40, 55, win->w()-40, win->h()-55);
     psed_p = new PSEditor(0, 0, 700, 900);
     psed_p->property_changed_callback(property_changed_cb);
     scroll->end();
@@ -557,8 +564,8 @@ int main(int argc, char** argv) {
     
     if (in_fp) {
       psed_p->open_file(in_fp);
-      page_sel_fill();
       psed_p->load();
+      page_sel_fill();
       fclose(in_fp);
     }
 
