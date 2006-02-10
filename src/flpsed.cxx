@@ -80,9 +80,9 @@ char filename[256] = "";
 
 
 void page_sel_cb(Fl_Widget *w, void *) {
-  int p = page_sel->value() - 1;
-  if (p >= 0) {
-    psed_p->load_page(page_sel->value() - 1);
+  int p = page_sel->value();
+  if (p > 0) {
+    psed_p->load_page(page_sel->value());
   }
 }
 
@@ -100,7 +100,7 @@ void page_sel_fill() {
     snprintf(buf, sizeof(buf), "%d", i);
     page_sel->add(buf);
   }
-  page_sel->select(psed_p->get_page() + 1);
+  page_sel->select(psed_p->get_page());
 }
 
 void open_cb() {
@@ -196,12 +196,12 @@ void import_cb() {
 
 void first_cb() {
   psed_p->load();
-  page_sel->select(psed_p->get_page() + 1);
+  page_sel->select(psed_p->get_page());
 }
 
 void next_cb() {
   psed_p->next();
-  page_sel->select(psed_p->get_page() + 1);
+  page_sel->select(psed_p->get_page());
 }
 
 void quit_cb() {
