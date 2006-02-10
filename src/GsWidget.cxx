@@ -148,7 +148,6 @@ int GsWidget::open_file(int fd) {
   if (dsc->parse(in_fd) == 0) {
     int bb_x, bb_y, bb_w, bb_h;
 
-    dsc->print();
     dsc->get_bounding_box(&bb_x, &bb_y, &bb_w, &bb_h);
     paper_x = bb_w;
     paper_y = bb_h;
