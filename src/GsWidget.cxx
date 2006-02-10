@@ -168,7 +168,7 @@ int GsWidget::load() {
   pid_t pid;
 
   if (dsc) {
-    return load_page(0);
+    return load_page(1);
   }
 
   if (in_fd < 0) {
@@ -208,7 +208,7 @@ GsWidget::load_page(int p) {
     return 1;
   }
 
-  if (p < 0 || p >= dsc->get_pages()) {
+  if (p < 1 || p > dsc->get_pages()) {
     fprintf(stderr, "Page %d not found in document\n", p);
     return 1;
   }
