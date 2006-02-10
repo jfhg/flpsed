@@ -4,6 +4,7 @@ flpsed-0.3.6
  - Add support for PostScript Document Structure Convention.
  - Pages can now be accessed in random order.
  - Document sizes other than A4 are handled better.
+ - Add -geometry and -z (zoom) options.
 
 flpsed-0.3.5
  - Add text color support. Click on the (initially) black button and 

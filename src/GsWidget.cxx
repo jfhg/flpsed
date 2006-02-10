@@ -395,15 +395,15 @@ int GsWidget::zoom(int p) {
   zoom_percent = p;
 
   kill_gs();
-
-  // Clear widget
-  fl_begin_offscreen(offscreen);
-  fl_color(FL_WHITE);
-  fl_rectf(0, 0, w(), h());
-  fl_end_offscreen();
-  redraw();
-
+  
   if (offscreen) {
+    // Clear widget with current size
+    fl_begin_offscreen(offscreen);
+    fl_color(FL_WHITE);
+    fl_rectf(0, 0, w(), h());
+    fl_end_offscreen();
+    redraw();
+
     fl_delete_offscreen(offscreen);
     offscreen = 0;
   }
