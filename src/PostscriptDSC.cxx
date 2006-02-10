@@ -51,6 +51,7 @@ PostscriptDSC::parse(int fd) {
   int x, y, w, h;
   int p1, p2, ps;
   int i = 0;
+  int bb_read = 0;
   
   bb_x = 0;
   bb_y = 0;
@@ -75,11 +76,13 @@ PostscriptDSC::parse(int fd) {
   }
 
   while (fgets(linebuf, sizeof(linebuf), fp) != NULL) {
-    if (sscanf(linebuf, "%%%%BoundingBox: %d %d %d %d", &x, &y, &w, &h) == 4) {
+    if (!bb_read &&
+        sscanf(linebuf, "%%%%BoundingBox: %d %d %d %d", &x, &y, &w, &h) == 4) {
       bb_x = x; 
       bb_y = y; 
       bb_w = w; 
       bb_h = h; 
+      bb_read++;
     } else if (strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0) {
       setup_len = ftello(fp);
     } else if (sscanf(linebuf, "%%%%Pages: %d", &ps) == 1) {
