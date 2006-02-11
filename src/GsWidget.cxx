@@ -318,8 +318,6 @@ void GsWidget::exec_gs() {
 }
 
 int GsWidget::reload() {
-  int ret;
-
   if (in_fd >= 0) {
     if (dsc) {
       load_page(page);
