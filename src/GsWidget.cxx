@@ -193,7 +193,7 @@ int GsWidget::load() {
     exec_gs();
   } else {
     gs_pid = pid;
-    page = 1;
+    page = 0;
   }
   
   return 0;

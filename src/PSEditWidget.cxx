@@ -130,7 +130,7 @@ void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
 }
 
 void PSEditWidget::new_text(int x1, int y1, const char *s) {
-  new_text(x1, y1, s, page);
+  new_text(x1, y1, s, get_page());
 }
 
 int PSEditWidget::set_cur_text(int x1, int y1) {
