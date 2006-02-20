@@ -298,10 +298,10 @@ void GsWidget::exec_gs() {
       
   dup2(d_null, STDOUT_FILENO);
 
-  snprintf(gvenv, sizeof(gvenv), "%d %d", 
+  snprintf(gvenv, sizeof(gvenv), "GHOSTVIEW=%d %d", 
     (int) fl_xid(window()), (int) offscreen);
     
-  setenv("GHOSTVIEW", gvenv, 1);
+  putenv(gvenv);
   argv[0] = "gs";
   argv[1] = "-dSAFER";
   argv[2] = "-dQUIET";
