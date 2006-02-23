@@ -1,5 +1,9 @@
 flpsed ChangeLog
 =================
+flpsed-
+ - use setenv() instead of putenv() for POSIX 
+   compatibility (noticed by Jeff Orczykowski on Solaris 8).
+
 flpsed-0.3.6
  - Add support for PostScript Document Structure Convention.
  - Pages can now be accessed in random order.
