@@ -312,11 +312,12 @@ void zoom_cb(Fl_Widget *w, void *) {
   Fl_Menu_* mw = (Fl_Menu_*)w;
   const Fl_Menu_Item* m = mw->mvalue();
   if (m) {
-    if (scroll) {
-      scroll->position(0,0);
-    }
     if (psed_p) {
       psed_p->zoom(atoi(m->label()));
+      if (scroll) {
+        scroll->position(0,0);
+        scroll->redraw();
+      }
     }
   }
 }

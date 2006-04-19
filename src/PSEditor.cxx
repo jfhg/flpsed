@@ -30,6 +30,7 @@ PSEditor::PSEditor(int X,int Y,int W, int H) : PSEditWidget(X, Y, W, H) {
   loaded = 0;
   mod = 0;
   ps_level = 1;
+  tmp_fd = -1;
 }
 
 
@@ -111,7 +112,7 @@ int PSEditor::handle(int event) {
 
 
 int PSEditor::open_file(FILE *fp) {
-  if (tmp_fd) {
+  if (tmp_fd >= 0) {
     close(tmp_fd);
   }
   
