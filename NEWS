@@ -5,6 +5,7 @@ flpsed-0.3.7
    compatibility (noticed by Jeff Orczykowski on Solaris 8).
  - fix gcc-4.1 compilation problem.
  - fix segfault in DSC code reported by Morten Brix Pedersen.
+ - fix scroll bar redraw problem after zoom.
 
 flpsed-0.3.6
  - Add support for PostScript Document Structure Convention.
