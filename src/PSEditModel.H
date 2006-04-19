@@ -83,7 +83,7 @@ public:
 
   int dump_tags();
 
-  int PSEditModel::load(FILE *fp);  
+  int load(FILE *fp);  
 
   int save(FILE *sfp, int tmp_fd);
 };
