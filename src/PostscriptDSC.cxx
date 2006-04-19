@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "PostscriptDSC.H"
 
 PostscriptDSC::PostscriptDSC() {
@@ -49,7 +50,7 @@ PostscriptDSC::parse(int fd) {
   FILE *fp;
   char linebuf[1024];
   int x, y, w, h;
-  int p1, p2, ps;
+  int p1 = 0, ps;
   int i = 0;
   int bb_read = 0;
   
@@ -93,7 +94,18 @@ PostscriptDSC::parse(int fd) {
       page_len = (size_t*) malloc(sizeof(size_t) * pages);
       memset(page_len, 0, sizeof(size_t) * pages);
 
-    } else if (sscanf(linebuf, "%%%%Page: %d %d", &p1, &p2) == 2) {
+    } else if (strncmp(linebuf, "%%Page: ", strlen("%%Page: ")) == 0) {
+      char *p_str = &linebuf[strlen(linebuf)];
+
+      // move p_str back to beginning of last number in linebuf
+      while (p_str > linebuf && !isdigit(*p_str)) {
+        p_str--;
+      }
+      while (p_str > linebuf && isdigit(*p_str)) {
+        p_str--;
+      }
+
+      p1 = atoi(p_str);
 
       if (!page_off || !page_len) {
         fprintf(stderr, "Number of pages not defined\n");
@@ -120,7 +132,7 @@ PostscriptDSC::parse(int fd) {
     }      
   }
   
-  if (page_len && page_off) {
+  if (page_len && page_off && p1 > 0 && p1 <= pages) {
     page_len[p1 - 1] = ftello(fp) - page_off[p1 - 1];
 
     for (int i=0; i<pages; i++) {
