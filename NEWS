@@ -1,8 +1,10 @@
 flpsed ChangeLog
 =================
-flpsed-
+flpsed-0.3.7
  - use setenv() instead of putenv() for POSIX 
    compatibility (noticed by Jeff Orczykowski on Solaris 8).
+ - fix gcc-4.1 compilation problem.
+ - fix segfault in DSC code reported by Morten Brix Pedersen.
 
 flpsed-0.3.6
  - Add support for PostScript Document Structure Convention.
