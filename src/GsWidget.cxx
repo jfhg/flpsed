@@ -29,7 +29,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <fcntl.h>
-#include <signal.h>
 
 #include <FL/fl_draw.H>
 
