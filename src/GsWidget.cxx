@@ -272,23 +272,30 @@ GsWidget::load_page(int p) {
 int GsWidget::fd_copy(int to, int from, size_t len) {
   size_t n, r;
   char buf[1024];
+  int ret = 0;
+
+  signal(SIGPIPE, SIG_IGN); // don't die if gs has a problem
 
   n = 0;
   while(len > 0) {
-    Fl::check(); // let fltk do its stuff - otherwise
-                 // gs can't get the GHOSTVIEW property
+
+    Fl::check(); // let fltk do its stuff 
+
     r = read(from, buf, MIN(sizeof(buf), len));
 
     if (r < 0) {
       perror("read");
-      return 1;
+      ret = 1;
+      break;
     }
 
     write(to, buf, r);
     len -= r;
   }
 
-  return 0;
+  signal(SIGPIPE, SIG_DFL);
+
+  return ret;
 }
 
 void GsWidget::exec_gs() {
