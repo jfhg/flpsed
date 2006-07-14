@@ -84,6 +84,8 @@ void GsWidget::setProps() {
   XChangeProperty(fl_display, xid, atoms[1],
 		  XA_STRING, 8, PropModeReplace,
 		  (unsigned char*) data, strlen(data));
+
+  XSync(fl_display, False);
 }
 
 void GsWidget::kill_gs() {
