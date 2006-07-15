@@ -95,6 +95,11 @@ PostscriptDSC::parse(int fd) {
     } else if (strncmp(linebuf, "%%Page: ", strlen("%%Page: ")) == 0) {
       char *p_str = &linebuf[strlen(linebuf)];
 
+      // implicitely end setup section
+      if (!setup_len) {
+        setup_len = ftello(fp);
+      }
+
       // move p_str back to beginning of last number in linebuf
       while (p_str > linebuf && !isdigit(*p_str)) {
         p_str--;
@@ -137,7 +142,12 @@ PostscriptDSC::parse(int fd) {
       }
     }      
   }
-  
+ 
+  // Now do some checks 
+  if (!setup_len) {
+    fprintf(stderr, "PageSetup end not found\n");
+    return 1;
+  }
   if (page_len && page_off && p1 > 0 && p1 <= pages) {
     page_len[p1 - 1] = ftello(fp) - page_off[p1 - 1];
 
