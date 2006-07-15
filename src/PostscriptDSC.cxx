@@ -53,7 +53,7 @@ PostscriptDSC::parse(int fd) {
   int p1 = 0, ps;
   int i = 0;
   int bb_read = 0;
-  int max_pages = 2;
+  int max_pages = 128;
   
   bb_x = 0;
   bb_y = 0;
