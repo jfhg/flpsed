@@ -113,6 +113,10 @@ char *PSEditText::get_text() {
   return s;
 }
 
+int PSEditText::is_empty() {
+  return !s || !s[0];
+}
+
 char *PSEditText::get_tag() {
   return tag;
 }

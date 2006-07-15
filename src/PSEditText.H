@@ -108,6 +108,8 @@ public:
 
   char *get_text();
 
+  int is_empty();
+
   char *get_tag();
 
   int set_tag(const char *t);

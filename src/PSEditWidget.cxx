@@ -116,11 +116,13 @@ void PSEditWidget::new_text(int x1, int y1, const char *s, int p) {
   t_old = model->get_cur_text();
 
   model->new_text(ps_x(x1), ps_y(y1), s, cur_size, p, &cur_text_color);
-  mod++;
-
+ 
   t = model->get_cur_text();
 
   if (t) {
+    if (!t->is_empty()) {
+      mod++;
+    }
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
   }
 
@@ -210,7 +212,9 @@ void PSEditWidget::move(int x1, int y1) {
     old_bbh = bb_h(t);
 
     model->move(ps_x(x1), ps_y(y1));
-    mod++;
+    if (!t->is_empty() || t->get_tag()) {
+      mod++;
+    }
 
     damage(4, old_bbx, old_bby, old_bbw, old_bbh);
     damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
