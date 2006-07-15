@@ -222,7 +222,7 @@ void print_cb() {
   char buf[256];
   int tmp_fd;
 
-  int r = fl_ask("Print file?");
+  int r = fl_choice("Print file?", "Cancel", "Print", NULL);
   if (r != 1) {
     return;
   }
