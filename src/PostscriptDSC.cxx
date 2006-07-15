@@ -53,6 +53,7 @@ PostscriptDSC::parse(int fd) {
   int p1 = 0, ps;
   int i = 0;
   int bb_read = 0;
+  int max_pages = 2;
   
   bb_x = 0;
   bb_y = 0;
@@ -76,6 +77,11 @@ PostscriptDSC::parse(int fd) {
     return 1;
   }
 
+  page_off = (size_t*) malloc(sizeof(size_t) * max_pages);
+  memset(page_off, 0, sizeof(size_t) * max_pages);
+  page_len = (size_t*) malloc(sizeof(size_t) * max_pages);
+  memset(page_len, 0, sizeof(size_t) * max_pages);
+
   while (fgets(linebuf, sizeof(linebuf), fp) != NULL) {
     if (!bb_read &&
         sscanf(linebuf, "%%%%BoundingBox: %d %d %d %d", &x, &y, &w, &h) == 4) {
@@ -86,14 +92,6 @@ PostscriptDSC::parse(int fd) {
       bb_read++;
     } else if (strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0) {
       setup_len = ftello(fp);
-    } else if (pages == 0 && sscanf(linebuf, "%%%%Pages: %d", &ps) == 1) {
-
-      pages = ps;
-      page_off = (size_t*) malloc(sizeof(size_t) * pages);
-      memset(page_off, 0, sizeof(size_t) * pages);
-      page_len = (size_t*) malloc(sizeof(size_t) * pages);
-      memset(page_len, 0, sizeof(size_t) * pages);
-
     } else if (strncmp(linebuf, "%%Page: ", strlen("%%Page: ")) == 0) {
       char *p_str = &linebuf[strlen(linebuf)];
 
@@ -107,15 +105,19 @@ PostscriptDSC::parse(int fd) {
 
       p1 = atoi(p_str);
 
-      if (!page_off || !page_len) {
-        fprintf(stderr, "Number of pages not defined\n");
-        return 1;
-      }
-
-      if (p1 > pages || p1 < 1) {
-        fprintf(stderr, "Page %d out of range (1 - %d)\n", p1, pages);
+      if (p1 < 1) {
+        fprintf(stderr, "Page %d out of range\n", p1);
         return 1;
       } 
+
+      if (p1 > max_pages) {
+        page_off = (size_t*) realloc(page_off, 2 * max_pages * sizeof(size_t));
+        memset(page_off + max_pages, 0, sizeof(size_t) * max_pages);
+        page_len = (size_t*) realloc(page_len, 2 * max_pages * sizeof(size_t));
+        memset(page_len + max_pages, 0, sizeof(size_t) * max_pages);
+        max_pages = max_pages * 2;
+      }
+
       if (page_off[p1 - 1] != 0) {
         fprintf(stderr, "Page %d already defined\n", p1);
         return 1;
@@ -128,6 +130,10 @@ PostscriptDSC::parse(int fd) {
       page_off[p1 - 1] = ftello(fp);
       if (p1 > 1) {
         page_len[p1 - 2] = page_off[p1 - 1] - page_off[p1 - 2];
+      }
+
+      if (p1 > pages) {
+        pages = p1;
       }
     }      
   }
