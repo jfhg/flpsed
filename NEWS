@@ -1,5 +1,16 @@
 flpsed ChangeLog
 =================
+
+flpsed-0.3.8
+ - implicitely end setup section if %%Page comment is encountered and check
+   for valid setup length after DSC parsing.
+ - only set modified flag if real changes have been made to the document.
+ - use fl_choice() instead of deprecated fl_ask().
+ - no longer rely on %%Pages comment because of possible use of (atend).
+ - call XSync() to avoid "Cannot get ghostview property" error from gs
+   (reported by A Mennucc).
+ - don't die on SIGPIPE if gs has a problem (reported by A Mennucc).
+
 flpsed-0.3.7
  - use setenv() instead of putenv() for POSIX 
    compatibility (noticed by Jeff Orczykowski on Solaris 8).
