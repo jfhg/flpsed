@@ -91,13 +91,13 @@ PostscriptDSC::parse(int fd) {
       bb_h = h; 
       bb_read++;
     } else if (strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0) {
-      setup_len = ftello(fp);
+      setup_len = ftell(fp);
     } else if (strncmp(linebuf, "%%Page: ", strlen("%%Page: ")) == 0) {
       char *p_str = &linebuf[strlen(linebuf)];
 
       // implicitely end setup section
       if (!setup_len) {
-        setup_len = ftello(fp);
+        setup_len = ftell(fp);
       }
 
       // move p_str back to beginning of last number in linebuf
@@ -132,7 +132,7 @@ PostscriptDSC::parse(int fd) {
         return 1;
       }
 
-      page_off[p1 - 1] = ftello(fp);
+      page_off[p1 - 1] = ftell(fp);
       if (p1 > 1) {
         page_len[p1 - 2] = page_off[p1 - 1] - page_off[p1 - 2];
       }
@@ -149,7 +149,7 @@ PostscriptDSC::parse(int fd) {
     return 1;
   }
   if (page_len && page_off && p1 > 0 && p1 <= pages) {
-    page_len[p1 - 1] = ftello(fp) - page_off[p1 - 1];
+    page_len[p1 - 1] = ftell(fp) - page_off[p1 - 1];
 
     for (int i=0; i<pages; i++) {
       if (page_off[i] == 0 || page_len[i] == 0) {
