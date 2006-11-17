@@ -400,16 +400,16 @@ char * PSWriter::ps_trailer() {
 PSLevel1Writer::PSLevel1Writer(PSEditModel *p) : PSWriter(p) {};
 
 char * PSLevel1Writer::ps_header() {
-  return		                                                \
-    "/PSEditWidgetPageCount 0 def\n"		                        \
-    "/PSEditWidgetPC 0 def\n"			                        \
-    "/PSEditWidgetshowpage /showpage load def\n"	                \
-    "/showpage {\n"							\
-    "gsave initgraphics\n"                                              \
-    "PSEditWidgetPageCount 0 eq { \n"					\
-    "/PSEditWidgetPC PSEditWidgetPC 1 add def PSEditWidgetPC\n"		\
-    "} {\n"								\
-    "PSEditWidgetPageCount\n"						\
+  return
+    "/PSEditWidgetPageCount 0 def\n"
+    "/PSEditWidgetPC 0 def\n"
+    "/PSEditWidgetshowpage /showpage load def\n"
+    "/showpage {\n"	
+    "gsave initgraphics\n"
+    "PSEditWidgetPageCount 0 eq { \n"
+    "/PSEditWidgetPC PSEditWidgetPC 1 add def PSEditWidgetPC\n"
+    "} {\n"
+    "PSEditWidgetPageCount\n"
     "} ifelse\n";
 }
 
