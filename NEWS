@@ -1,6 +1,14 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.3.9
+ - fix problem with documents that embed standard font replacements
+   (reported by Volker Kuhlmann)
+ - use plain Helvetica font instead of HelveticaNeue-Roman
+   (reported by Evgeny Stambulchik and others.
+ - use ftell() instead of ftello() for better compatibility
+   (reported by Christophe CURIS)
+
 flpsed-0.3.8
  - implicitely end setup section if %%Page comment is encountered and check
    for valid setup length after DSC parsing.
