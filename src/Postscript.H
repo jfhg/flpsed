@@ -97,14 +97,4 @@ class PSLevel1Writer : public PSWriter {
   PSLevel1Writer(PSEditModel *p);
 };
 
-class PSLevel2Writer : public PSWriter {
- protected:
-  char *ps_header();
-
-  char *ps_trailer();
-
- public:
-  PSLevel2Writer(PSEditModel *p);
-};
-  
 #endif

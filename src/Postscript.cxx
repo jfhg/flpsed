@@ -416,24 +416,3 @@ char * PSLevel1Writer::ps_header() {
 char * PSLevel1Writer::ps_trailer() {
   return  "grestore PSEditWidgetshowpage} def\n";
 }
-
-
-PSLevel2Writer::PSLevel2Writer(PSEditModel *p) : PSWriter(p) {};
-
-char * PSLevel2Writer::ps_header() {
-  return		                                                \
-    "/PSEditWidgetPageCount 0 def\n"	                         	\
-    "<< /EndPage {\n"				                        \
-    "gsave initgraphics\n"                                              \
-    "pop\n"								\
-    "PSEditWidgetPageCount 0 eq { \n"                                   \
-    "1 add                        %% use showpage counter instead.\n"	\
-    "} {\n"								\
-    "PSEditWidgetPageCount\n"						\
-    "} ifelse\n";
-
-}
-
-char * PSLevel2Writer::ps_trailer() {
-  return  "grestore true } >> setpagedevice\n";
-}
