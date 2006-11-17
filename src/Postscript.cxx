@@ -27,7 +27,7 @@
 
 #define PS_POS_FORMAT   "newpath %d %d moveto\n"
 #define PS_TEXT_FORMAT  "(%s) show\n"
-#define PS_SIZE_FORMAT  "/Helvetica findfont %d scalefont setfont\n"
+#define PS_SIZE_FORMAT  "PSEditWidgetFontHelvetica %d scalefont setfont\n"
 #define PS_COLOR_FORMAT  "%lf %lf %lf setrgbcolor\n"
 #define PS_GLYPH_FORMAT "/%s glyphshow\n"
 #define PS_TAG_FORMAT   ""
@@ -403,6 +403,7 @@ char * PSLevel1Writer::ps_header() {
   return
     "/PSEditWidgetPageCount 0 def\n"
     "/PSEditWidgetPC 0 def\n"
+	"/PSEditWidgetFontHelvetica /Helvetica findfont def\n"
     "/PSEditWidgetshowpage /showpage load def\n"
     "/showpage {\n"	
     "gsave initgraphics\n"
