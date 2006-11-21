@@ -147,22 +147,10 @@ void open_cb() {
 
 	if (!check_save()) return;
 
-	file = fl_file_chooser("Open File?", "*.ps", filename);
+	file = fl_file_chooser("Open File?", "*.{ps,pdf}", filename);
 	if(file != NULL) {
 		open_file(file);
 	}  
-}
-
-
-void import_pdf_cb() {
-	char *file;
-
-	if (!check_save()) return;
-
-	file = fl_file_chooser("Open File?", "*.pdf", filename);
-	if(file != NULL) {
-		open_file(file);
-	}
 }
 
 void export_pdf_cb() {
@@ -359,7 +347,7 @@ Fl_Menu_Item menuitems[] = {
 	{ "&Open File...",    FL_CTRL + 'o', (Fl_Callback *)open_cb },
 	{ "&Save File as...", FL_CTRL + 's', (Fl_Callback *)save_cb },
 	{ "I&mport Tags from File...",    FL_CTRL + 'm', (Fl_Callback *)import_cb },
-	{ "&Import PDF...", FL_CTRL + 'i', (Fl_Callback *)import_pdf_cb },
+	{ "&Import PDF...", FL_CTRL + 'i', (Fl_Callback *)open_cb },
 	{ "E&xport PDF...", FL_CTRL + 'x', (Fl_Callback *)export_pdf_cb },
 	{ "&Print...", FL_CTRL + 'p', (Fl_Callback *)print_cb, 0, FL_MENU_DIVIDER },
 	{ "&Quit", FL_CTRL + 'q', (Fl_Callback *)quit_cb, 0 },
