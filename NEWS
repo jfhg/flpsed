@@ -7,7 +7,9 @@ flpsed-0.3.9
  - use plain Helvetica font instead of HelveticaNeue-Roman
    (reported by Evgeny Stambulchik and others.
  - use ftell() instead of ftello() for better compatibility
-   (reported by Christophe CURIS)
+   (reported by Christophe CURIS).
+ - automatically import PDF files from the command line.
+   (requested by many)
 
 flpsed-0.3.8
  - implicitely end setup section if %%Page comment is encountered and check
