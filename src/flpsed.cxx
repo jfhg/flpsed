@@ -110,7 +110,7 @@ void open_file(char *file) {
 	pid_t pid;
 	char *dot = strrchr(file, '.');
 
-	if (dot && strcasecmp(dot, ".pdf")) {
+	if (dot && strcasecmp(dot, ".pdf") == 0) {
 		// assume pdf and try to import it using pdftops
 		args[0] = "pdftops";
 		args[1] = file;
@@ -143,8 +143,11 @@ void open_file(char *file) {
 }
 
 void open_cb() {
+	char *file;
+
 	if (!check_save()) return;
-	char *file = fl_file_chooser("Open File?", "*.ps", filename);
+
+	file = fl_file_chooser("Open File?", "*.ps", filename);
 	if(file != NULL) {
 		open_file(file);
 	}  
@@ -152,7 +155,10 @@ void open_cb() {
 
 
 void import_pdf_cb() {
+	char *file;
+
 	if (!check_save()) return;
+
 	file = fl_file_chooser("Open File?", "*.pdf", filename);
 	if(file != NULL) {
 		open_file(file);
@@ -428,7 +434,7 @@ int main(int argc, char** argv) {
 	Fl_Menu_Bar *m;
 	struct {char *tag; char *value;} tv[TV_LEN];
 	int tv_idx = 0, my_argc;
-	FILE *in_fp = NULL, *out_fp = NULL;
+	FILE *out_fp = NULL;
 	int zoom_val = 0;
 
 	err = 0;
@@ -486,13 +492,6 @@ int main(int argc, char** argv) {
 	my_argc = argc - optind;
 	my_argv = argv + optind;
 
-	if (my_argc >= 1) {
-		in_fp = fopen(my_argv[0], "r");
-		if (!in_fp) {
-			perror("fopen");
-			exit(1);
-		}
-	}
 
 	if (bflag || dflag) {
 		//
@@ -501,8 +500,15 @@ int main(int argc, char** argv) {
 
 		PSEditModel *m = new PSEditModel();
 		int tmp_fd;
+		FILE *in_fp;
 
-		if (!in_fp) {
+		if (my_argc >= 1) {
+			in_fp = fopen(my_argv[0], "r");
+			if (!in_fp) {
+				perror("fopen");
+				exit(1);
+			}
+		} else {
 			in_fp = stdin;
 		}
 
@@ -591,11 +597,8 @@ int main(int argc, char** argv) {
 			psed_p->zoom(zoom_val);
 		}
 
-		if (in_fp) {
-			psed_p->open_file(in_fp);
-			psed_p->load();
-			page_sel_fill();
-			fclose(in_fp);
+		if (my_argc >= 1) {
+			open_file(my_argv[0]);
 		}
 
 		for(int i=0; i<tv_idx; i++) {
