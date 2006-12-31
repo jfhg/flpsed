@@ -3,7 +3,7 @@ flpsed
 =======
 
 
-flpsed is a pseudo PostScript editor. Pseudo, because you can't actually 
+flpsed is a PostScript annotator. You can't actually 
 edit existing PostScript documents, but you can add arbitrary text lines to
 existing documents.
 It is useful for filling in forms etc. 
