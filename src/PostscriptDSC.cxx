@@ -127,7 +127,7 @@ PostscriptDSC::parse(int fd) {
         fprintf(stderr, "Page %d already defined\n", p1);
         return 1;
       }
-      if (p1 > 1 && page_off[p1 - 2] == NULL) {
+      if (p1 > 1 && page_off[p1 - 2] == 0) {
         fprintf(stderr, "Page %d not yet defined\n", p1 - 1);
         return 1;
       }
