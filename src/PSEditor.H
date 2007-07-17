@@ -10,27 +10,25 @@
 #include "PSEditWidget.H"
 
 class PSEditor : public PSEditWidget {
- private:
-  int tmp_fd;
+	private:
+		int tmp_fd;
 
-  int ps_level;
+		int ps_level;
 
-  int handle(int event);
+		int handle(int event);
 
-public: 
-  PSEditor(int X,int Y,int W, int H);  
+	public: 
+		PSEditor(int X,int Y,int W, int H);  
 
-  int open_file(FILE *fp); 
+		int open_file(FILE *fp); 
 
-  int open_file(const char *f); 
+		int open_file(const char *f); 
 
-  int save(FILE *fp);
+		int save(FILE *fp);
 
-  int save(const char* savefile);
+		int save(const char* savefile);
 
-  int import(char *f); 
+		int import(char *f); 
 };
 
-
-  
 #endif

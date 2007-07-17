@@ -12,48 +12,48 @@
 
 FILE *
 pexecvp(const char *file, char *const argv[], pid_t *pid, char *type) {
-  FILE *iop;
-  int   pdes[2];
+	FILE *iop;
+	int   pdes[2];
 
-  if (pipe(pdes) < 0) {
-    return NULL;
-  }
-	
-  *pid = vfork();
+	if (pipe(pdes) < 0) {
+		return NULL;
+	}
 
-  if (*pid == -1) {
-    perror("vfork");
-    close(pdes[0]);
-    close(pdes[1]);
-    return NULL;
-  } else if (*pid == 0) {
-    /* child */
-    
-    if (*type == 'r') {
-      close(pdes[0]);
-      if (pdes[1] != STDOUT_FILENO) {
-	dup2(pdes[1], STDOUT_FILENO);
-	close(pdes[1]);
-      }
-    } else {
-      close(pdes[1]);
-      if (pdes[0] != STDIN_FILENO) {
-	dup2(pdes[0], STDIN_FILENO);
-	close(pdes[0]);
-      }
-    }
+	*pid = vfork();
 
-    execvp(file, argv);
-    exit(127);
-  } else {
-    /* parent */ 
-    if (*type == 'r') {
-      iop = fdopen(pdes[0], "r");
-      close(pdes[1]);
-    } else {
-      iop = fdopen(pdes[1], "w");
-      close(pdes[0]);
-    }
-    return iop;
-  }
+	if (*pid == -1) {
+		perror("vfork");
+		close(pdes[0]);
+		close(pdes[1]);
+		return NULL;
+	} else if (*pid == 0) {
+		/* child */
+
+		if (*type == 'r') {
+			close(pdes[0]);
+			if (pdes[1] != STDOUT_FILENO) {
+				dup2(pdes[1], STDOUT_FILENO);
+				close(pdes[1]);
+			}
+		} else {
+			close(pdes[1]);
+			if (pdes[0] != STDIN_FILENO) {
+				dup2(pdes[0], STDIN_FILENO);
+				close(pdes[0]);
+			}
+		}
+
+		execvp(file, argv);
+		exit(127);
+	} else {
+		/* parent */ 
+		if (*type == 'r') {
+			iop = fdopen(pdes[0], "r");
+			close(pdes[1]);
+		} else {
+			iop = fdopen(pdes[1], "w");
+			close(pdes[0]);
+		}
+		return iop;
+	}
 }

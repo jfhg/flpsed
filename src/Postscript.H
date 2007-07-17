@@ -11,73 +11,73 @@
 #include "PSEditModel.H"
 
 class PSParser {
- protected:
-  PSEditModel *pse;
+	protected:
+		PSEditModel *pse;
 
-  int cur_size;
+		int cur_size;
 
-  PSEditColor cur_text_color;
+		PSEditColor cur_text_color;
 
-  int page;
+		int page;
 
- public: 
-  PSParser(PSEditModel *p);
+	public: 
+		PSParser(PSEditModel *p);
 
-  virtual int parse(char *line);
+		virtual int parse(char *line);
 };
 
 class PSParser_2 : public PSParser {
- private:
-  int inside;
+	private:
+		int inside;
 
- public:
-  PSParser_2(PSEditModel *p);
+	public:
+		PSParser_2(PSEditModel *p);
 
-  int parse(char *line);
+		int parse(char *line);
 };
 
 class PSWriter {
- protected:
-  PSEditModel *pse;
+	protected:
+		PSEditModel *pse;
 
-  char * pos_format;
+		char * pos_format;
 
-  char * size_format;
+		char * size_format;
 
-  char * text_format;
+		char * text_format;
 
-  char * color_format;
+		char * color_format;
 
-  char * glyph_format;
+		char * glyph_format;
 
-  char * tag_format;
+		char * tag_format;
 
-  void write_string(FILE *out, char *s);
+		void write_string(FILE *out, char *s);
 
-  void write_main_block(FILE *out);
+		void write_main_block(FILE *out);
 
-  void write_internal_format(FILE *out);
+		void write_internal_format(FILE *out);
 
-  int write_text(FILE *out, PSEditText *t);
+		int write_text(FILE *out, PSEditText *t);
 
-  virtual char *ps_header();
+		virtual char *ps_header();
 
-  virtual char *ps_trailer();
+		virtual char *ps_trailer();
 
- public: 
-  PSWriter(PSEditModel *p);
+	public: 
+		PSWriter(PSEditModel *p);
 
-  int write(FILE *in, FILE *out);
+		int write(FILE *in, FILE *out);
 };
 
 class PSLevel1Writer : public PSWriter {
- protected:
-  char *ps_header();
+	protected:
+		char *ps_header();
 
-  char *ps_trailer();
+		char *ps_trailer();
 
- public:
-  PSLevel1Writer(PSEditModel *p);
+	public:
+		PSLevel1Writer(PSEditModel *p);
 };
 
 #endif

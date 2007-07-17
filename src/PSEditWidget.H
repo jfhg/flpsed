@@ -15,98 +15,98 @@ typedef void (PSEditCallback)();
 class PSText;
 
 class PSEditWidget : public GsWidget {
-private:
-  int cur_size;
+	private:
+		int cur_size;
 
-  PSEditColor cur_text_color;
+		PSEditColor cur_text_color;
 
-  int show_tags;
+		int show_tags;
 
-  int zoom_percent;
+		int zoom_percent;
 
-  PSEditCallback *property_changed_cb;
+		PSEditCallback *property_changed_cb;
 
-protected:
-  PSEditModel *model;
+	protected:
+		PSEditModel *model;
 
-  int loaded;
+		int loaded;
 
-  int mod;
+		int mod;
 
-  void clear_text();
+		void clear_text();
 
-  void draw();
+		void draw();
 
-public: 
-  PSEditWidget(int X,int Y,int W, int H);  
+	public: 
+		PSEditWidget(int X,int Y,int W, int H);  
 
-  int next();
+		int next();
 
-  void new_text(int x1, int y1, const char *s, int p);
+		void new_text(int x1, int y1, const char *s, int p);
 
-  void new_text(int x1, int y1, const char *s);
+		void new_text(int x1, int y1, const char *s);
 
-  int set_cur_text(int x1, int y1);
-  
-  int next_text();
-  
-  void append_text(const char *s);
+		int set_cur_text(int x1, int y1);
 
-  void move(int x1, int y1);
+		int next_text();
 
-  void rel_move(int dx, int dy);
+		void append_text(const char *s);
 
-  void rm_char();
+		void move(int x1, int y1);
 
-  int reload();
+		void rel_move(int dx, int dy);
 
-  void set_size(int s);
+		void rm_char();
 
-  int get_size();
+		int reload();
 
-  void set_color(const PSEditColor *c);
+		void set_size(int s);
 
-  void get_color(PSEditColor *c);
+		int get_size();
 
-  int get_max_pages();
+		void set_color(const PSEditColor *c);
 
-  char *get_tag();
+		void get_color(PSEditColor *c);
 
-  int set_tag(const char *t);
+		int get_max_pages();
 
-  int get_show_tags();
+		char *get_tag();
 
-  void set_show_tags(int s);
+		int set_tag(const char *t);
 
-  PSText * get_text(int p);
+		int get_show_tags();
 
-  int modified();
+		void set_show_tags(int s);
 
-  int file_loaded();
+		PSText * get_text(int p);
 
-  int replace_tag(char* tag, char* text);
+		int modified();
 
-  int zoom(int p);
+		int file_loaded();
 
-  void property_changed_callback(PSEditCallback *cb) {
-    property_changed_cb = cb;};
+		int replace_tag(char* tag, char* text);
 
- private:
-  int bb_x(PSEditText *t);
+		int zoom(int p);
 
-  int bb_y(PSEditText *t);
+		void property_changed_callback(PSEditCallback *cb) {
+			property_changed_cb = cb;};
 
-  int bb_w(PSEditText *t);
-  
-  int bb_h(PSEditText *t);
+	private:
+		int bb_x(PSEditText *t);
 
-  int ps_to_display_x(int x1);
+		int bb_y(PSEditText *t);
 
-  int ps_to_display_y(int y1);
+		int bb_w(PSEditText *t);
 
-  int ps_x(int x1);
+		int bb_h(PSEditText *t);
 
-  int ps_y(int y1);
+		int ps_to_display_x(int x1);
+
+		int ps_to_display_y(int y1);
+
+		int ps_x(int x1);
+
+		int ps_y(int y1);
 };
 
 #endif

@@ -20,61 +20,61 @@
 #include "PostscriptDSC.H"
 
 class GsWidget : public Fl_Widget {
-private:
-  PostscriptDSC *dsc;
-  int gs_win;
-  Atom atoms[5];
-  pid_t gs_pid;
-  int display_x, display_y;
-  int in_fd, reload_needed;
-  int zoom_percent;
-  int initial_width, initial_height;
-  int feeding;
+	private:
+		PostscriptDSC *dsc;
+		int gs_win;
+		Atom atoms[5];
+		pid_t gs_pid;
+		int display_x, display_y;
+		int in_fd, reload_needed;
+		int zoom_percent;
+		int initial_width, initial_height;
+		int feeding;
 
-protected:
-  int page;
-  Fl_Offscreen offscreen;
-  int xdpi, ydpi;
-  int paper_x, paper_y;
+	protected:
+		int page;
+		Fl_Offscreen offscreen;
+		int xdpi, ydpi;
+		int paper_x, paper_y;
 
-  void draw();
+		void draw();
 
-public:
-  GsWidget(int X,int Y,int W, int H);
-    
-  ~GsWidget();
-  
-  int open_file(char *f);
+	public:
+		GsWidget(int X,int Y,int W, int H);
 
-  int open_file(int fd);
+		~GsWidget();
 
-  int load();
+		int open_file(char *f);
 
-  int load_page(int p);
+		int open_file(int fd);
 
-  int reload();
+		int load();
 
-  int next();
+		int load_page(int p);
 
-  int prev();
+		int reload();
 
-  int handleX11(int ev);
+		int next();
 
-  int zoom(int p);
+		int prev();
 
-  int get_page();
+		int handleX11(int ev);
 
-  int get_pages();
+		int zoom(int p);
 
-private:
-  void setProps();
-	
-  void exec_gs();
+		int get_page();
 
-  void kill_gs();
+		int get_pages();
 
-  int fd_copy(int to, int from, size_t len);
+	private:
+		void setProps();
 
-  bool gs_active();
+		void exec_gs();
+
+		void kill_gs();
+
+		int fd_copy(int to, int from, size_t len);
+
+		bool gs_active();
 };
 #endif

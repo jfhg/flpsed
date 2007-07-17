@@ -45,28 +45,28 @@ int xev_handler(int ev) {
 void save_cb();
 
 int check_save(void) {
-  if (!psed_p->modified()) return 1;
+	if (!psed_p->modified()) return 1;
 
-  int r = fl_choice("The current file has not been saved.\n"
-	  "Would you like to save it now?",
-	  "Cancel", "Save", "Discard");
+	int r = fl_choice("The current file has not been saved.\n"
+		"Would you like to save it now?",
+		"Cancel", "Save", "Discard");
 
-  if (r == 1) {
-	  save_cb(); // Save the file...
-	  return !psed_p->modified();
-  }
+	if (r == 1) {
+		save_cb(); // Save the file...
+		return !psed_p->modified();
+	}
 
-  return (r == 2) ? 1 : 0;
+	return (r == 2) ? 1 : 0;
 }
 
 static int
 confirm_overwrite(const char *f) {
-  struct stat sb;
-    if (stat(f, &sb) == 0) {
-       return fl_choice("The file exists.\n", "Cancel", "Overwrite", NULL);
-    } else {
-       return 1;
-    }
+	struct stat sb;
+	if (stat(f, &sb) == 0) {
+		return fl_choice("The file exists.\n", "Cancel", "Overwrite", NULL);
+	} else {
+		return 1;
+	}
 }
 
 char filename[256] = "";
@@ -74,9 +74,9 @@ char filename[256] = "";
 
 void page_sel_cb(Fl_Widget *w, void *) {
 	int p = page_sel->value();
-  if (p > 0) {
-	  psed_p->load_page(page_sel->value());
-  }
+	if (p > 0) {
+		psed_p->load_page(page_sel->value());
+	}
 }
 
 void page_sel_fill() {
@@ -179,7 +179,7 @@ void export_pdf_cb() {
 			perror("pexecvp");
 		}
 
-    signal(SIGPIPE, SIG_DFL);
+		signal(SIGPIPE, SIG_DFL);
 	}
 }
 
@@ -230,10 +230,10 @@ void print_cb() {
 		close(tmp_fd);
 		if (psed_p->save(tmpname) != 0) {
 			fprintf(stderr, "Failed to print file\n");
-    } else {
-		snprintf(buf, 256, "lpr %s", tmpname);
-		system(buf);
-    }
+		} else {
+			snprintf(buf, 256, "lpr %s", tmpname);
+			system(buf);
+		}
 		unlink(tmpname);
 	} 
 }
@@ -241,8 +241,8 @@ void print_cb() {
 void about_cb() {
 	fl_message("flpsed -- a PostScript annotator\n"
 		"Version %s\n\n"
-	     "(c) Johannes Hofmann 2004-2006\n\n"
-		 "PostScript is a registered trademark of Adobe Systems", VERSION);
+		"(c) Johannes Hofmann 2004-2006\n\n"
+		"PostScript is a registered trademark of Adobe Systems", VERSION);
 }
 
 Fl_Choice *size_c;
@@ -352,10 +352,10 @@ Fl_Menu_Item menuitems[] = {
 	{ 0 },
 
 	{ "&Zoom", 0, 0, 0, FL_SUBMENU },
-    { "50 %",  0, (Fl_Callback *)zoom_cb },
+	{ "50 %",  0, (Fl_Callback *)zoom_cb },
 	{ "75 %",  0, (Fl_Callback *)zoom_cb },
 	{ "100 %",  0, (Fl_Callback *)zoom_cb },
-    { "150 %",  0, (Fl_Callback *)zoom_cb },
+	{ "150 %",  0, (Fl_Callback *)zoom_cb },
 	{ "200 %",  0, (Fl_Callback *)zoom_cb },
 	{ "250 %",  0, (Fl_Callback *)zoom_cb },
 	{ 0 },
@@ -468,7 +468,7 @@ int main(int argc, char** argv) {
 	if (err) {
 		usage();
 		exit(1);
-  }
+	}
 
 	my_argc = argc - optind;
 	my_argv = argv + optind;

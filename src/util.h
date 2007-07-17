@@ -13,8 +13,8 @@
 extern "C" {
 #endif
 
-FILE *
-pexecvp(const char *file, char *const argv[], pid_t *pid, char *type);
+	FILE *
+		pexecvp(const char *file, char *const argv[], pid_t *pid, char *type);
 
 #ifdef __cplusplus
 }
