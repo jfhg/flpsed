@@ -1,6 +1,10 @@
 flpsed ChangeLog
 =================
 
+ - fix long standing redraw problem.
+ - fix PostScript DSC problem (reported by Jim Cline).
+ - ask before overwriting files.
+
 flpsed-0.3.9
  - fix problem with documents that embed standard font replacements
    (reported by Volker Kuhlmann)
