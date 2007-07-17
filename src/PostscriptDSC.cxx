@@ -90,7 +90,8 @@ PostscriptDSC::parse(int fd) {
       bb_w = w; 
       bb_h = h; 
       bb_read++;
-    } else if (strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0) {
+    } else if (setup_len == 0 &&
+               strncmp(linebuf, "%%EndSetup", strlen("%%EndSetup")) == 0) {
       setup_len = ftell(fp);
     } else if (strncmp(linebuf, "%%Page: ", strlen("%%Page: ")) == 0) {
       char *p_str = &linebuf[strlen(linebuf)];
