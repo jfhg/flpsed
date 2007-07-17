@@ -566,7 +566,7 @@ int main(int argc, char** argv) {
 		page_sel->callback(page_sel_cb);
 		page_sel->end();
 		scroll = new Fl_Scroll(40, 55, win->w()-40, win->h()-55);
-		psed_p = new PSEditor(0, 0, 700, 900);
+		psed_p = new PSEditor(40, 55, 700, 900);
 		psed_p->property_changed_callback(property_changed_cb);
 		scroll->end();
 
