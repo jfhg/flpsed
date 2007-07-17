@@ -1,25 +1,8 @@
-// 
-// "$Id: Postscript.cxx,v 1.18 2005/06/17 18:27:17 hofmann Exp $"
 //
-// Postscript handling routines.
+// Copyright 2007 Johannes Hofmann <Johannes.Hofmann@gmx.de>
 //
-// Copyright 2004 by Johannes Hofmann
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Library General Public
-// License as published by the Free Software Foundation; either
-// version 2 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Library General Public License for more details.
-//
-// You should have received a copy of the GNU Library General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-// USA.
-//
+// This software may be used and distributed according to the terms
+// of the GNU General Public License, incorporated herein by reference.
 
 #include <stdlib.h>
 #include <string.h>
@@ -32,9 +15,6 @@
 #define PS_GLYPH_FORMAT "/%s glyphshow\n"
 #define PS_TAG_FORMAT   ""
 
-//
-// PSEditWidget internal format as PostScript comments
-//
 
 #define PSEDIT_BEGIN              "% PSEditWidget Begin\n"
 #define PSEDIT_END                "% PSEditWidget End\n"
@@ -48,10 +28,6 @@
 #define PSEDIT_GLYPH_FORMAT       "%% PSEditWidget: GLYPH %s\n"
 #define PSEDIT_TAG_FORMAT         "%% PSEditWidget: TAG %s\n"
 
-//
-// Marker to set page number. This is necessary for viewers like ghostview
-// to display single pages properly.
-// 
 #define PSEDIT_PAGE_MARKER "/PSEditWidgetPageCount %d def %% PSEditWidget\n"
 
 static struct {
@@ -248,9 +224,6 @@ int PSParser_2::parse(char *line) {
 }
 
 
-//
-// Postscript writer methods
-//
 
 
 PSWriter::PSWriter(PSEditModel *p) {
