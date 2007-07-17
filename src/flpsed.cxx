@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
@@ -75,6 +76,15 @@ int check_save(void) {
   return (r == 2) ? 1 : 0;
 }
 
+static int
+confirm_overwrite(const char *f) {
+  struct stat sb;
+    if (stat(f, &sb) == 0) {
+       return fl_choice("The file exists.\n", "Cancel", "Overwrite", NULL);
+    } else {
+       return 1;
+    }
+}
 
 char filename[256] = "";
 
@@ -161,7 +171,7 @@ void export_pdf_cb() {
 	pid_t pid;
 
 	file = fl_file_chooser("Open File?", "*.pdf", filename);
-	if(file != NULL) {
+	if(file != NULL && confirm_overwrite(file)) {
 		args[0] = "ps2pdf";
 		args[1] = "-";
 		args[2] = file;
@@ -215,7 +225,7 @@ void quit_cb() {
 
 void save_cb() {
 	char *file = fl_file_chooser("Open File?", "*.ps", filename);
-	if (file != NULL) {
+	if (file != NULL && confirm_overwrite(file)) {
 		psed_p->save(file);
 	}
 }
