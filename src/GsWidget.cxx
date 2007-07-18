@@ -117,8 +117,10 @@ int GsWidget::open_file(char *f) {
 }
 
 int GsWidget::open_file(int fd) {
+	clear();
+
 	if (in_fd >= 0 && fd != in_fd) {
-		close (in_fd);
+		close(in_fd);
 	}
 	in_fd = fd;
 
@@ -383,19 +385,7 @@ int GsWidget::get_page() {
 int GsWidget::zoom(int p) {
 	zoom_percent = p;
 
-	kill_gs();
-
-	if (offscreen) {
-		// Clear widget with current size
-		fl_begin_offscreen(offscreen);
-		fl_color(FL_WHITE);
-		fl_rectf(0, 0, w(), h());
-		fl_end_offscreen();
-		redraw();
-
-		fl_delete_offscreen(offscreen);
-		offscreen = 0;
-	}
+	clear();
 
 	xdpi = 75 * zoom_percent / 100;
 	ydpi = 75 * zoom_percent / 100;
@@ -419,4 +409,21 @@ GsWidget::get_pages() {
 void
 GsWidget::resize() {
 	size(paper_x * xdpi / 72, paper_y * ydpi / 72);
+}
+
+void
+GsWidget::clear() {
+	kill_gs();
+
+	if (offscreen) {
+		// Clear widget with current size
+		fl_begin_offscreen(offscreen);
+		fl_color(FL_WHITE);
+		fl_rectf(0, 0, w(), h());
+		fl_end_offscreen();
+		redraw();
+
+		fl_delete_offscreen(offscreen);
+		offscreen = 0;
+	}
 }

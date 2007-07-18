@@ -32,6 +32,7 @@ class GsWidget : public Fl_Widget {
 		int feeding;
 	
 		void resize();
+		void clear();
 
 	protected:
 		int page;
