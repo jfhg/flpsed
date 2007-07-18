@@ -49,7 +49,7 @@ int check_save(void) {
 
 	int r = fl_choice("The current file has not been saved.\n"
 		"Would you like to save it now?",
-		"Cancel", "Save", "Discard");
+		"Cancel", "Save", "Discard Changes");
 
 	if (r == 1) {
 		save_cb(); // Save the file...
