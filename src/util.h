@@ -1,8 +1,9 @@
-//
-// Copyright 2007 Johannes Hofmann <Johannes.Hofmann@gmx.de>
-//
-// This software may be used and distributed according to the terms
-// of the GNU General Public License, incorporated herein by reference.
+/*
+ * Copyright 2007 Johannes Hofmann <Johannes.Hofmann@gmx.de>
+ *
+ * This software may be used and distributed according to the terms
+ * of the GNU General Public License, incorporated herein by reference.
+ */
 
 #ifndef _UTIL_H_
 #define _UTIL_H_
