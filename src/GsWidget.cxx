@@ -93,8 +93,7 @@ GsWidget::GsWidget(int X,int Y,int W, int H) : Fl_Widget(X, Y, W, H) {
 	ydpi = 75 * zoom_percent / 100;
 	paper_x = 594; // DIN A4
 	paper_y = 841; //
-	initial_width = W;
-	initial_height = H;
+	resize();
 	in_fd = -1;
 	reload_needed = 0;
 	dsc = NULL;
@@ -140,6 +139,8 @@ int GsWidget::open_file(int fd) {
 		paper_x = 594; // DIN A4
 		paper_y = 841; //
 	}
+
+	resize();
 
 	page = 0;
 
@@ -396,11 +397,11 @@ int GsWidget::zoom(int p) {
 		offscreen = 0;
 	}
 
-	w(initial_width * zoom_percent / 100);
-	h(initial_height * zoom_percent / 100);
-
 	xdpi = 75 * zoom_percent / 100;
 	ydpi = 75 * zoom_percent / 100;
+
+	resize();
+
 	reload();
 
 	return 0;
@@ -413,4 +414,9 @@ GsWidget::get_pages() {
 	} else {
 		return 0;
 	}
+}
+
+void
+GsWidget::resize() {
+	size(paper_x * xdpi / 72, paper_y * ydpi / 72);
 }

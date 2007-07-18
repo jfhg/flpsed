@@ -30,6 +30,8 @@ class GsWidget : public Fl_Widget {
 		int zoom_percent;
 		int initial_width, initial_height;
 		int feeding;
+	
+		void resize();
 
 	protected:
 		int page;
