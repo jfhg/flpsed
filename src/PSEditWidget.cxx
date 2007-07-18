@@ -403,7 +403,7 @@ int PSEditWidget::ps_to_display_x(int x1) {
 }
 
 int PSEditWidget::ps_to_display_y(int y1) {
-	return round_div((paper_y - y1) * xdpi, 72);
+	return round_div((paper_y - y1) * ydpi, 72);
 }
 
 int PSEditWidget::ps_x(int x1) {
