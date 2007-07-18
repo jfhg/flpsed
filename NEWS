@@ -1,7 +1,7 @@
 flpsed ChangeLog
 =================
 
- - fix long standing redraw problem.
+ - fix scroll drawing problem.
  - fix PostScript DSC problem (reported by Jim Cline).
  - ask before overwriting files.
  - fix problem with non-A4 paper sizes.
