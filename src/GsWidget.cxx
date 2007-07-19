@@ -383,9 +383,9 @@ int GsWidget::get_page() {
 }
 
 int GsWidget::zoom(int p) {
-	zoom_percent = p;
-
 	clear();
+
+	zoom_percent = p;
 
 	xdpi = 75 * zoom_percent / 100;
 	ydpi = 75 * zoom_percent / 100;
@@ -409,6 +409,7 @@ GsWidget::get_pages() {
 void
 GsWidget::resize() {
 	size(paper_x * xdpi / 72, paper_y * ydpi / 72);
+	Fl::check(); // avoid redraw problems 
 }
 
 void
