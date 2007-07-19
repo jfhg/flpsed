@@ -1,10 +1,12 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.5.0
  - fix scroll drawing problem.
  - fix PostScript DSC problem (reported by Jim Cline).
  - ask before overwriting files.
  - fix problem with non-A4 paper sizes.
+ - add a manual page.
 
 flpsed-0.3.9
  - fix problem with documents that embed standard font replacements
