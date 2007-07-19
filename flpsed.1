@@ -1,0 +1,86 @@
+.Dd July 18 2007
+.Dt FLPSED 1
+.Os
+.Sh NAME
+.Nm flpsed
+.Nd annotate PostScript and PDF files
+.Sh SYNOPSIS
+.Nm
+.Op Fl bdh
+.Op Fl t Ar tag=value
+.Op Fl z Ar zoom
+.Op Ar infile
+.Op Ar outfile
+.Sh DESCRIPTION
+The
+.Nm
+utility allows to annotate Postscript and PDF files.
+If the document was saved in Postscript format,
+added text can be reedited later with flpsed.
+.Nm
+is useful for filling in forms or adding short comments.
+Batch mode can be used to automate form filling.
+.Pp
+The options are as follows:
+.Bl -tag -width indent
+.It Fl b
+Batch mode (no GUI). In batch mode
+.Nm
+reads from stdin, if no
+.Ar infile
+is specified. Batch mode is useful in combination with the
+.Ar Fl t
+option.
+.It Fl d
+Dump tags and values from a document
+to stdout (implies
+.Fl b
+).
+.It Fl h
+Show short help text.
+.It Fl t Ar tag=value
+Set text to
+.Ar value
+where tag is
+.Ar tag
+.
+Multiple 
+.Fl t
+options are allowed.
+.It Fl z Ar zoom
+Set initial zoom value in percent.
+.It Fl geometry Ar WxH+X+Y
+Set initial geometry.
+.It Fl iconic
+Start iconified.
+.It Fl scheme Ar string
+Use fltk scheme
+.Ar string
+Currently fltk supports "plastic" and "gtk+".
+.El
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+The command:
+.Pp
+.Dl "flpsed file1"
+.Pp
+will start flpsed and load
+.Pa file1
+for interactive editing.
+.Pp
+The command:
+.Pp
+.Dl "flpsed -b -t foo=bar file1 file2"
+.Pp
+will set the text of all text fields in
+.Pa file1
+carrying the tag "foo" to "bar" and write the
+resulting Postscript document to
+.Pa file2
+.
+.Sh SEE ALSO
+.Xr pdftops 1 ,
+.Xr ps2pdf 1
+.Sh AUTHOR
+Johannes Hofmann <Johannes.Hofmann@gmx.de>
