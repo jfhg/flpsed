@@ -45,7 +45,7 @@ pexecvp(const char *file, char *const argv[], pid_t *pid, char *type) {
 		}
 
 		execvp(file, argv);
-		exit(127);
+		_exit(127);
 	} else {
 		/* parent */ 
 		if (*type == 'r') {
