@@ -90,7 +90,8 @@ int PSEditor::handle(int event) {
 			return 0;
 			break;
 	}
-	return 0;
+
+	return PSEditWidget::handle(event);
 }
 
 
