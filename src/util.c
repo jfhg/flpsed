@@ -1,4 +1,5 @@
-/*
+/* 
+ *
  * Copyright 2007 Johannes Hofmann <Johannes.Hofmann@gmx.de>
  *
  * This software may be used and distributed according to the terms
@@ -20,7 +21,7 @@ pexecvp(const char *file, char *const argv[], pid_t *pid, char *type) {
 		return NULL;
 	}
 
-	*pid = vfork();
+	*pid = fork();
 
 	if (*pid == -1) {
 		perror("vfork");
@@ -45,7 +46,7 @@ pexecvp(const char *file, char *const argv[], pid_t *pid, char *type) {
 		}
 
 		execvp(file, argv);
-		_exit(127);
+		exit(127);
 	} else {
 		/* parent */ 
 		if (*type == 'r') {
