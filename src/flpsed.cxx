@@ -53,7 +53,7 @@ int check_save(void) {
 		"Cancel", "Save", "Discard Changes");
 
 	if (r == 1) {
-		save_cb(); // Save the file...
+		save_cb();
 		return !psed_p->modified();
 	}
 
@@ -213,34 +213,39 @@ void save_cb() {
 }
 
 void print_cb() {
-	char tmpname[256];
-	char buf[256];
-	int tmp_fd;
-	char *prefCommand;
-	const char *printCommand;
+	char *pref_cmd, tmpname[256];
+	int r, tmp_fd;
+	const char *print_cmd;
 	Fl_Preferences prefs(Fl_Preferences::USER,
 		"Johannes.HofmannATgmx.de", "flpsed");
 
-	prefs.get("printCommand", prefCommand, "lpr");
-
-	printCommand = fl_input("Print Command", prefCommand);
-	if (!printCommand || printCommand[0] == '\0')
+	prefs.get("printCommand", pref_cmd, "lpr");
+	print_cmd = fl_input("Print Command", pref_cmd);
+	if (!print_cmd || print_cmd[0] == '\0')
 		return;
 
-	if (strcmp(printCommand, prefCommand))
-		prefs.set("printCommand", printCommand);
+	if (strcmp(print_cmd, pref_cmd))
+		prefs.set("printCommand", print_cmd);
 
-	strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", sizeof(tmpname));
+	strncpy(tmpname, "/tmp/flpsedXXXXXX", sizeof(tmpname));
 	tmp_fd = mkstemp(tmpname);
 
 	if (tmp_fd >= 0) {
-		close(tmp_fd);
-		if (psed_p->save(tmpname) != 0) {
-			fprintf(stderr, "Failed to print file\n");
-		} else {
-			snprintf(buf, 256, "%s %s", printCommand, tmpname);
+		FILE *fp = fdopen(tmp_fd, "w");
+
+		r = psed_p->save(fp);
+		fclose(fp);
+
+		if (r == 0) {
+			int len = strlen(tmpname) + strlen(print_cmd) + 10;
+			char *buf = (char*) malloc (len);
+			snprintf(buf, len, "%s %s", print_cmd, tmpname);
 			system(buf);
+			free(buf);
+		} else {
+			fprintf(stderr, "Failed to print file\n");
 		}
+
 		unlink(tmpname);
 	} 
 }
@@ -571,7 +576,6 @@ int main(int argc, char** argv) {
 		psed_p->property_changed_callback(property_changed_cb);
 		scroll->end();
 
-
 		fl_open_display();
 		Fl::add_handler(xev_handler);
 
@@ -580,7 +584,6 @@ int main(int argc, char** argv) {
 		win->end();
 		win->callback((Fl_Callback *)quit_cb);
 		win->show(1, argv); 
-
 
 		if (zoom_val)
 			psed_p->zoom(zoom_val);
