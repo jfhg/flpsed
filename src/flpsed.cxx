@@ -1,5 +1,5 @@
 //
-// Copyright 2007 Johannes Hofmann <Johannes.Hofmann@gmx.de>
+// Copyright 2006-2008 Johannes Hofmann <Johannes.Hofmann@gmx.de>
 //
 // This software may be used and distributed according to the terms
 // of the GNU General Public License, incorporated herein by reference.
@@ -35,11 +35,10 @@ Fl_Scroll *scroll = NULL;
 Fl_Hold_Browser *page_sel = NULL;
 
 int xev_handler(int ev) {
-	if (psed_p) {
+	if (psed_p)
 		return psed_p->handleX11(ev);
-	} else {
+	else
 		return 0;
-	}
 }
 
 void save_cb();
@@ -63,15 +62,14 @@ int check_save(void) {
 static int
 confirm_overwrite(const char *f) {
 	struct stat sb;
-	if (stat(f, &sb) == 0) {
+
+	if (stat(f, &sb) == 0)
 		return fl_choice("The file exists.\n", "Cancel", "Overwrite", NULL);
-	} else {
+	else
 		return 1;
-	}
 }
 
-char filename[256] = "";
-
+char filename[1024] = "";
 
 void page_sel_cb(Fl_Widget *w, void *) {
 	int p = page_sel->value();
@@ -220,7 +218,7 @@ void print_cb() {
 		"Johannes.HofmannATgmx.de", "flpsed");
 
 	prefs.get("printCommand", pref_cmd, "lpr");
-	print_cmd = fl_input("Print Command", pref_cmd);
+	print_cmd = fl_input("Print Command, e.g. \"lpr\" or \"psnup -2 | lpr\"", pref_cmd);
 	if (!print_cmd || print_cmd[0] == '\0')
 		return;
 
@@ -232,7 +230,7 @@ void print_cb() {
 	if (fp) {
 		signal(SIGPIPE, SIG_IGN);
 		r = psed_p->save(fp);
-		fclose(fp);
+		pclose(fp);
 		signal(SIGPIPE, SIG_DFL);
 	} 
 
@@ -504,16 +502,14 @@ int main(int argc, char** argv) {
 			exit(1);
 		}
 
-		if (in_fp != stdin) {
+		if (in_fp != stdin)
 			fclose(in_fp);
-		}
 
-		for(int i=0; i<tv_idx; i++) {
+		for (int i = 0; i < tv_idx; i++) {
 			m->replace_tag(tv[i].tag, tv[i].value);
 			free(tv[i].tag);
 			free(tv[i].value);
 		}
-
 
 		if (bflag) {
 			if (my_argc >= 2) {
@@ -528,10 +524,10 @@ int main(int argc, char** argv) {
 
 			m->save(out_fp, tmp_fd);
 
-			if (out_fp != stdout) {
+			if (out_fp != stdout)
 				fclose(out_fp);
-			}
-		} else { // dump tags
+
+		} else {
 			m->dump_tags();
 		}
 
@@ -581,7 +577,7 @@ int main(int argc, char** argv) {
 		if (my_argc >= 1)
 			open_file(my_argv[0]);
 
-		for(int i=0; i<tv_idx; i++) {
+		for (int i = 0; i < tv_idx; i++) {
 			psed_p->replace_tag(tv[i].tag, tv[i].value);
 			free(tv[i].tag);
 			free(tv[i].value);
