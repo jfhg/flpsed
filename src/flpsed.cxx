@@ -217,11 +217,19 @@ void print_cb() {
 	char tmpname[256];
 	char buf[256];
 	int tmp_fd;
+	char *prefCommand;
+	const char *printCommand;
+	Fl_Preferences prefs(Fl_Preferences::USER,
+		"Johannes.HofmannATgmx.de", "flpsed");
 
-	int r = fl_choice("Print file?", "Cancel", "Print", NULL);
-	if (r != 1) {
+	prefs.get("printCommand", prefCommand, "lpr");
+
+	printCommand = fl_input("Print Command", prefCommand);
+	if (!printCommand || printCommand[0] == '\0')
 		return;
-	}
+
+	if (strcmp(printCommand, prefCommand))
+		prefs.set("printCommand", printCommand);
 
 	strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", 256);
 	tmp_fd = mkstemp(tmpname);
@@ -231,7 +239,7 @@ void print_cb() {
 		if (psed_p->save(tmpname) != 0) {
 			fprintf(stderr, "Failed to print file\n");
 		} else {
-			snprintf(buf, 256, "lpr %s", tmpname);
+			snprintf(buf, 256, "%s %s", printCommand, tmpname);
 			system(buf);
 		}
 		unlink(tmpname);

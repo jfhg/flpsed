@@ -1,5 +1,7 @@
 flpsed ChangeLog
 =================
+flpsed-0.5.1
+ - Add print command dialog.
 
 flpsed-0.5.0
  - fix scroll drawing problem.
