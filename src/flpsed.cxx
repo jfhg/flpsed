@@ -213,8 +213,8 @@ void save_cb() {
 }
 
 void print_cb() {
-	char *pref_cmd, tmpname[256];
-	int r, tmp_fd;
+	char *pref_cmd;
+	int r;
 	const char *print_cmd;
 	Fl_Preferences prefs(Fl_Preferences::USER,
 		"Johannes.HofmannATgmx.de", "flpsed");
@@ -227,27 +227,17 @@ void print_cb() {
 	if (strcmp(print_cmd, pref_cmd))
 		prefs.set("printCommand", print_cmd);
 
-	strncpy(tmpname, "/tmp/flpsedXXXXXX", sizeof(tmpname));
-	tmp_fd = mkstemp(tmpname);
+	FILE *fp = popen(print_cmd, "w");
 
-	if (tmp_fd >= 0) {
-		FILE *fp = fdopen(tmp_fd, "w");
-
+	if (fp) {
+		signal(SIGPIPE, SIG_IGN);
 		r = psed_p->save(fp);
 		fclose(fp);
-
-		if (r == 0) {
-			int len = strlen(tmpname) + strlen(print_cmd) + 10;
-			char *buf = (char*) malloc (len);
-			snprintf(buf, len, "%s %s", print_cmd, tmpname);
-			system(buf);
-			free(buf);
-		} else {
-			fprintf(stderr, "Failed to print file\n");
-		}
-
-		unlink(tmpname);
+		signal(SIGPIPE, SIG_DFL);
 	} 
+
+	if (!fp || r)
+		fprintf(stderr, "Print Command %s failed\n", print_cmd);
 }
 
 void about_cb() {
