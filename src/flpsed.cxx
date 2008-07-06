@@ -241,7 +241,7 @@ void print_cb() {
 void about_cb() {
 	fl_message("flpsed -- a PostScript annotator\n"
 		"Version %s\n\n"
-		"(c) Johannes Hofmann 2004-2007\n\n"
+		"(c) Johannes Hofmann 2004-2008\n\n"
 		"PostScript is a registered trademark of Adobe Systems", VERSION);
 }
 
