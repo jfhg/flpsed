@@ -45,7 +45,8 @@ int xev_handler(int ev) {
 void save_cb();
 
 int check_save(void) {
-	if (!psed_p->modified()) return 1;
+	if (!psed_p->modified())
+		return 1;
 
 	int r = fl_choice("The current file has not been saved.\n"
 		"Would you like to save it now?",
@@ -74,25 +75,24 @@ char filename[256] = "";
 
 void page_sel_cb(Fl_Widget *w, void *) {
 	int p = page_sel->value();
-	if (p > 0) {
+	if (p > 0)
 		psed_p->load_page(page_sel->value());
-	}
 }
 
 void page_sel_fill() {
-	char buf[64];
+	char buf[128];
 	int p = psed_p->get_pages();
 
 	page_sel->clear();
 
-	if (p == 0) {
+	if (!p)
 		return;
-	}
 
 	for(int i=1; i<=p; i++) {
 		snprintf(buf, sizeof(buf), "%d", i);
 		page_sel->add(buf);
 	}
+
 	page_sel->select(psed_p->get_page());
 }
 
@@ -138,12 +138,12 @@ void open_file(char *file) {
 void open_cb() {
 	char *file;
 
-	if (!check_save()) return;
+	if (!check_save())
+		return;
 
 	file = fl_file_chooser("Open File?", "*.{ps,pdf}", filename);
-	if(file != NULL) {
+	if (file)
 		open_file(file);
-	}  
 }
 
 void export_pdf_cb() {
@@ -185,9 +185,8 @@ void export_pdf_cb() {
 
 void import_cb() {
 	char *file = fl_file_chooser("Import Overlay from File?", "*.ps", filename);
-	if(file != NULL) {
+	if(file)
 		psed_p->import(file);
-	}  
 }
 
 void first_cb() {
@@ -201,16 +200,16 @@ void next_cb() {
 }
 
 void quit_cb() {
-	if (!check_save()) return;
+	if (!check_save())
+		return;
 	delete psed_p;
 	exit(0);
 }
 
 void save_cb() {
 	char *file = fl_file_chooser("Open File?", "*.ps", filename);
-	if (file != NULL && confirm_overwrite(file)) {
+	if (file && confirm_overwrite(file))
 		psed_p->save(file);
-	}
 }
 
 void print_cb() {
@@ -231,7 +230,7 @@ void print_cb() {
 	if (strcmp(printCommand, prefCommand))
 		prefs.set("printCommand", printCommand);
 
-	strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", 256);
+	strncpy(tmpname, "/tmp/PSEditWidgetXXXXXX", sizeof(tmpname));
 	tmp_fd = mkstemp(tmpname);
 
 	if (tmp_fd >= 0) {
@@ -289,9 +288,8 @@ void property_changed_cb() {
 void size_cb(Fl_Widget *w, void *) {
 	Fl_Menu_* mw = (Fl_Menu_*)w;
 	const Fl_Menu_Item* m = mw->mvalue();
-	if (m) {
+	if (m)
 		psed_p->set_size(atoi(m->label()));
-	}
 }
 
 void color_cb(Fl_Widget *w, void *v) {
@@ -304,7 +302,9 @@ void color_cb(Fl_Widget *w, void *v) {
 	g = pc.get_g();
 	b = pc.get_b();
 
-	if (!fl_color_chooser("Text Color", r, g, b)) return;
+	if (!fl_color_chooser("Text Color", r, g, b))
+		return;
+
 	Fl_Button* button = (Fl_Button*)v;
 	pc.set(r, g, b);
 	psed_p->set_color(&pc);
@@ -582,13 +582,11 @@ int main(int argc, char** argv) {
 		win->show(1, argv); 
 
 
-		if (zoom_val) {
+		if (zoom_val)
 			psed_p->zoom(zoom_val);
-		}
 
-		if (my_argc >= 1) {
+		if (my_argc >= 1)
 			open_file(my_argv[0]);
-		}
 
 		for(int i=0; i<tv_idx; i++) {
 			psed_p->replace_tag(tv[i].tag, tv[i].value);
