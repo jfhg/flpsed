@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -86,7 +85,7 @@ void page_sel_fill() {
 	if (!p)
 		return;
 
-	for(int i=1; i<=p; i++) {
+	for (int i = 1; i <= p; i++) {
 		snprintf(buf, sizeof(buf), "%d", i);
 		page_sel->add(buf);
 	}
@@ -183,7 +182,7 @@ void export_pdf_cb() {
 
 void import_cb() {
 	char *file = fl_file_chooser("Import Overlay from File?", "*.ps", filename);
-	if(file)
+	if (file)
 		psed_p->import(file);
 }
 
@@ -474,7 +473,6 @@ int main(int argc, char** argv) {
 	my_argc = argc - optind;
 	my_argv = argv + optind;
 
-
 	if (bflag || dflag) {
 		//
 		// Batch Mode 
@@ -493,7 +491,6 @@ int main(int argc, char** argv) {
 		} else {
 			in_fp = stdin;
 		}
-
 
 		tmp_fd = m->load(in_fp);
 
