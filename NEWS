@@ -1,97 +1,97 @@
 flpsed ChangeLog
 =================
 flpsed-0.5.1
- * Add a simple print command dialog.
- * Cleaned up sources and fixed some minor bugs.
+* Add a simple print command dialog.
+* Cleaned up sources and fixed some minor bugs.
 
 flpsed-0.5.0
- * fix scroll drawing problem.
- * fix PostScript DSC problem (reported by Jim Cline).
- * ask before overwriting files.
- * fix problem with non-A4 paper sizes.
- * add a manual page.
+* fix scroll drawing problem.
+* fix PostScript DSC problem (reported by Jim Cline).
+* ask before overwriting files.
+* fix problem with non-A4 paper sizes.
+* add a manual page.
 
 flpsed-0.3.9
- * fix problem with documents that embed standard font replacements
+* fix problem with documents that embed standard font replacements
    (reported by Volker Kuhlmann)
- * use plain Helvetica font instead of HelveticaNeue-Roman
+* use plain Helvetica font instead of HelveticaNeue-Roman
    (reported by Evgeny Stambulchik and others).
- * use ftell() instead of ftello() for better compatibility
+* use ftell() instead of ftello() for better compatibility
    (reported by Christophe CURIS).
- * automatically import PDF files from the command line (requested by many).
+* automatically import PDF files from the command line (requested by many).
 
 flpsed-0.3.8
- * implicitely end setup section if %%Page comment is encountered and check
+* implicitely end setup section if %%Page comment is encountered and check
    for valid setup length after DSC parsing.
- * only set modified flag if real changes have been made to the document.
- * use fl_choice() instead of deprecated fl_ask().
- * no longer rely on %%Pages comment because of possible use of (atend).
- * call XSync() to avoid "Cannot get ghostview property" error from gs
+* only set modified flag if real changes have been made to the document.
+* use fl_choice() instead of deprecated fl_ask().
+* no longer rely on %%Pages comment because of possible use of (atend).
+* call XSync() to avoid "Cannot get ghostview property" error from gs
    (reported by A Mennucc).
- * don't die on SIGPIPE if gs has a problem (reported by A Mennucc).
+* don't die on SIGPIPE if gs has a problem (reported by A Mennucc).
 
 flpsed-0.3.7
- * use setenv() instead of putenv() for POSIX 
+* use setenv() instead of putenv() for POSIX 
    compatibility (noticed by Jeff Orczykowski on Solaris 8).
- * fix gcc-4.1 compilation problem.
- * fix segfault in DSC code reported by Morten Brix Pedersen.
- * fix scroll bar redraw problem after zoom.
+* fix gcc-4.1 compilation problem.
+* fix segfault in DSC code reported by Morten Brix Pedersen.
+* fix scroll bar redraw problem after zoom.
 
 flpsed-0.3.6
- * Add support for PostScript Document Structure Convention.
- * Pages can now be accessed in random order.
- * Document sizes other than A4 are handled better.
- * Add -geometry and -z (zoom) options.
+* Add support for PostScript Document Structure Convention.
+* Pages can now be accessed in random order.
+* Document sizes other than A4 are handled better.
+* Add -geometry and -z (zoom) options.
 
 flpsed-0.3.5
- * Add text color support. Click on the (initially) black button and 
+* Add text color support. Click on the (initially) black button and 
    increase the brightness using the vertical slider.
- * Move text properties (currently text size and color) to own toolbar.
- * Fix keyboard shortcuts (noticed by Spec).
- * Updated Mac OS X compile instructions 
+* Move text properties (currently text size and color) to own toolbar.
+* Fix keyboard shortcuts (noticed by Spec).
+* Updated Mac OS X compile instructions 
    (based on feedback from Jonathan Dueck).
 
 flpsed-0.3.4
- * Switched to automake/autoconf (thanks to Peter Seiderer).
- * Fixed a compile problem on amd64 (Debian bug 303406).
- * Added compilation instructions for Mac OS X (by Michael Grossman).
- * Fixed cyan background problem on some machines.
- * Add support for a whole bunch of new special characters 
+* Switched to automake/autoconf (thanks to Peter Seiderer).
+* Fixed a compile problem on amd64 (Debian bug 303406).
+* Added compilation instructions for Mac OS X (by Michael Grossman).
+* Fixed cyan background problem on some machines.
+* Add support for a whole bunch of new special characters 
    (patch by Thadeu Penna).
 
 flpsed-0.3.3
- * Implement PDF import/export based on pdftops and ps2pdf.
- * Fix segfault when using arrow keys on empty document 
+* Implement PDF import/export based on pdftops and ps2pdf.
+* Fix segfault when using arrow keys on empty document 
   (reported by Arho Virkki).
- * Remove beeping sound  (requested by Arho Virkki).
- * Fix PostScript output for certain documents (reported by Petr Baum).
+* Remove beeping sound  (requested by Arho Virkki).
+* Fix PostScript output for certain documents (reported by Petr Baum).
 
 flpsed-0.3.2
- * Implement zooming (thanks to Jochen Eisinger for the suggestion).
+* Implement zooming (thanks to Jochen Eisinger for the suggestion).
 
 flpsed-0.3.1
- * Fix redraw problem after scrolling.
- * Allow moving of text with arrow keys for better text positioning.
- * Tab key now cycles through text fields on current page.
- * Various bug fixes.
+* Fix redraw problem after scrolling.
+* Allow moving of text with arrow keys for better text positioning.
+* Tab key now cycles through text fields on current page.
+* Various bug fixes.
 
 flpsed-0.3.0
- * Add support for tags (thanks to Reimar Bauer for his thoughts on this).
- * Add batch processing mode.
- * Load PostScript file given on the command line.
- * Reduced flickering.
+* Add support for tags (thanks to Reimar Bauer for his thoughts on this).
+* Add batch processing mode.
+* Load PostScript file given on the command line.
+* Reduced flickering.
 
 flpsed-0.2.1
- * Fix segfault when reloading documents.
+* Fix segfault when reloading documents.
 
 flpsed-0.2
- * Change internal format to allow for more compatible PostScript code.
- * Improve PostScript output.
- * Make flpsed work with various page sizes.
- * Major code restructuring.
- * Allow pasting of text.
- * Fix segmentation fault when saving large documents.
- * Add support for '\' character.
+* Change internal format to allow for more compatible PostScript code.
+* Improve PostScript output.
+* Make flpsed work with various page sizes.
+* Major code restructuring.
+* Allow pasting of text.
+* Fix segmentation fault when saving large documents.
+* Add support for '\' character.
 
 flpsed-0.1
- * Initial version.
+* Initial version.
