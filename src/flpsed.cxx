@@ -68,7 +68,7 @@ confirm_overwrite(const char *f) {
 		return 1;
 }
 
-char filename[1024] = "";
+char *filename = NULL;
 
 void page_sel_cb(Fl_Widget *w, void *) {
 	int p = page_sel->value();
@@ -139,8 +139,12 @@ void open_cb() {
 		return;
 
 	file = fl_file_chooser("Open File?", "*.{ps,pdf}", filename);
-	if (file)
+	if (file) {
 		open_file(file);
+		if (filename)
+			free(filename);
+		filename = strdup(file);
+	}
 }
 
 void export_pdf_cb() {
@@ -150,7 +154,7 @@ void export_pdf_cb() {
 	char *args[32];
 	pid_t pid;
 
-	file = fl_file_chooser("Open File?", "*.pdf", filename);
+	file = fl_file_chooser("Open File?", "*.pdf", NULL);
 	if(file != NULL && confirm_overwrite(file)) {
 		args[0] = "ps2pdf";
 		args[1] = "-";
@@ -181,7 +185,7 @@ void export_pdf_cb() {
 }
 
 void import_cb() {
-	char *file = fl_file_chooser("Import Overlay from File?", "*.ps", filename);
+	char *file = fl_file_chooser("Import Overlay from File?", "*.ps", NULL);
 	if (file)
 		psed_p->import(file);
 }
@@ -571,8 +575,10 @@ int main(int argc, char** argv) {
 		if (zoom_val)
 			psed_p->zoom(zoom_val);
 
-		if (my_argc >= 1)
-			open_file(my_argv[0]);
+		if (my_argc >= 1) {
+			filename = strdup(my_argv[0]);
+			open_file(filename);
+		}
 
 		for (int i = 0; i < tv_idx; i++) {
 			psed_p->replace_tag(tv[i].tag, tv[i].value);
