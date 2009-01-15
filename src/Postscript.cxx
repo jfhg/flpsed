@@ -317,7 +317,7 @@ void PSWriter::write_string(FILE *out, char *s) {
 		write_string(out, &(s[1]));
 		return;
 	} else {
-		for(int i=0; i<strlen(s); i++) {
+		for(int i = 0; i < strlen(s); i++) {
 			if ((glyph = char_to_glyph(&(s[i]))) != NULL) {
 				char *s1 = strdup(s);
 				s1[i] = '\0';
