@@ -22,6 +22,7 @@ class PSParser {
 
 	public: 
 		PSParser(PSEditModel *p);
+		virtual ~PSParser() {};
 
 		virtual int parse(char *line);
 };
@@ -66,6 +67,7 @@ class PSWriter {
 
 	public: 
 		PSWriter(PSEditModel *p);
+		virtual ~PSWriter() {};
 
 		int write(FILE *in, FILE *out);
 };
