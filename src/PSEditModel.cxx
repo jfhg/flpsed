@@ -255,7 +255,7 @@ int PSEditModel::load(FILE *fp) {
 	while (fgets(linebuf, sizeof(linebuf), fp) != NULL) {
 		if (!p2->parse(linebuf)) {
 			ret = write(tmp_fd, linebuf, strlen(linebuf));
-			if (ret != strlen(linebuf)) {
+			if (ret != (int) strlen(linebuf)) {
 				fprintf(stderr, "Error while writing to temporary file\n");
 			}
 		}
