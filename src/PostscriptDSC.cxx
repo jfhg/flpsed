@@ -35,8 +35,7 @@ PostscriptDSC::parse(int fd) {
 	FILE *fp;
 	char linebuf[1024];
 	int x, y, w, h;
-	int p1 = 0, ps;
-	int i = 0;
+	int p1 = 0;
 	int bb_read = 0;
 	int max_pages = 128;
 
