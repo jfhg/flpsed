@@ -276,7 +276,7 @@ void PSWriter::write_main_block(FILE *out) {
 	fprintf(out, "\n");
 	fprintf(out, ps_header());
 
-	for (int i=1;i<pse->get_max_pages();i++) {
+	for (int i = 1; i<pse->get_max_pages(); i++) {
 		if (pse->get_text(i)) {
 			fprintf(out, "dup %d eq { \n", i);
 			write_text(out, pse->get_text(i));
@@ -299,7 +299,7 @@ void PSWriter::write_internal_format(FILE *out) {
 	glyph_format = PSEDIT_GLYPH_FORMAT;
 	tag_format   = PSEDIT_TAG_FORMAT;
 
-	for (int i=1;i<pse->get_max_pages();i++) {
+	for (int i = 1; i < pse->get_max_pages(); i++) {
 		if (pse->get_text(i)) {
 			fprintf(out, PSEDIT_PAGE_FORMAT, i);
 			write_text(out, pse->get_text(i));
@@ -317,7 +317,7 @@ void PSWriter::write_string(FILE *out, char *s) {
 		write_string(out, &(s[1]));
 		return;
 	} else {
-		for(int i = 0; i < strlen(s); i++) {
+		for (int i = 0; i < strlen(s); i++) {
 			if ((glyph = char_to_glyph(&(s[i]))) != NULL) {
 				char *s1 = strdup(s);
 				s1[i] = '\0';
