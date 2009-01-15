@@ -7,6 +7,8 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/GsWidget.H])
 AC_CONFIG_HEADER(config.h)
 
+CPPFLAGS="-Wall $CPPFLAGS"
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
