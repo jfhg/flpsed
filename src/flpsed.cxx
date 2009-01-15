@@ -1,5 +1,5 @@
 //
-// Copyright 2006-2008 Johannes Hofmann <Johannes.Hofmann@gmx.de>
+// Copyright 2006-2009 Johannes Hofmann <Johannes.Hofmann@gmx.de>
 //
 // This software may be used and distributed according to the terms
 // of the GNU General Public License, incorporated herein by reference.
@@ -311,7 +311,7 @@ void print_cb() {
 void about_cb() {
 	fl_message("flpsed -- a PostScript annotator\n"
 		"Version %s\n\n"
-		"(c) Johannes Hofmann 2004-2008\n\n"
+		"(c) Johannes Hofmann 2004-2009\n\n"
 		"PostScript is a registered trademark of Adobe Systems", VERSION);
 }
 
