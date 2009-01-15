@@ -25,6 +25,8 @@
 #include <FL/Fl_Color_Chooser.H>
 #include <FL/Fl_Hold_Browser.H>
 
+#include <assert.h>
+
 #include "PSEditor.H"
 #include "util.h"
 #include "../config.h"
@@ -70,11 +72,41 @@ confirm_overwrite(const char *f) {
 
 char *filename = NULL;
 
-void page_sel_cb(Fl_Widget *w, void *) {
-	int p = page_sel->value();
-	if (p > 0)
-		psed_p->load_page(page_sel->value());
+
+void scroll_to_begin() {
+	assert(scroll);
+
+	scroll->position(0, 0);
+	scroll->redraw();
 }
+
+
+void scroll_to_end() {
+	assert(scroll && psed_p);
+
+	scroll->position(0, psed_p->h() - scroll->h());
+	scroll->redraw();
+}
+
+
+void page_sel_cb(Fl_Widget *w, void *) {
+	int new_page, old_page;
+
+	assert(page_sel && psed_p);
+
+	new_page = page_sel->value();
+	old_page = psed_p->get_page();
+
+	if (new_page > 0 && new_page != old_page) {
+		psed_p->load_page(page_sel->value());
+
+		if(old_page < new_page)
+			scroll_to_begin();
+		else if(old_page > new_page)
+			scroll_to_end();
+	}
+}
+
 
 void page_sel_fill() {
 	char buf[128];
@@ -193,12 +225,47 @@ void import_cb() {
 void first_cb() {
 	psed_p->load();
 	page_sel->select(psed_p->get_page());
+	scroll_to_begin();
 }
 
-void next_cb() {
-	psed_p->next();
+
+void last_cb() {
+	int pg = psed_p->get_pages();
+
+	if(psed_p->get_page() == pg)
+		return;
+
+	psed_p->load_page(pg);
 	page_sel->select(psed_p->get_page());
+	scroll_to_begin();
 }
+
+
+void next_cb() {
+	int pg = psed_p->get_page();
+
+	psed_p->next();
+
+	if(psed_p->get_page() == pg)
+		return;
+
+	page_sel->select(psed_p->get_page());
+	scroll_to_begin();
+}
+
+
+void prev_cb() {
+	int pg = psed_p->get_page();
+
+	psed_p->prev();
+
+	if(psed_p->get_page() == pg)
+		return;
+
+	page_sel->select(psed_p->get_page());
+	scroll_to_end();
+}
+
 
 void quit_cb() {
 	if (!check_save())
@@ -314,10 +381,7 @@ void zoom_cb(Fl_Widget *w, void *) {
 	if (m) {
 		if (psed_p) {
 			psed_p->zoom(atoi(m->label()));
-			if (scroll) {
-				scroll->position(0,0);
-				scroll->redraw();
-			}
+			scroll_to_begin();
 		}
 	}
 }
@@ -352,7 +416,9 @@ Fl_Menu_Item menuitems[] = {
 
 	{ "&Page", 0, 0, 0, FL_SUBMENU },
 	{ "&First",        FL_CTRL + 'f', (Fl_Callback *)first_cb },
+	{ "&Last",        FL_CTRL + 'l', (Fl_Callback *)last_cb },
 	{ "&Next",       FL_CTRL + 'n', (Fl_Callback *)next_cb },
+	{ "P&revious",       FL_CTRL + 'r', (Fl_Callback *)prev_cb },
 	{ 0 },
 
 	{ "&Zoom", 0, 0, 0, FL_SUBMENU },

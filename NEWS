@@ -1,5 +1,11 @@
 flpsed ChangeLog
 =================
+flpsed-0.5.2
+* Add Ctrl-l (last page) and Ctrl-p (previous page) hotkeys. (by Paulo Jnkml)
+* Scroll to top of page when going to next page. (by Paulo Jnkml)
+* Scroll to bottom of page when going to previous page. (by Paulo Jnkml)
+* Minor fixes.
+
 flpsed-0.5.1
 * Add a simple print command dialog.
 * Cleaned up sources and fixed some minor bugs.
