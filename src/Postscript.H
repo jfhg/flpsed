@@ -41,17 +41,12 @@ class PSWriter {
 	protected:
 		PSEditModel *pse;
 
-		char * pos_format;
-
-		char * size_format;
-
-		char * text_format;
-
-		char * color_format;
-
-		char * glyph_format;
-
-		char * tag_format;
+		const char * pos_format;
+		const char * size_format;
+		const char * text_format;
+		const char * color_format;
+		const char * glyph_format;
+		const char * tag_format;
 
 		void write_string(FILE *out, char *s);
 
@@ -61,9 +56,9 @@ class PSWriter {
 
 		int write_text(FILE *out, PSEditText *t);
 
-		virtual char *ps_header();
+		virtual const char *ps_header();
 
-		virtual char *ps_trailer();
+		virtual const char *ps_trailer();
 
 	public: 
 		PSWriter(PSEditModel *p);
@@ -74,9 +69,9 @@ class PSWriter {
 
 class PSLevel1Writer : public PSWriter {
 	protected:
-		char *ps_header();
+		const char *ps_header();
 
-		char *ps_trailer();
+		const char *ps_trailer();
 
 	public:
 		PSLevel1Writer(PSEditModel *p);

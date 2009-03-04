@@ -128,7 +128,7 @@ void page_sel_fill() {
 void open_file(char *file) {
 	FILE *p;
 	int status;
-	char *args[32];
+	const char *args[5];
 	pid_t pid;
 	char *dot = strrchr(file, '.');
 
@@ -139,7 +139,7 @@ void open_file(char *file) {
 		args[2] = "-";
 		args[3] = NULL;
 
-		p = pexecvp("pdftops", args, &pid, "r");
+		p = pexecvp("pdftops", const_cast<char * const *>(args), &pid, "r");
 
 		if (p) {
 			psed_p->open_file(p);
@@ -183,7 +183,7 @@ void export_pdf_cb() {
 	char *file;
 	FILE *p;
 	int status;
-	char *args[32];
+	const char *args[5];
 	pid_t pid;
 
 	file = fl_file_chooser("Open File?", "*.pdf", NULL);
@@ -195,7 +195,7 @@ void export_pdf_cb() {
 
 		signal(SIGPIPE, SIG_IGN);
 
-		p = pexecvp("ps2pdf", args, &pid, "w");
+		p = pexecvp("ps2pdf", const_cast<char * const *>(args), &pid, "w");
 
 		if (p) {
 			psed_p->save(p);
@@ -319,7 +319,7 @@ Fl_Choice *size_c;
 Fl_Button *color_b;
 
 static struct {
-	char *label;
+	const char *label;
 	int size;
 } text_sizes[] = {
 	{"8", 8},

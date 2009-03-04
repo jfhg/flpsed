@@ -285,7 +285,8 @@ int GsWidget::fd_copy(int to, int from, size_t len) {
 }
 
 void GsWidget::exec_gs() {
-	char *argv[16];
+	const char * const argv[] = {"gs", "-dSAFER", "-dQUIET",
+		"-sDEVICE=x11alpha", "-dNOPLATFONTS", "-dNOPAUSE", "-", NULL};
 	char gvenv[256];
 	int d_null = open("/dev/null", O_WRONLY);
 
@@ -295,15 +296,10 @@ void GsWidget::exec_gs() {
 		(int) fl_xid(window()), (int) offscreen);
 
 	putenv(gvenv);
-	argv[0] = "gs";
-	argv[1] = "-dSAFER";
-	argv[2] = "-dQUIET";
-	argv[3] = "-sDEVICE=x11alpha";
-	argv[4] = "-dNOPLATFONTS";
-	argv[5] = "-dNOPAUSE";
-	argv[6] = "-";
-	argv[7] = NULL;
-	execvp(argv[0], argv);
+
+	// const cast is necessary because of execvp declaration, see:
+	// http://www.opengroup.org/onlinepubs/000095399/functions/exec.html
+	execvp(argv[0], const_cast<char * const *>(argv));
 	perror("exec");
 	fprintf(stderr, "Please install ghostscript and make sure 'gs' "
 		"is in the PATH.\n");

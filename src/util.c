@@ -12,7 +12,7 @@
 #include "util.h"
 
 FILE *
-pexecvp(const char *file, char *const argv[], pid_t *pid, char *type) {
+pexecvp(const char *file, char *const argv[], pid_t *pid, const char *type) {
 	FILE *iop;
 	int   pdes[2];
 

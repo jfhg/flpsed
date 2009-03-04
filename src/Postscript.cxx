@@ -362,17 +362,17 @@ int PSWriter::write_text(FILE *out, PSEditText *t) {
 	return 0;
 }
 
-char * PSWriter::ps_header() {
+const char * PSWriter::ps_header() {
 	return "";
 }
 
-char * PSWriter::ps_trailer() {
+const char * PSWriter::ps_trailer() {
 	return "";
 }
 
 PSLevel1Writer::PSLevel1Writer(PSEditModel *p) : PSWriter(p) {};
 
-char * PSLevel1Writer::ps_header() {
+const char * PSLevel1Writer::ps_header() {
 	return
 		"/PSEditWidgetPageCount 0 def\n"
 		"/PSEditWidgetPC 0 def\n"
@@ -387,6 +387,6 @@ char * PSLevel1Writer::ps_header() {
 		"} ifelse\n";
 }
 
-char * PSLevel1Writer::ps_trailer() {
+const char * PSLevel1Writer::ps_trailer() {
 	return  "grestore PSEditWidgetshowpage} def\n";
 }
