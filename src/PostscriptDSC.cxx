@@ -190,9 +190,9 @@ PostscriptDSC::print() {
 	int i;
 
 	printf("x %d, y %d, w %d, h %d\n", bb_x, bb_y, bb_w, bb_h);
-	printf("setup_len %d\n", setup_len);
+	printf("setup_len %zu\n", setup_len);
 	for (i=0; i<pages; i++) {
-		printf("p %d, off %d, len %d\n", i, page_off[i], page_len[i]);
+		printf("p %d, off %zu, len %zu\n", i, page_off[i], page_len[i]);
 	}
 }
 
