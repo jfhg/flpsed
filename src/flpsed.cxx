@@ -84,7 +84,8 @@ void scroll_to_begin() {
 void scroll_to_end() {
 	assert(scroll && psed_p);
 
-	scroll->position(0, psed_p->h() - scroll->h());
+	int new_pos = psed_p->h() > scroll->h() ? psed_p->h() - scroll->h() : 0;
+	scroll->position(0, new_pos);
 	scroll->redraw();
 }
 
