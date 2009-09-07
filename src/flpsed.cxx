@@ -34,6 +34,7 @@
 PSEditor *psed_p   = NULL;
 Fl_Scroll *scroll = NULL;
 Fl_Hold_Browser *page_sel = NULL;
+Fl_Window *win;
 
 int xev_handler(int ev) {
 	if (psed_p)
@@ -132,6 +133,11 @@ void open_file(char *file) {
 	const char *args[5];
 	pid_t pid;
 	char *dot = strrchr(file, '.');
+	static const char *title_prefix = "flpsed - ";
+	int title_len = strlen(file) + strlen(title_prefix) + 1;
+	char *title = (char*) malloc(title_len);
+
+	snprintf(title, title_len, "%s%s", title_prefix, file);
 
 	if (dot && strcasecmp(dot, ".pdf") == 0) {
 		// assume pdf and try to import it using pdftops
@@ -153,6 +159,8 @@ void open_file(char *file) {
 			} else if (WEXITSTATUS(status) != 0) {
 				fl_message("PDF import failed\n");
 			}
+
+			win->copy_label(title);
 		} else {
 			perror("pexecvp");
 		}
@@ -160,7 +168,10 @@ void open_file(char *file) {
 		// assume postscript
 		psed_p->open_file(file);
 		psed_p->load();
+		win->copy_label(title);
 	}
+
+	free(title);
 
 	page_sel_fill();
 }
@@ -482,7 +493,6 @@ int main(int argc, char** argv) {
 	char *sep, *tmp, **my_argv;
 	int c, err, bflag = 0, dflag = 0;
 	int i, n;
-	Fl_Window *win;
 	Fl_Menu_Bar *m;
 	struct {char *tag; char *value;} tv[TV_LEN];
 	int tv_idx = 0, my_argc;
