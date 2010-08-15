@@ -206,20 +206,10 @@ void PSEditWidget::move(int x1, int y1) {
 
 void PSEditWidget::rel_move(int dx, int dy) {
 	PSEditText *t;
-	int old_bbx, old_bby, old_bbw, old_bbh;
 
 	t = model->get_cur_text();
 	if (t) {
-		old_bbx = bb_x(t);
-		old_bby = bb_y(t);
-		old_bbw = bb_w(t);
-		old_bbh = bb_h(t);
-
-		model->move(t->get_x() + dx, t->get_y() + dy);
-		mod++;
-
-		damage(4, old_bbx, old_bby, old_bbw, old_bbh);
-		damage(4, bb_x(t), bb_y(t), bb_w(t), bb_h(t));
+		move(ps_to_display_x(t->get_x() + dx), ps_to_display_y(t->get_y() + dy));
 	}
 }
 
