@@ -294,7 +294,7 @@ void save_cb() {
 
 void print_cb() {
 	char *pref_cmd;
-	int r;
+	int r = 0;
 	const char *print_cmd;
 	Fl_Preferences prefs(Fl_Preferences::USER,
 		"Johannes.HofmannATgmx.de", "flpsed");
@@ -647,7 +647,9 @@ int main(int argc, char** argv) {
 
 		win->end();
 		win->callback((Fl_Callback *)quit_cb);
-		win->show(1, argv); 
+		win->show(1, argv);
+
+		property_changed_cb(); // sync properties with UI
 
 		if (zoom_val)
 			psed_p->zoom(zoom_val);
