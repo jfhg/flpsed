@@ -6,6 +6,7 @@ flpsed-0.5.3
 * Fix scroll_to_end() when scroll is higher than the document.
 * NEWS -> ChangeLog.
 * Show current file name in the window title (by Sydro).
+* Show correct font size and color on startup (reported by Luis Alberto).
 
 flpsed-0.5.2
 * Add Ctrl-l (last page) and Ctrl-r (previous page) hotkeys. (by Paulo Jnkml)
