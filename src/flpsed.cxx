@@ -127,19 +127,34 @@ void page_sel_fill() {
 	page_sel->select(psed_p->get_page());
 }
 
+bool is_pdf(const char *file) {
+	FILE *f = fopen(file, "r");
+	char buf[4] = {'\0'};
+	size_t read = 0;
+
+	if (!f)
+		return false;
+
+	while (read < sizeof(buf) && !feof(f) && !ferror(f))
+		read += fread(buf + read, 1, sizeof(buf) - read, f);
+	fclose(f);
+
+	return (strncmp(buf, "%PDF", sizeof(buf)) == 0);
+}
+
+
 void open_file(char *file) {
 	FILE *p;
 	int status;
 	const char *args[5];
 	pid_t pid;
-	char *dot = strrchr(file, '.');
 	static const char *title_prefix = "flpsed - ";
 	int title_len = strlen(file) + strlen(title_prefix) + 1;
 	char *title = (char*) malloc(title_len);
 
 	snprintf(title, title_len, "%s%s", title_prefix, file);
 
-	if (dot && strcasecmp(dot, ".pdf") == 0) {
+	if (is_pdf(file)) {
 		// assume pdf and try to import it using pdftops
 		args[0] = "pdftops";
 		args[1] = file;
