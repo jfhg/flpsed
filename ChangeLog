@@ -1,6 +1,9 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.5.4
+* Detect pdf by looking at magic number instead of file extension.
+
 flpsed-0.5.3
 * Fix warnings (reported by Kapil Hari Paranjape).
 * Fix scroll_to_end() when scroll is higher than the document.
