@@ -77,7 +77,7 @@ char *filename = NULL;
 void scroll_to_begin() {
 	assert(scroll);
 
-	scroll->position(0, 0);
+	scroll->scroll_to(0, 0);
 	scroll->redraw();
 }
 
@@ -86,7 +86,7 @@ void scroll_to_end() {
 	assert(scroll && psed_p);
 
 	int new_pos = psed_p->h() > scroll->h() ? psed_p->h() - scroll->h() : 0;
-	scroll->position(0, new_pos);
+	scroll->scroll_to(0, new_pos);
 	scroll->redraw();
 }
 
@@ -629,7 +629,7 @@ int main(int argc, char** argv) {
 		// Interactive Mode
 		//
 
-		win = new Fl_Window(600,700);
+		win = new Fl_Window(600, 700);
 		m = new Fl_Menu_Bar(0, 0, 600, 30);
 		m->menu(menuitems);
 
