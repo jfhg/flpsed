@@ -1,8 +1,10 @@
 flpsed ChangeLog
 =================
 
-flpsed-0.5.4
+flpsed-0.7.0
 * Detect pdf by looking at magic number instead of file extension.
+* Bring in utf8 changes from fltk2 based version to make it work
+  with fltk-1.3. flpsed is now officially based on fltk-1.3.x.
 
 flpsed-0.5.3
 * Fix warnings (reported by Kapil Hari Paranjape).

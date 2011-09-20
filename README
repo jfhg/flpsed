@@ -40,8 +40,8 @@ Restrictions:
 Building:
 - flpsed only works on X11-based systems.
 - You need to have ghostscript installed.
-- You need to have fltk-1.1.x from www.fltk.org installed.
-- Unpack the tarball and type "./configire", "make", and "make install".
+- You need to have fltk-1.3.x from www.fltk.org installed.
+- Unpack the tarball and type "./configure", "make", and "make install".
 
 
 
