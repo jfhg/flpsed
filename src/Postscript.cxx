@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <FL/fl_utf8.h>
 #include "Postscript.H"
 
 #define PS_POS_FORMAT   "newpath %d %d moveto\n"
@@ -28,118 +29,154 @@
 #define PSEDIT_GLYPH_FORMAT       "%% PSEditWidget: GLYPH %s\n"
 #define PSEDIT_TAG_FORMAT         "%% PSEditWidget: TAG %s\n"
 
+//
+// Marker to set page number. This is necessary for viewers like ghostview
+// to display single pages properly.
+// 
 #define PSEDIT_PAGE_MARKER "/PSEditWidgetPageCount %d def %% PSEditWidget\n"
 
 static struct {
 	const char *glyph;
 	const char *c;
 } glyph_char[] = {
-	{"adieresis",  "\xE4"}, 
-	{"Adieresis",  "\xC4"}, 
-	{"odieresis",  "\xF6"}, 
-	{"Odieresis",  "\xD6"}, 
-	{"udieresis",  "\xFC"}, 
-	{"Udieresis",  "\xDC"}, 
-	{"germandbls", "\xDF"}, 
-	{"parenleft",  "("}, 
-	{"parenright", ")"}, 
-	{"percent",    "%"}, 
-	{"backslash",  "\\"}, 
-	{"exclamdown", "\xA1"},
-	{"cent",       "\xA2"},
-	{"sterling",   "\xA3"},
-	{"currency",   "\xA4"},
-	{"yen",        "\xA5"},
-	{"brokenbar",  "\xA6"},
-	{"section",    "\xA7"},
-	{"diaeresis",  "\xA8"},
-	{"copyright",  "\xA9"},
-	{"ordfeminine","\xAA"},
-	{"guillemotleft","\xAB"},
-	{"notsign",    "\xAC"},
-	{"hyphen",     "\xAD"},
-	{"registered", "\xAE"},
-	{"macron",     "\xAF"},
-	{"degree",     "\xB0"},
-	{"plusminus",  "\xB1"},
-	{"twosuperior","\xB2"},
-	{"threesuperior","\xB3"},
-	{"acute",      "\xB4"},
-	{"mu",         "\xB5"},
-	{"paragraph",  "\xB6"},
-	{"periodcentered","\xB7"},
-	{"cedilla",    "\xB8"},
-	{"onesuperior","\xB9"},
-	{"masculine",  "\xBA"},
-	{"guillemotright","\xBB"},
-	{"onequarter", "\xBC"},
-	{"onehalf",    "\xBD"},
-	{"threequarters","\xBE"},
-	{"questiondown","\xBF"},
-	{"Agrave",      "\xC0"},
-	{"Aacute",      "\xC1"},
-	{"Acircumflex", "\xC2"},
-	{"Atilde",      "\xC3"},
-	{"Adiaeresis",  "\xC4"},
-	{"Aring",       "\xC5"},
-	{"AE",          "\xC6"},
-	{"Ccedilla",    "\xC7"},
-	{"Egrave",      "\xC8"},
-	{"Eacute",      "\xC9"},
-	{"Ecircumflex", "\xCA"},
-	{"Ediaeresis",  "\xCB"},
-	{"Igrave",      "\xCC"},
-	{"Iacute",      "\xCD"},
-	{"Icircumflex", "\xCE"},
-	{"Idiaeresis",  "\xCF"},
-	{"ETH",         "\xD0"},
-	{"Ntilde",      "\xD1"},
-	{"Ograve",      "\xD2"},
-	{"Oacute",      "\xD3"},
-	{"Ocircumflex", "\xD4"},
-	{"Otilde",      "\xD5"},
-	{"Odiaeresis",  "\xD6"},
-	{"multiply",    "\xD7"},
-	{"Ooblique",    "\xD8"},
-	{"Ugrave",      "\xD9"},
-	{"Uacute",      "\xDA"},
-	{"Ucircumflex", "\xDB"},
-	{"Udiaeresis",  "\xDC"},
-	{"Yacute",      "\xDD"},
-	{"THORN",       "\xDE"},
-	{"ssharp",      "\xDF"},
-	{"agrave",      "\xE0"},
-	{"aacute",      "\xE1"},
-	{"acircumflex", "\xE2"},
-	{"atilde",      "\xE3"},
-	{"adiaeresis",  "\xE4"},
-	{"aring",       "\xE5"},
-	{"ae",          "\xE6"},
-	{"ccedilla",    "\xE7"},
-	{"egrave",      "\xE8"},
-	{"eacute",      "\xE9"},
-	{"ecircumflex", "\xEA"},
-	{"ediaeresis",  "\xEB"},
-	{"igrave",      "\xEC"},
-	{"iacute",      "\xED"},
-	{"icircumflex", "\xEE"},
-	{"idiaeresis",  "\xEF"},
-	{"eth",         "\xF0"},
-	{"ntilde",      "\xF1"},
-	{"ograve",      "\xF2"},
-	{"oacute",      "\xF3"},
-	{"ocircumflex", "\xF4"},
-	{"otilde",      "\xF5"},
-	{"odiaeresis",  "\xF6"},
-	{"division",    "\xF7"},
-	{"oslash",      "\xF8"},
-	{"ugrave",      "\xF9"},
-	{"uacute",      "\xFA"},
-	{"ucircumflex", "\xFB"},
-	{"udiaeresis",  "\xFC"},
-	{"yacute",      "\xFD"},
-	{"thorn",       "\xFE"},
-	{"ydiaeresis",  "\xFF"},
+	{"AE",          "\xC3\x86"},
+	{"Aacute",      "\xC3\x81"},
+	{"Acircumflex", "\xC3\x82"},
+	{"Adieresis",  "\xC3\x84"},
+	{"Agrave",      "\xC3\x80"},
+	{"Aogonek", "\xC4\x84"},
+	{"Aring",       "\xC3\x85"},
+	{"Atilde",      "\xC3\x83"},
+	{"Cacute", "\xC4\x86"},
+	{"Ccaron", "\xC4\x8C"},
+	{"Ccedilla",    "\xC3\x87"},
+	{"Dcaron", "\xC4\x8E"},
+	{"Dcroat", "\xC4\x90"},
+	{"ETH",         "\xC3\x90"},
+	{"Eacute",      "\xC3\x89"},
+	{"Ecaron", "\xC4\x9A"},
+	{"Ecircumflex", "\xC3\x8A"},
+	{"Ediaeresis",  "\xC3\x8B"},
+	{"Egrave",      "\xC3\x88"},
+	{"Eogonek", "\xC4\x98"},
+	{"Euro", "\xE2\x82\xAC"},
+	{"Iacute",      "\xC3\x8D"},
+	{"Icircumflex", "\xC3\x8E"},
+	{"Idiaeresis",  "\xC3\x8F"},
+	{"Igrave",      "\xC3\x8C"},
+	{"Lslash", "\xC5\x81"},
+	{"Nacute", "\xC5\x83"},
+	{"Ncaron", "\xC5\x87"},
+	{"Ntilde",      "\xC3\x91"},
+	{"Oacute",      "\xC3\x93"},
+	{"Ocircumflex", "\xC3\x94"},
+	{"Odieresis",  "\xC3\x96"},
+	{"Ograve",      "\xC3\x92"},
+	{"Ooblique",    "\xC3\x98"},
+	{"Otilde",      "\xC3\x95"},
+	{"Rcaron", "\xC5\x98"},
+	{"Sacute", "\xC5\x9A"},
+	{"Scaron", "\xC5\xA0"},
+	{"THORN",       "\xC3\x9E"},
+	{"Tcaron", "\xC5\xA4"},
+	{"Uacute",      "\xC3\x9A"},
+	{"Ucircumflex", "\xC3\x9B"},
+	{"Udieresis",  "\xC3\x9C"},
+	{"Ugrave",      "\xC3\x99"},
+	{"Uring", "\xC5\xAE"},
+	{"Yacute",      "\xC3\x9D"},
+	{"Zacute", "\xC5\xB9"},
+	{"Zcaron", "\xC5\xBD"},
+	{"Zdotaccent", "\xC5\xBB"},
+	{"aacute",      "\xC3\xA1"},
+	{"acircumflex", "\xC3\xA2"},
+	{"acute",      "\xC2\xB4"},
+	{"adieresis",  "\xC3\xA4"},
+	{"ae",          "\xC3\xA6"},
+	{"agrave",      "\xC3\xA0"},
+	{"aogonek", "\xC4\x85"},
+	{"aring",       "\xC3\xA5"},
+	{"atilde",      "\xC3\xA3"},
+	{"backslash",  "\\"},
+	{"brokenbar",  "\xC2\xA6"},
+	{"cacute", "\xC4\x87"},
+	{"ccaron", "\xC4\x8D"},
+	{"ccedilla",    "\xC3\xA7"},
+	{"cedilla",    "\xC2\xB8"},
+	{"cent",       "\xC2\xA2"},
+	{"copyright",  "\xC2\xA9"},
+	{"currency",   "\xC2\xA4"},
+	{"dcaron", "\xC4\x8F"},
+	{"dcroat", "\xC4\x91"},
+	{"degree",     "\xC2\xB0"},
+	{"diaeresis",  "\xC2\xA8"},
+	{"division",    "\xC3\xB7"},
+	{"eacute",      "\xC3\xA9"},
+	{"ecaron", "\xC4\x9B"},
+	{"ecircumflex", "\xC3\xAA"},
+	{"ediaeresis",  "\xC3\xAB"},
+	{"egrave",      "\xC3\xA8"},
+	{"eogonek", "\xC4\x99"},
+	{"eth",         "\xC3\xB0"},
+	{"exclamdown", "\xC2\xA1"},
+	{"germandbls", "\xC3\x9F"},
+	{"guillemotleft","\xC2\xAB"},
+	{"guillemotright","\xC2\xBB"},
+	{"hyphen",     "\xC2\xAD"},
+	{"iacute",      "\xC3\xAD"},
+	{"icircumflex", "\xC3\xAE"},
+	{"idiaeresis",  "\xC3\xAF"},
+	{"igrave",      "\xC3\xAC"},
+	{"lslash", "\xC5\x82"},
+	{"macron",     "\xC2\xAF"},
+	{"masculine",  "\xC2\xBA"},
+	{"mu",         "\xC2\xB5"},
+	{"multiply",    "\xC3\x97"},
+	{"nacute", "\xC5\x84"},
+	{"ncaron", "\xC5\x88"},
+	{"notsign",    "\xC2\xAC"},
+	{"ntilde",      "\xC3\xB1"},
+	{"oacute",      "\xC3\xB3"},
+	{"oacute", "\xC3\xB3"},
+	{"ocircumflex", "\xC3\xB4"},
+	{"odieresis",  "\xC3\xB6"},
+	{"ograve",      "\xC3\xB2"},
+	{"onehalf",    "\xC2\xBD"},
+	{"onequarter", "\xC2\xBC"},
+	{"onesuperior","\xC2\xB9"},
+	{"ordfeminine","\xC2\xAA"},
+	{"oslash",      "\xC3\xB8"},
+	{"otilde",      "\xC3\xB5"},
+	{"paragraph",  "\xC2\xB6"},
+	{"parenleft",  "("},
+	{"parenright", ")"},
+	{"percent",    "%"},
+	{"periodcentered","\xC2\xB7"},
+	{"plusminus",  "\xC2\xB1"},
+	{"questiondown","\xC2\xBF"},
+	{"rcaron", "\xC5\x99"},
+	{"registered", "\xC2\xAE"},
+	{"sacute", "\xC5\x9B"},
+	{"scaron", "\xC5\xA1"},
+	{"section",    "\xC2\xA7"},
+	{"ssharp",      "\xC3\x9F"},
+	{"sterling",   "\xC2\xA3"},
+	{"tcaron", "\xC5\xA5"},
+	{"thorn",       "\xC3\xBE"},
+	{"threequarters","\xC2\xBE"},
+	{"threesuperior","\xC2\xB3"},
+	{"twosuperior","\xC2\xB2"},
+	{"uacute",      "\xC3\xBA"},
+	{"ucircumflex", "\xC3\xBB"},
+	{"udieresis",  "\xC3\xBC"},
+	{"ugrave",      "\xC3\xB9"},
+	{"uring", "\xC5\xAF"},
+	{"yacute",      "\xC3\xBD"},
+	{"ydiaeresis",  "\xC3\xBF"},
+	{"yen",        "\xC2\xA5"},
+	{"zacute", "\xC5\xBA"},
+	{"zcaron", "\xC5\xBE"},
+	{"zdotaccent", "\xC5\xBC"},
 	{NULL, NULL}};
 
 static const char * glyph_to_char(char *glyph) {
@@ -159,7 +196,7 @@ static const char * char_to_glyph(char *c) {
 	int i=0;
 
 	while(glyph_char[i].glyph != NULL) {
-		if (strncmp(glyph_char[i].c, c, 1) == 0) {
+		if (strncmp(glyph_char[i].c, c, strlen(glyph_char[i].c)) == 0) {
 			return glyph_char[i].glyph;
 		}
 		i++;
@@ -307,6 +344,18 @@ void PSWriter::write_internal_format(FILE *out) {
 	}
 }
 
+static int utf8len(char *s) {
+	int len;
+
+	if (*s & 0x80) {
+		fl_utf8decode(s, s + strlen(s), &len);
+	} else {
+		len = 1;
+	}
+
+	return len;
+}
+
 void PSWriter::write_string(FILE *out, char *s) {
 	const char *glyph;
 
@@ -314,10 +363,10 @@ void PSWriter::write_string(FILE *out, char *s) {
 		return;
 	} else if ((glyph = char_to_glyph(s)) != NULL) {
 		fprintf(out, glyph_format, glyph);
-		write_string(out, &(s[1]));
+		write_string(out, &(s[utf8len(&(s[0]))]));
 		return;
 	} else {
-		for (unsigned int i = 0; i < strlen(s); i++) {
+		for(size_t i=0; i < strlen(s); i = i + utf8len(&(s[i]))) {
 			if ((glyph = char_to_glyph(&(s[i]))) != NULL) {
 				char *s1 = strdup(s);
 				s1[i] = '\0';

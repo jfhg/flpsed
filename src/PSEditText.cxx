@@ -1,5 +1,5 @@
 //
-// Copyright 2007-2009 Johannes Hofmann <Johannes.Hofmann@gmx.de>
+// Copyright 2007 Johannes Hofmann <Johannes.Hofmann@gmx.de>
 //
 // This software may be used and distributed according to the terms
 // of the GNU General Public License, incorporated herein by reference.
@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <FL/fl_utf8.h>
 
 #include "PSEditText.H"
 
@@ -52,7 +53,9 @@ void PSEditText::append_text(const char*s1) {
 
 void PSEditText::rm_char() {
 	if (s && strlen(s) > 0) {
-		s[strlen(s) - 1] = '\0';
+		char *t;
+		t = (char*)fl_utf8back(s + strlen(s) - 1, s, s + strlen(s));
+		t[0] = '\0';
 	}
 }
 
