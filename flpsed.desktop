@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=flpsed
+GenericName=Simple PS/PDF editor
+Comment=A simple annotator for PS/PDF files
+Comment[es]=Un anotador simple de archivos PS/PDF
+Icon=flpsed
+Exec=flpsed %U
+Terminal=false
+StartupNotify=true
+Categories=Graphics;
+MimeType=application/postscript;application/pdf;
+Keywords=pump.io;social network;microblog
