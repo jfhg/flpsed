@@ -1,6 +1,9 @@
 flpsed ChangeLog
 =================
 
+flpsed-0.7.2
+* Fix desktop file. (by Luis Alberto)
+
 flpsed-0.7.1
 * Add icon and desktop file. (by Luis Alberto)
 
