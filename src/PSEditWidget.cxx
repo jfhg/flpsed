@@ -277,11 +277,9 @@ int PSEditWidget::get_size() {
 
 void PSEditWidget::set_color(const PSEditColor *c) {
 	PSEditText *t;
-	uchar *p;
 
 	t = model->get_cur_text();
 
-	p = (uchar*) &c;
 	cur_text_color.set(c);
 
 	model->set_color(&cur_text_color);

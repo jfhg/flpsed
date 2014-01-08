@@ -256,13 +256,12 @@ GsWidget::load_page(int p) {
 }
 
 int GsWidget::fd_copy(int to, int from, size_t len) {
-	size_t n, r;
+	size_t r;
 	char buf[1024];
 	int ret = 0;
 
 	signal(SIGPIPE, SIG_IGN); // don't die if gs has a problem
 
-	n = 0;
 	while(len > 0) {
 
 		Fl::check(); // let fltk do its stuff 
