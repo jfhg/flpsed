@@ -311,7 +311,7 @@ void PSWriter::write_main_block(FILE *out) {
 	tag_format   = PS_TAG_FORMAT;
 
 	fprintf(out, "\n");
-	fprintf(out, ps_header());
+	fprintf(out, "%s", ps_header());
 
 	for (int i = 1; i<pse->get_max_pages(); i++) {
 		if (pse->get_text(i)) {
@@ -321,7 +321,7 @@ void PSWriter::write_main_block(FILE *out) {
 		}
 	}
 
-	fprintf(out, ps_trailer());
+	fprintf(out, "%s", ps_trailer());
 	fprintf(out, "\n");
 	fprintf(out, "%s", PSEDIT_END);
 	fprintf(out, "\n");
