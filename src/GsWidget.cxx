@@ -256,7 +256,7 @@ GsWidget::load_page(int p) {
 }
 
 int GsWidget::fd_copy(int to, int from, size_t len) {
-	size_t r;
+	ssize_t r;
 	char buf[1024];
 	int ret = 0;
 
