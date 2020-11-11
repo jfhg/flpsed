@@ -57,26 +57,3 @@ You can now call flpsed in batch mode to set the actual values:
 
 flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
 
-
-## Mac OS X 
-
-To compile flpsed on Mac OS X Panther, first make sure you have Fink
-installed.  Make sure Fink is set up to install unstable packages.
-(See the Fink Docs about this at the Fink website.)
-
-Then use Fink to install the following packages.
-
-Apple X11, xfree, or xorg
-	If you choose Apple X11, make sure you install X11-SDK which is
-	found on the Panther install disks.
-
-fltk-x11
-fltk-x11-shlibs
-ghostscript
-
-DO NOT INSTALL the Fink package called fltk, as this appears to be for
-building aqua fltk applications rather than X11 apps.
-
-You must unset the C-preprocessor macro __APPLE__ to get flpsed to compile
-under OS X. This is can be done by calling 
-"CPPFLAGS=-U__APPLE__; export CPPFLAGS" before running "./configure".
