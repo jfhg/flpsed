@@ -1,6 +1,4 @@
-=======
-flpsed
-=======
+# flpsed
 
 
 flpsed is a PostScript annotator. You can't actually 
@@ -8,7 +6,7 @@ edit existing PostScript documents, but you can add arbitrary text lines to
 existing documents.
 It is useful for filling in forms etc. 
 
-Quick Start:
+## Quick Start:
 - Open an existing PostScript document.
 - Click anywhere on the document and type a text line.
 - The frame around the text shows, which text line has the focus.
@@ -20,7 +18,7 @@ Quick Start:
 - Save your document and preview it with ghostview or something similar.
 - If you reopen the document with flpsed, you can edit the added text lines.
 
-Features:
+## Features:
 - Add arbitrary text to existing PostScript documents.
 - Reedit text, that has been added with flpsed.
 - The overall structure of the PostScript document is not
@@ -28,7 +26,7 @@ Features:
 - Lines can be given names ("tags"). The text of these lines can
   be replaced in batch mode (no X11 required).
  
-Restrictions:
+## Restrictions:
 - flpsed probably does not work on all existing PostScript documents.
   You simply have to test it for your documents.
 - Zooming depends on the availability of scalable fonts on your X11 system.
@@ -37,7 +35,7 @@ Restrictions:
 - flpsed is alpha software, so please backup your files, before trying to 
   modify them.
 
-Building:
+## Building:
 - flpsed only works on X11-based systems.
 - You need to have ghostscript installed.
 - You need to have fltk-1.3.x from www.fltk.org installed.
@@ -45,7 +43,7 @@ Building:
 
 
 
-Tags and Batch Mode:
+## Tags and Batch Mode:
 
 To use batch mode, add text lines to your PostScript document as usual. 
 Give all or some of the lines tag names (Tags->Edit Tag). 
@@ -60,9 +58,7 @@ You can now call flpsed in batch mode to set the actual values:
 flpsed -b -t name="Hans Meier" -t street="Haupstr. 14" letter-templ.ps out.ps
 
 
-==================
-Mac OS X 
-==================
+## Mac OS X 
 
 To compile flpsed on Mac OS X Panther, first make sure you have Fink
 installed.  Make sure Fink is set up to install unstable packages.
@@ -84,8 +80,3 @@ building aqua fltk applications rather than X11 apps.
 You must unset the C-preprocessor macro __APPLE__ to get flpsed to compile
 under OS X. This is can be done by calling 
 "CPPFLAGS=-U__APPLE__; export CPPFLAGS" before running "./configure".
-
-
-Johannes Hofmann
-(Johannes.Hofmann@gmx.de)
-June 17, 2005
