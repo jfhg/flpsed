@@ -41,8 +41,8 @@ void PSEditText::append_text(const char*s1) {
 	int len = (s?strlen(s):0) + strlen(s1) + 1;
 	char *tmp = (char*) malloc(len);
 
-	strncpy(tmp, s?s:"", len);
-	strncat(tmp, s1, len - strlen(tmp));
+	strcpy(tmp, s?s:"");
+	strcat(tmp, s1);
 
 	if (s) {
 		free(s);
