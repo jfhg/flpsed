@@ -1,0 +1,17 @@
+*.o
+.Po
+.deps
+config.*
+autom4te.cache
+INSTALL
+COPYING
+Makefile
+Makefile.in
+configure
+compile
+aclocal.m4
+depcomp
+install-sh
+stamp-h1
+missing
+flpsed
